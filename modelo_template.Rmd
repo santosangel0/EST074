@@ -1,0 +1,130 @@
+---
+title: "TÍTULO DO TRABALHO"
+author:
+  - "Nome do Integrante 1 (Matrícula: XXXXXXXX)"
+  - "Nome do Integrante 2 (Matrícula: XXXXXXXX)"
+date: "Data"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    number_sections: false
+    keep_tex: false
+bibliography: references.bib
+biblio-style: apalike
+link-citations: true
+geometry: margin=2cm, headheight=28pt, headsep=14pt, footskip=20pt
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{lastpage}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{xcolor}
+  - \usepackage{caption}
+  - \captionsetup[table]{skip=4pt}
+  - \pagestyle{fancy}
+  - \fancypagestyle{plain}{\fancyhf{}\fancyhead[L]{\footnotesize Federal University of Juiz de Fora\\Spring 2026}\fancyhead[C]{\footnotesize EST074\\Análise de Regressão}\fancyhead[R]{\footnotesize Department of Statistics\\Tiago M. Magalhães}\fancyfoot[L]{\footnotesize\texttt{ufjf.br/tiago\_magalhaes}}\fancyfoot[R]{\footnotesize Page \thepage/\pageref{LastPage}}\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0.4pt}}
+  - \fancyhf{}
+  - \fancyhead[L]{\footnotesize Federal University of Juiz de Fora\\Spring 2026}
+  - \fancyhead[C]{\footnotesize EST074\\Análise de Regressão}
+  - \fancyhead[R]{\footnotesize Department of Statistics\\Tiago M. Magalhães}
+  - \fancyfoot[L]{\footnotesize\texttt{ufjf.br/tiago\_magalhaes}}
+  - \fancyfoot[R]{\footnotesize Page \thepage/\pageref{LastPage}}
+  - \renewcommand{\headrulewidth}{0.4pt}
+  - \renewcommand{\footrulewidth}{0.4pt}
+  - \setlength{\headheight}{28pt}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.pos = "H"
+)
+
+# Carregamento dos scripts modulares
+# source("scripts/01_data_loader.R")
+# source("scripts/02_eda_tables.R")
+# source("scripts/03_eda_plots.R")
+# source("scripts/04_model_analysis.R")
+```
+
+## Resumo
+
+Apresentar uma síntese do trabalho contendo: contexto dos dados, objetivo da análise, método utilizado (regressão), principais resultados e conclusões.
+
+**Palavras-chave:** inserir de 3 a 5 palavras-chave separadas por ponto e vírgula.
+
+---
+
+## 1. Introdução
+
+Apresentar o contexto do problema e descrever os dados analisados, destacando sua importância e aplicabilidade [@helliwell2022world].
+
+Ao final da introdução, explicitar claramente o objetivo do trabalho.
+
+---
+
+## 2. Análise exploratória dos dados
+
+Realizar uma análise descritiva das variáveis do conjunto de dados.
+
+* **Para variáveis qualitativas:**
+  * apresentar contagens e proporções por categoria
+* **Para variáveis quantitativas:**
+  * média
+  * mediana
+  * primeiro e terceiro quartis
+  * mínimo e máximo
+  * desvio padrão
+  * coeficiente de variação
+
+### Análise gráfica:
+* **Variáveis qualitativas:** gráficos de barras (e setores, se desejado)
+* **Variáveis quantitativas:** histogramas e box-plots
+* **Relação entre variáveis:** gráficos de dispersão entre a variável resposta e as variáveis preditoras
+
+Os resultados devem ser apresentados por meio de tabelas e gráficos devidamente identificados e interpretados no texto.
+
+---
+
+## 3. Modelo de regressão
+
+Descrever a variável resposta e as variáveis preditoras utilizadas.
+
+Apresentar a equação do modelo de regressão estimado.
+
+Interpretar os coeficientes do modelo, discutindo:
+* sinal dos coeficientes
+* magnitude dos efeitos
+* relação entre as variáveis
+
+Quando aplicável, comentar sobre a qualidade do ajuste do modelo.
+
+Os resultados devem ser apresentados em tabelas elaboradas pelos alunos, contendo apenas as informações relevantes para a análise.
+
+---
+
+## 4. Conclusão
+
+Retomar o objetivo do trabalho e apresentar os principais resultados obtidos.
+
+Discutir, de forma sintética, as conclusões da análise realizada.
+
+---
+
+## Referências
+
+<!-- As referências incluídas no references.bib e citadas no texto aparecerão automaticamente aqui -->
+<div id="refs"></div>
+
+---
+
+## Anexo (opcional)
+
+Incluir códigos, dados adicionais ou demonstrações, se necessário.

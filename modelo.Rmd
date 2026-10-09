@@ -1,0 +1,219 @@
+---
+title: "Determinantes Globais da Felicidade: Uma Análise de Regressão Linear Múltipla baseada no World Happiness Report"
+author:
+  - "Angelo dos Santos Luna Filho (Matrícula: 202465601D)"
+  - "Nome do Integrante 2 (Matrícula: 202XXXXXX)"
+date: "09 de Outubro de 2026"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    number_sections: false
+    keep_tex: false
+    citation_package: default
+bibliography: references.bib
+biblio-style: apalike
+link-citations: true
+geometry: margin=2cm, headheight=28pt, headsep=14pt, footskip=20pt
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{lastpage}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{xcolor}
+  - \usepackage{caption}
+  - \captionsetup[table]{skip=4pt}
+  - \pagestyle{fancy}
+  - \fancypagestyle{plain}{\fancyhf{}\fancyhead[L]{\footnotesize Federal University of Juiz de Fora\\Spring 2026}\fancyhead[C]{\footnotesize EST074\\Análise de Regressão}\fancyhead[R]{\footnotesize Department of Statistics\\Tiago M. Magalhães}\fancyfoot[L]{\footnotesize\texttt{ufjf.br/tiago\_magalhaes}}\fancyfoot[R]{\footnotesize Page \thepage/\pageref{LastPage}}\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0.4pt}}
+  - \fancyhf{}
+  - \fancyhead[L]{\footnotesize Federal University of Juiz de Fora\\Spring 2026}
+  - \fancyhead[C]{\footnotesize EST074\\Análise de Regressão}
+  - \fancyhead[R]{\footnotesize Department of Statistics\\Tiago M. Magalhães}
+  - \fancyfoot[L]{\footnotesize\texttt{ufjf.br/tiago\_magalhaes}}
+  - \fancyfoot[R]{\footnotesize Page \thepage/\pageref{LastPage}}
+  - \renewcommand{\headrulewidth}{0.4pt}
+  - \renewcommand{\footrulewidth}{0.4pt}
+  - \setlength{\headheight}{28pt}
+---
+
+```{r setup, include=FALSE}
+# Configurações globais dos chunks do knitr:
+# Conforme as instruções do trabalho, nenhum código, comando ou saída bruta do R
+# deve aparecer no corpo do artigo. Todos os resultados são apresentados via
+# tabelas e gráficos formatados profissionalmente.
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.pos = "H"
+)
+
+# Carregamento modular dos scripts desenvolvidos em scripts/
+source("scripts/01_data_loader.R")
+source("scripts/02_eda_tables.R")
+source("scripts/03_eda_plots.R")
+source("scripts/04_model_analysis.R")
+
+# Carregamento e preparação dos dados
+dados_felicidade <- load_happiness_data("dados/Worldhappiness.xls")
+
+# Ajuste dos modelos de regressão linear
+modelos <- fit_regression_models(dados_felicidade)
+```
+
+## Resumo
+
+Este trabalho investiga os fatores explicativos da pontuação média de felicidade (*Score*) em 146 nações, utilizando a base de dados do *World Happiness Report 2022*. A partir da metodologia da escala de Cantril, estimou-se inicialmente um modelo de regressão linear múltipla completo considerando seis determinantes: produto interno bruto per capita (*GDP*), apoio social (*Social*), expectativa de vida saudável (*Healthy*), liberdade para escolhas de vida (*Freedom*), generosidade (*Generosity*) e percepção de corrupção (*Corruption*). Realizou-se uma análise exploratória minuciosa com medidas descritivas e inspeção visual de distribuições e valores atípicos. O modelo completo evidenciou que generosidade e percepção de corrupção não foram estatisticamente significantes a 5%. Com base no critério de parcimônia e no Critério de Informação Bayesiano (BIC), propôs-se um modelo reduzido com quatro variáveis preditoras (*GDP*, *Social*, *Healthy* e *Freedom*), todas altamente significantes ($p < 0{,}01$) e com excelente capacidade explicativa ($R^2 = 0{,}762$). Os resultados demonstram que a liberdade individual e o apoio social exercem os impactos marginais mais intensos sobre o bem-estar subjetivo das nações.
+
+**Palavras-chave:** Felicidade global; Regressão linear múltipla; Qualidade de vida; Modelagem estatística; World Happiness Report.
+
+---
+
+## 1. Introdução
+
+A mensuração do bem-estar subjetivo e da qualidade de vida transcendeu as fronteiras dos indicadores estritamente econômicos nas últimas décadas. Conforme documentado amplamente por @helliwell2022world, o *World Happiness Report* (WHR) consolidou-se como a principal referência internacional para avaliar o nível de felicidade das populações ao redor do globo. O relatório apoia-se nos dados coletados pela *Gallup World Poll*, utilizando a metodologia consagrada da escala de *Cantril ladder life-evaluation*. Sob essa métrica, entrevistados em cada país avaliam suas vidas em uma escala contínua de 0 (pior vida possível) a 10 (melhor vida possível), correspondendo cada observação anual à média trienal de cerca de 1.000 entrevistas por país.
+
+Para compreender os fatores determinantes dessa avaliação, o relatório examina seis dimensões fundamentais de desenvolvimento humano e institucional: o produto interno bruto per capita (*GDP*), o suporte social (*Social*), a expectativa de vida saudável ao nascer (*Healthy*), a percepção de liberdade para fazer escolhas de vida (*Freedom*), a generosidade da sociedade (*Generosity*) e a percepção de integridade institucional/ausência de corrupção (*Corruption*). A análise conjunta dessas variáveis possui relevância estratégica para a formulação de políticas públicas orientadas não apenas ao crescimento monetário, mas à promoção integral da satisfação humana.
+
+O objetivo do presente trabalho é aplicar as técnicas de modelagem por regressão linear múltipla para identificar, quantificar e interpretar a relação entre o índice de felicidade e essas seis variáveis preditoras. Especificamente, busca-se conduzir uma análise exploratória descritiva completa, ajustar o modelo de regressão linear múltipla completo, avaliar a significância estatística dos parâmetros ao nível de 5%, selecionar um modelo parcimonioso fundamentado e interpretar os coeficientes estimados sob a condição *ceteris paribus*.
+
+---
+
+## 2. Análise exploratória dos dados
+
+O conjunto de dados é composto por $n = 146$ países avaliados no relatório de 2022. Na dimensão qualitativa, os dados cobrem uma diversidade equilibrada de continentes e regimes socioeconômicos globais. Na dimensão quantitativa, analisa-se a variável resposta *Score* e as seis variáveis preditoras. A Tabela 1 apresenta as medidas descritivas de tendência central, dispersão, separatrizes e o coeficiente de variação (CV) para todas as variáveis quantitativas do estudo.
+
+```{r tab-descritiva}
+desc_stats <- compute_descriptive_stats(dados_felicidade)
+format_descriptive_table(desc_stats, caption = "Medidas descritivas das variáveis do estudo (n = 146 países)")
+```
+
+A pontuação média de felicidade global é de $5{,}554$ pontos ($\pm 1{,}087$), variando entre um mínimo de $2{,}404$ (Afeganistão) e um máximo de $7{,}821$ (Finlândia). A proximidade entre a média ($5{,}554$) e a mediana ($5{,}569$) sugere uma distribuição simétrica para a variável resposta, corroborada pelo baixo coeficiente de variação ($19{,}57\%$). Por outro lado, as variáveis preditoras apresentam comportamentos distintos. Enquanto o *GDP* (média $1{,}410$), o apoio social (*Social*, média $0{,}906$) e a expectativa de vida saudável (*Healthy*, média $0{,}586$) exibem dispersão relativa intermediária ($CV \approx 30\%$), as variáveis *Generosity* ($CV = 56{,}16\%$) e especialmente *Corruption* ($CV = 82{,}40\%$) apresentam elevada variabilidade relativa entre as nações.
+
+```{r fig-distribuicoes, fig.height=3.4, fig.width=6.5, fig.cap="Distribuições de frequência e densidade estimada das variáveis analisadas."}
+plot_histograms(dados_felicidade)
+```
+
+A Figura 1 apresenta os histogramas com a densidade empírica superposta. Observa-se que *Score* e *Freedom* apresentam formato razoavelmente unimodal e simétrico. Em contraste, *Corruption* e *Generosity* exibem forte assimetria positiva, na qual a ampla maioria dos países concentra-se em pontuações baixas, enquanto um número restrito de nações atinge patamares elevados.
+
+```{r fig-boxplots, fig.height=3.0, fig.width=6.5, fig.cap="Box-plots univariados para detecção de dispersão e valores atípicos."}
+plot_boxplots(dados_felicidade)
+```
+
+A inspeção dos box-plots na Figura 2 e a aplicação formal da regra da amplitude interquartílica ($1{,}5 \times IQR$) revelam importantes pontos atípicos (*outliers*). A Tabela 2 sintetiza as observações que ultrapassaram as barreiras interquartílicas.
+
+```{r tab-outliers}
+outliers_df <- identify_outliers(dados_felicidade)
+format_outliers_table(outliers_df, caption = "Observações atípicas identificadas pelo critério de 1,5 vezes a distância interquartílica")
+```
+
+Nota-se que o Afeganistão desponta como *outlier* inferior no *Score* ($2{,}404$), em virtude de severas crises humanitárias no período da coleta, exibindo simultaneamente os menores índices mundiais em *GDP*, apoio social e liberdade. Na variável *Corruption*, países nórdicos (Finlândia, Dinamarca, Noruega, Suécia) e centros de governança avançada (Singapura, Nova Zelândia, Suíça) aparecem como *outliers* superiores, pois o indicador quantifica a transparência e a baixa percepção de desvios no setor público. Em generosidade, Indonésia e Mianmar destacam-se pelo engajamento cultural filantrópico.
+
+```{r fig-dispersao, fig.height=3.6, fig.width=6.5, fig.cap="Gráficos de dispersão entre o Score de Felicidade e as variáveis explicativas com retas de ajuste linear."}
+plot_bivariate_relationships(dados_felicidade)
+```
+
+A Figura 3 expõe os diagramas de dispersão entre a variável resposta *Score* e cada uma das preditoras, acompanhados da reta de regressão linear simples. Constata-se uma relação linear positiva e nítida entre o *Score* e os determinantes *GDP* ($r = 0{,}76$), *Social* ($r = 0{,}78$) e *Healthy* ($r = 0{,}74$). A relação com *Freedom* é igualmente expressiva e positiva ($r = 0{,}63$). Por sua vez, *Corruption* exibe inclinação positiva moderada ($r = 0{,}42$), enquanto *Generosity* demonstra dispersão difusa em relação à felicidade ($r = 0{,}06$), antecipando uma possível ausência de contribuição linear significativa no modelo multivariado.
+
+---
+
+## 3. Modelo de regressão
+
+A variável resposta do estudo é a pontuação média de felicidade do país ($Y = \text{Score}$). O vetor de variáveis explicativas candidatas contempla seis dimensões: $X_1 = \text{GDP}$, $X_2 = \text{Social}$, $X_3 = \text{Healthy}$, $X_4 = \text{Freedom}$, $X_5 = \text{Generosity}$ e $X_6 = \text{Corruption}$.
+
+Considerando a presença de intercepto e um termo de erro estocástico $\varepsilon_i \sim \text{Normal}(0, \sigma^2)$ com erros independentes e homocedásticos, o modelo de regressão linear múltipla completo é formulado por:
+
+$$\text{Score}_i = \beta_0 + \beta_1 \text{GDP}_i + \beta_2 \text{Social}_i + \beta_3 \text{Healthy}_i + \beta_4 \text{Freedom}_i + \beta_5 \text{Generosity}_i + \beta_6 \text{Corruption}_i + \varepsilon_i$$
+
+### 3.1 Ajuste do Modelo Completo e Testes de Significância
+
+O ajuste por Mínimos Quadrados Ordinários (MQO) para o modelo completo forneceu a seguinte equação estimada:
+
+$$\widehat{\text{Score}} = 1{,}668 + 0{,}550 \cdot \text{GDP} + 1{,}409 \cdot \text{Social} + 1{,}275 \cdot \text{Healthy} + 1{,}604 \cdot \text{Freedom} + 0{,}966 \cdot \text{Generosity} + 0{,}731 \cdot \text{Corruption}$$
+
+A Tabela 3 exibe os coeficientes estimados, erros padrões, estatísticas $t$, $p$-valores associados ao teste bilateral de hipóteses ($H_0: \beta_j = 0$ contra $H_1: \beta_j \neq 0$) e os intervalos de confiança de 95%.
+
+```{r tab-coef-completo}
+format_coefficients_table(modelos$Completo, caption = "Estimativas dos parâmetros e testes de significância para o modelo completo")
+```
+
+Ao nível de significância de 5% ($\alpha = 0{,}05$), verifica-se que as variáveis **PIB per capita** ($p = 0{,}0089$), **Apoio Social** ($p < 0{,}001$), **Expectativa de Vida Saudável** ($p = 0{,}0045$) e **Liberdade** ($p < 0{,}001$) são estatisticamente significantes, com seus intervalos de confiança não contendo o valor zero. Em contrapartida, as variáveis **Generosidade** ($p = 0{,}0913$) e **Percepção de Corrupção** ($p = 0{,}0673$) apresentaram $p$-valores superiores ao limiar de $0{,}05$, não havendo evidências empíricas suficientes para rejeitar a hipótese nula de que seus coeficientes populacionais sejam nulos no modelo completo.
+
+### 3.2 Seleção do Modelo Reduzido
+
+Diante da não significância dessas preditoras a 5%, fundamenta-se a proposição de um modelo reduzido parcimonioso. Adotando a exclusão conjunta das variáveis não significantes (*Generosity* e *Corruption*), obtém-se o Modelo Reduzido composto por quatro preditores essenciais:
+
+$$\text{Score}_i = \beta_0 + \beta_1 \text{GDP}_i + \beta_2 \text{Social}_i + \beta_3 \text{Healthy}_i + \beta_4 \text{Freedom}_i + \varepsilon_i$$
+
+A equação de regressão estimada para o modelo reduzido é expressa por:
+
+$$\widehat{\text{Score}} = 1{,}741 + 0{,}529 \cdot \text{GDP} + 1{,}376 \cdot \text{Social} + 1{,}369 \cdot \text{Healthy} + 1{,}969 \cdot \text{Freedom}$$
+
+A Tabela 4 sumariza as estimativas dos parâmetros do modelo reduzido final.
+
+```{r tab-coef-reduzido}
+format_coefficients_table(modelos$Reduzido, caption = "Estimativas dos parâmetros para o modelo reduzido final")
+```
+
+No modelo reduzido, todas as quatro variáveis explicativas permanecem altamente significantes a 1% ($p < 0{,}01$). A Tabela 5 compara as métricas de qualidade de ajuste do modelo completo e do modelo reduzido, incluindo também o modelo intermediário unicamente sem *Generosity*.
+
+```{r tab-comparacao-modelos}
+format_models_comp <- compare_models_table(modelos, caption = "Comparação da qualidade de ajuste e critérios de informação")
+format_models_comp
+```
+
+A Tabela 6 detalha o teste $F$ parcial (ANOVA) para a comparação entre o modelo reduzido e o modelo completo, testando a hipótese nula conjunta de que os coeficientes de generosidade e corrupção são simultaneamente nulos ($H_0: \beta_{\text{Generosity}} = \beta_{\text{Corruption}} = 0$).
+
+```{r tab-anova}
+format_anova_comparison(modelos$Reduzido, modelos$Completo, 
+                        caption = "Teste F parcial para comparação do modelo reduzido frente ao modelo completo")
+```
+
+Observa-se que o coeficiente de determinação do modelo reduzido ($R^2 = 0{,}762$; $R^2_{\text{ajustado}} = 0{,}755$) é praticamente equivalente ao do modelo completo ($R^2 = 0{,}774$; $R^2_{\text{ajustado}} = 0{,}764$), com uma perda de apenas $0{,}012$ na proporção da variância explicada com a remoção de duas variáveis. Ademais, o Critério de Informação Bayesiano (BIC), que penaliza rigorosamente a inclusão excessiva de parâmetros, favorece expressivamente o **Modelo Reduzido** ($BIC = 257{,}96$ contra $BIC = 260{,}62$ no completo), confirmando sua maior parcimônia e precisão inferencial.
+
+### 3.3 Interpretação dos Coeficientes e Qualidade de Ajuste
+
+A interpretação prática dos coeficientes estimados no modelo final, sob a condição *ceteris paribus* (mantendo-se todas as demais variáveis constantes), é detalhada a seguir:
+
+* **Intercepto ($\hat{\beta}_0 = 1{,}741$):** Representa o valor esperado do *Score* de felicidade para um país hipotético cujos indicadores de PIB, apoio social, saúde e liberdade sejam iguais a zero. Corresponde à pontuação basal de subsistência no modelo.
+* **PIB per capita ($\hat{\beta}_1 = 0{,}529$, $p = 0{,}0098$):** O coeficiente positivo confirma que o rendimento econômico eleva o bem-estar. Para cada acréscimo de uma unidade na contribuição do PIB per capita, a pontuação média de felicidade aumenta, em média, $0{,}529$ pontos, fixados o apoio social, a saúde e a liberdade.
+* **Apoio Social ($\hat{\beta}_2 = 1{,}376$, $p < 0{,}001$):** O suporte de redes interpessoais e familiares possui impacto de elevada magnitude. O incremento de uma unidade no apoio social acarreta um ganho médio estimado de $1{,}376$ pontos na felicidade do país (*ceteris paribus*).
+* **Expectativa de Vida Saudável ($\hat{\beta}_3 = 1{,}369$, $p = 0{,}0026$):** A saúde pública ao longo da vida é determinante central do bem-estar. O avanço de uma unidade na expectativa de vida saudável projeta uma elevação média de $1{,}369$ pontos no *Score* (*ceteris paribus*).
+* **Liberdade de Escolha ($\hat{\beta}_4 = 1{,}969$, $p < 0{,}001$):** A percepção de autonomia para tomar decisões de vida constitui o preditor de maior efeito marginal no modelo final. Mantendo-se constantes a renda, a rede social e a saúde, o acréscimo de uma unidade no índice de liberdade produz um aumento médio estimado de expressivos $1{,}969$ pontos na pontuação de felicidade.
+
+```{r fig-diagnostico, fig.height=3.6, fig.width=6.5, fig.cap="Gráficos de diagnóstico dos resíduos para validação das suposições do modelo reduzido final."}
+plot_diagnostics(modelos$Reduzido)
+```
+
+A Figura 4 apresenta os gráficos diagnósticos do modelo final. O gráfico de *Resíduos vs Valores Ajustados* e o de *Escala-Locação* indicam distribuição aleatória dos erros em torno de zero, atestando a linearidade das relações e a homogeneidade da variância dos resíduos (homocedasticidade). O gráfico *Q-Q Normal* demonstra que os resíduos padronizados aderem estreitamente à reta teórica, validando a normalidade dos erros. Por fim, o diagrama de *Resíduos vs Alavancagem* assegura a ausência de observações influentes que comprometam a estabilidade das estimativas dos parâmetros.
+
+---
+
+## 4. Conclusão
+
+Este estudo investigou os fatores determinantes do bem-estar subjetivo global por meio de modelagem por regressão linear múltipla aplicada aos dados do *World Happiness Report 2022*. A partir de uma análise exploratória robusta, confirmou-se a acentuada heterogeneidade entre as 146 nações avaliadas, identificando-se contrastes severos em termos de privação (Afeganistão) e excelência em governança e apoio social (países nórdicos).
+
+O ajuste do modelo completo revelou que, em nível multivariado, os fatores de generosidade individual e percepção de corrupção não apresentaram contribuição linear estatisticamente significante a 5%. A adoção fundamentada do modelo reduzido permitiu reter os quatro pilares mais determinantes da felicidade mundial: produto interno bruto (*GDP*), suporte social (*Social*), expectativa de vida saudável (*Healthy*) e liberdade (*Freedom*). 
+
+O modelo final revelou-se altamente parcimonioso e consistente ($R^2 = 0{,}762$), demonstrando que mais de 76% da variação observada na felicidade dos países é explicada por esses quatro fatores. Sob a perspectiva prática de formulação de políticas internacionais, as estimativas evidenciam que, embora a solvência econômica seja indispensável, os fatores de coesão social e autonomia individual sobre as escolhas de vida exercem impactos marginais de magnitude superior à renda econômica isolada. Conclui-se que o avanço sustentável do bem-estar global demanda a preservação da saúde física aliada ao fortalecimento inegociável da liberdade civil e das redes de amparo comunitário.
+
+---
+
+## Referências
+
+<div id="refs"></div>
+
+---
+
+## Anexo: Estrutura Modular dos Scripts em R
+
+Em conformidade com as boas práticas de reprodutibilidade científica e modularização exigidas pelo projeto, toda a lógica computacional do relatório foi desacoplada em quatro scripts independentes alocados no diretório `scripts/`:
+
+1. **`scripts/01_data_loader.R`:** Responsável pela leitura automatizada da planilha Excel (`dados/Worldhappiness.xls`), checagem da integridade das colunas, validação de tipos de dados e controle de valores omissos.
+2. **`scripts/02_eda_tables.R`:** Implementa as funções para cálculo das medidas descritivas solicitadas (mínimo, $Q_1$, mediana, média, $Q_3$, máximo, desvio padrão e coeficiente de variação) e detecção de observações atípicas pela regra de $1{,}5 \times IQR$, gerando tabelas formatadas em LaTeX.
+3. **`scripts/03_eda_plots.R`:** Encapsula as rotinas gráficas baseadas no pacote `ggplot2` para geração de histogramas com curvas de densidade, box-plots comparativos, diagramas de dispersão com ajuste linear e matriz de correlação de Pearson.
+4. **`scripts/04_model_analysis.R`:** Executa o ajuste dos modelos de regressão linear (completo e reduzidos), a extração das equações em notação LaTeX, o cálculo de intervalos de confiança e tabelas comparativas ($R^2$, $R^2_{\text{ajustado}}$, AIC, BIC, ANOVA) e a produção dos quatro gráficos de diagnóstico de resíduos.
