@@ -2,7 +2,7 @@
 title: "Determinantes Globais da Felicidade: Uma Análise de Regressão Linear Múltipla baseada no World Happiness Report"
 author:
   - "Angelo dos Santos Luna Filho (Matrícula: 202465601D)"
-  - "Nome do Integrante 2 (Matrícula: 202XXXXXX)"
+  - "Daniel Antonio Camargo Vieira (Matrícula: 201965615D)"
 date: "09 de Outubro de 2026"
 output:
   pdf_document:
@@ -67,7 +67,7 @@ modelos <- fit_regression_models(dados_felicidade)
 
 ## Resumo
 
-Este trabalho investiga os fatores explicativos da pontuação média de felicidade (*Score*) em 146 nações, utilizando a base de dados do *World Happiness Report 2022*. A partir da metodologia da escala de Cantril, estimou-se inicialmente um modelo de regressão linear múltipla completo considerando seis determinantes: produto interno bruto per capita (*GDP*), apoio social (*Social*), expectativa de vida saudável (*Healthy*), liberdade para escolhas de vida (*Freedom*), generosidade (*Generosity*) e percepção de corrupção (*Corruption*). Realizou-se uma análise exploratória minuciosa com medidas descritivas e inspeção visual de distribuições e valores atípicos. O modelo completo evidenciou que generosidade e percepção de corrupção não foram estatisticamente significantes a 5%. Com base no critério de parcimônia e no Critério de Informação Bayesiano (BIC), propôs-se um modelo reduzido com quatro variáveis preditoras (*GDP*, *Social*, *Healthy* e *Freedom*), todas altamente significantes ($p < 0{,}01$) e com excelente capacidade explicativa ($R^2 = 0{,}762$). Os resultados demonstram que a liberdade individual e o apoio social exercem os impactos marginais mais intensos sobre o bem-estar subjetivo das nações.
+Este trabalho investiga os fatores explicativos da pontuação média de felicidade (*Score*) em 146 nações, utilizando a base de dados do *World Happiness Report 2022*. A partir da metodologia da escala de Cantril, estimou-se inicialmente um modelo de regressão linear múltipla completo considerando seis determinantes: produto interno bruto per capita (*GDP*), apoio social (*Social*), expectativa de vida saudável (*Healthy*), liberdade para escolhas de vida (*Freedom*), generosidade (*Generosity*) e percepção de corrupção (*Corruption*). Realizou-se uma análise exploratória minuciosa com medidas descritivas e inspeção visual de distribuições e valores atípicos. Embora o teste $F$ parcial aponte que generosidade e percepção de corrupção sejam conjuntamente significativas a 5% ($F(2; 139) = 3{,}57$; $p = 0{,}031$), sua exclusão acarreta perda pequena de ajuste ($\Delta R^2 = 0{,}012$). Respaldado pelo Critério de Informação Bayesiano (BIC), pela parcimônia e pela interpretabilidade, propôs-se um modelo reduzido com quatro variáveis preditoras (*GDP*, *Social*, *Healthy* e *Freedom*), todas altamente significantes ($p < 0{,}01$) e com excelente capacidade explicativa ($R^2 = 0{,}762$). Os resultados demonstram que a liberdade individual e o apoio social exercem os impactos marginais mais intensos sobre o bem-estar subjetivo das nações.
 
 **Palavras-chave:** Felicidade global; Regressão linear múltipla; Qualidade de vida; Modelagem estatística; World Happiness Report.
 
@@ -85,7 +85,7 @@ O objetivo do presente trabalho é aplicar as técnicas de modelagem por regress
 
 ## 2. Análise exploratória dos dados
 
-O conjunto de dados é composto por $n = 146$ países avaliados no relatório de 2022. Na dimensão qualitativa, os dados cobrem uma diversidade equilibrada de continentes e regimes socioeconômicos globais. Na dimensão quantitativa, analisa-se a variável resposta *Score* e as seis variáveis preditoras. A Tabela 1 apresenta as medidas descritivas de tendência central, dispersão, separatrizes e o coeficiente de variação (CV) para todas as variáveis quantitativas do estudo.
+O conjunto de dados é composto por $n = 146$ países avaliados no relatório de 2022. Analisa-se a variável resposta *Score* e as seis variáveis preditoras. A Tabela 1 apresenta as medidas descritivas de tendência central, dispersão, separatrizes e o coeficiente de variação (CV) para todas as variáveis quantitativas do estudo.
 
 ```{r tab-descritiva}
 desc_stats <- compute_descriptive_stats(dados_felicidade)
@@ -145,7 +145,7 @@ Ao nível de significância de 5% ($\alpha = 0{,}05$), verifica-se que as variá
 
 ### 3.2 Seleção do Modelo Reduzido
 
-Diante da não significância dessas preditoras a 5%, fundamenta-se a proposição de um modelo reduzido parcimonioso. Adotando a exclusão conjunta das variáveis não significantes (*Generosity* e *Corruption*), obtém-se o Modelo Reduzido composto por quatro preditores essenciais:
+Embora o teste $F$ parcial indique que *Generosity* e *Corruption* sejam conjuntamente significativas a 5% ($F(2; 139) = 3{,}57$; $p = 0{,}031$), sua eliminação acarreta perda pequena de ajuste ($\Delta R^2 = 0{,}012$). Assim, respaldando-se no Critério de Informação Bayesiano (BIC), na parcimônia e na interpretabilidade, propõe-se um modelo reduzido composto por quatro preditores essenciais:
 
 $$\text{Score}_i = \beta_0 + \beta_1 \text{GDP}_i + \beta_2 \text{Social}_i + \beta_3 \text{Healthy}_i + \beta_4 \text{Freedom}_i + \varepsilon_i$$
 
@@ -173,7 +173,7 @@ format_anova_comparison(modelos$Reduzido, modelos$Completo,
                         caption = "Teste F parcial para comparação do modelo reduzido frente ao modelo completo")
 ```
 
-Observa-se que o coeficiente de determinação do modelo reduzido ($R^2 = 0{,}762$; $R^2_{\text{ajustado}} = 0{,}755$) é praticamente equivalente ao do modelo completo ($R^2 = 0{,}774$; $R^2_{\text{ajustado}} = 0{,}764$), com uma perda de apenas $0{,}012$ na proporção da variância explicada com a remoção de duas variáveis. Ademais, o Critério de Informação Bayesiano (BIC), que penaliza rigorosamente a inclusão excessiva de parâmetros, favorece expressivamente o **Modelo Reduzido** ($BIC = 257{,}96$ contra $BIC = 260{,}62$ no completo), confirmando sua maior parcimônia e precisão inferencial.
+Observa-se que o coeficiente de determinação do modelo reduzido ($R^2 = 0{,}762$; $R^2_{\text{ajustado}} = 0{,}755$) apresenta uma perda pequena de ajuste frente ao modelo completo ($R^2 = 0{,}774$; $R^2_{\text{ajustado}} = 0{,}764$), com uma perda de apenas $0{,}012$ na proporção da variância explicada com a remoção de duas variáveis. Ademais, o Critério de Informação Bayesiano (BIC), que penaliza rigorosamente a inclusão excessiva de parâmetros, favorece moderadamente ($\Delta\text{BIC} = 2{,}66$, evidência positiva) o **Modelo Reduzido** ($BIC = 257{,}96$ contra $BIC = 260{,}62$ no completo), confirmando sua maior parcimônia. Por outro lado, o Critério de Informação de Akaike (AIC) favorece o completo ($\Delta\text{AIC} = 3{,}31$).
 
 ### 3.3 Interpretação dos Coeficientes e Qualidade de Ajuste
 
@@ -183,13 +183,13 @@ A interpretação prática dos coeficientes estimados no modelo final, sob a con
 * **PIB per capita ($\hat{\beta}_1 = 0{,}529$, $p = 0{,}0098$):** O coeficiente positivo confirma que o rendimento econômico eleva o bem-estar. Para cada acréscimo de uma unidade na contribuição do PIB per capita, a pontuação média de felicidade aumenta, em média, $0{,}529$ pontos, fixados o apoio social, a saúde e a liberdade.
 * **Apoio Social ($\hat{\beta}_2 = 1{,}376$, $p < 0{,}001$):** O suporte de redes interpessoais e familiares possui impacto de elevada magnitude. O incremento de uma unidade no apoio social acarreta um ganho médio estimado de $1{,}376$ pontos na felicidade do país (*ceteris paribus*).
 * **Expectativa de Vida Saudável ($\hat{\beta}_3 = 1{,}369$, $p = 0{,}0026$):** A saúde pública ao longo da vida é determinante central do bem-estar. O avanço de uma unidade na expectativa de vida saudável projeta uma elevação média de $1{,}369$ pontos no *Score* (*ceteris paribus*).
-* **Liberdade de Escolha ($\hat{\beta}_4 = 1{,}969$, $p < 0{,}001$):** A percepção de autonomia para tomar decisões de vida constitui o preditor de maior efeito marginal no modelo final. Mantendo-se constantes a renda, a rede social e a saúde, o acréscimo de uma unidade no índice de liberdade produz um aumento médio estimado de expressivos $1{,}969$ pontos na pontuação de felicidade.
+* **Liberdade de Escolha ($\hat{\beta}_4 = 1{,}969$, $p < 0{,}001$):** Embora a autonomia apresente a maior estimativa pontual na escala original, em escala padronizada o apoio social exerce o maior efeito ($\hat{\beta} \cdot \text{DP} \approx 0{,}385$ contra $0{,}287$ de liberdade). Mantendo-se constantes a renda, a rede social e a saúde, o acréscimo de uma unidade no índice de liberdade produz um aumento médio estimado de expressivos $1{,}969$ pontos na pontuação de felicidade.
 
 ```{r fig-diagnostico, fig.height=3.6, fig.width=6.5, fig.cap="Gráficos de diagnóstico dos resíduos para validação das suposições do modelo reduzido final."}
 plot_diagnostics(modelos$Reduzido)
 ```
 
-A Figura 4 apresenta os gráficos diagnósticos do modelo final. O gráfico de *Resíduos vs Valores Ajustados* e o de *Escala-Locação* indicam distribuição aleatória dos erros em torno de zero, atestando a linearidade das relações e a homogeneidade da variância dos resíduos (homocedasticidade). O gráfico *Q-Q Normal* demonstra que os resíduos padronizados aderem estreitamente à reta teórica, validando a normalidade dos erros. Por fim, o diagrama de *Resíduos vs Alavancagem* assegura a ausência de observações influentes que comprometam a estabilidade das estimativas dos parâmetros.
+A Figura 4 apresenta os gráficos diagnósticos do modelo final. O gráfico de *Resíduos vs Valores Ajustados* e o de *Escala-Locação* indicam distribuição aleatória dos erros em torno de zero, atestando a linearidade das relações e a homogeneidade da variância dos resíduos (homocedasticidade). O gráfico *Q-Q Normal* demonstra que os resíduos padronizados aderem estreitamente à reta teórica, validando a normalidade dos erros. Por fim, o diagrama de *Resíduos vs Alavancagem* não indica observações claramente influentes, embora um ponto apresente alavancagem elevada.
 
 ---
 
@@ -197,9 +197,9 @@ A Figura 4 apresenta os gráficos diagnósticos do modelo final. O gráfico de *
 
 Este estudo investigou os fatores determinantes do bem-estar subjetivo global por meio de modelagem por regressão linear múltipla aplicada aos dados do *World Happiness Report 2022*. A partir de uma análise exploratória robusta, confirmou-se a acentuada heterogeneidade entre as 146 nações avaliadas, identificando-se contrastes severos em termos de privação (Afeganistão) e excelência em governança e apoio social (países nórdicos).
 
-O ajuste do modelo completo revelou que, em nível multivariado, os fatores de generosidade individual e percepção de corrupção não apresentaram contribuição linear estatisticamente significante a 5%. A adoção fundamentada do modelo reduzido permitiu reter os quatro pilares mais determinantes da felicidade mundial: produto interno bruto (*GDP*), suporte social (*Social*), expectativa de vida saudável (*Healthy*) e liberdade (*Freedom*). 
+Embora o teste $F$ parcial indique que generosidade e percepção de corrupção sejam conjuntamente significativas a 5% ($F(2; 139) = 3{,}57$; $p = 0{,}031$), sua exclusão acarreta perda pequena de ajuste ($\Delta R^2 = 0{,}012$). Pautada no critério BIC, na parcimônia e na interpretabilidade, a adoção fundamentada do modelo reduzido permitiu reter os quatro pilares mais determinantes da felicidade mundial: produto interno bruto (*GDP*), suporte social (*Social*), expectativa de vida saudável (*Healthy*) e liberdade (*Freedom*). 
 
-O modelo final revelou-se altamente parcimonioso e consistente ($R^2 = 0{,}762$), demonstrando que mais de 76% da variação observada na felicidade dos países é explicada por esses quatro fatores. Sob a perspectiva prática de formulação de políticas internacionais, as estimativas evidenciam que, embora a solvência econômica seja indispensável, os fatores de coesão social e autonomia individual sobre as escolhas de vida exercem impactos marginais de magnitude superior à renda econômica isolada. Conclui-se que o avanço sustentável do bem-estar global demanda a preservação da saúde física aliada ao fortalecimento inegociável da liberdade civil e das redes de amparo comunitário.
+O modelo final revelou-se altamente parcimonioso e consistente ($R^2 = 0{,}762$), demonstrando que mais de 76% da variação observada na felicidade dos países é explicada por esses quatro fatores. Sob a perspectiva prática de formulação de políticas internacionais, as estimativas evidenciam que, embora a solvência econômica seja indispensável, o apoio social desponta como o fator de maior impacto em escala padronizada ($\hat{\beta} \cdot \text{DP} \approx 0{,}385$ contra $0{,}287$ de liberdade), superando amplamente a renda econômica isolada. Conclui-se que o avanço sustentável do bem-estar global demanda a preservação da saúde física aliada ao fortalecimento inegociável da liberdade civil e das redes de amparo comunitário.
 
 ---
 
