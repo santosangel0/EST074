@@ -1,0 +1,356 @@
+# Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões
+
+Este módulo reúne a modelagem multivariada avançada e as extensões contemporâneas da regressão linear (slides **p12**, **p13**, **p14**, **p15**, **p16** e **p17**). São abordados os diagnósticos e tratamentos da multicolinearidade (incluindo regressão Ridge), critérios de seleção de modelos ($AIC$, $BIC$, $C_p$, Lasso), protocolos de validação cruzada, inferência bayesiana, Modelos Lineares Generalizados (GLM) e a convergência entre Estatística e Aprendizado de Máquina.
+
+---
+
+## 4.1 Multicolinearidade: Diagnóstico e Regressão Ridge
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### O Problema da Multicolinearidade
+Ocorre quando há uma relação de dependência linear exata ou quase exata entre duas ou mais variáveis preditoras na matriz de delineamento $X$.
+
+**Consequências prejudiciais:**
+- Matriz $X^\top X$ próxima da singularidade ($\det(X^\top X) \approx 0$);
+- Inflação desproporcional da variância dos estimadores de MQO: $\mathrm{Var}(\hat{\beta}_j) = \sigma^2 [(X^\top X)^{-1}]_{jj}$;
+- Estimativas numéricas instáveis, altamente sensíveis à exclusão ou adição de poucas observações;
+- Estimadores com sinais contrários ao conhecimento substantivo ou à correlação bivariada observada;
+- Paradoxos inferenciais: $R^2$ elevado e teste $F$ global altamente significativo, mas nenhum dos testes $t$ individuais de coeficientes se mostra estatisticamente significante.
+
+### Métodos de Diagnóstico
+
+1. **Matriz de Correlação das Preditoras:**
+   Identifica correlações bivariadas elevadas ($|r_{jk}| > 0{,}8$ ou $0{,}9$). É incapaz, contudo, de detectar multicolinearidade envolvendo combinações lineares de três ou mais variáveis.
+
+2. **Fator de Inflação da Variância ($VIF$):**
+   Para a $j$-ésima variável preditora:
+   $$VIF_j = \frac{1}{1 - R_j^2}$$
+   em que $R_j^2$ é o coeficiente de determinação obtido pela regressão de $X_j$ sobre as demais $p - 1$ variáveis preditoras.
+   - **Tolerância:** $Tol_j = \frac{1}{VIF_j} = 1 - R_j^2$.
+   - **Regra de decisão:** $VIF_j > 5$ ou $10$ indica multicolinearidade prejudicial.
+
+3. **Autovalores e Número de Condição:**
+   A partir da decomposição espectral da matriz de variáveis preditoras padronizadas, com autovalores ordenados $\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_p$:
+   - **Número de Condição:** $\kappa = \sqrt{\frac{\lambda_{\max}}{\lambda_{\min}}}$
+   - **Índices de Condição:** $CI_j = \sqrt{\frac{\lambda_{\max}}{\lambda_j}}$
+   - **Critério:** $CI > 10$ a $30$ indica multicolinearidade moderada; $CI > 30$ indica multicolinearidade severa.
+
+### Regressão Ridge (Hoerl & Kennard, 1970)
+Para solucionar a instabilidade provocada por $X^\top X$ mal-condicionada, adiciona-se uma constante positiva $k \ge 0$ à diagonal da matriz de coeficientes nas variáveis padronizadas:
+$$\hat{\beta}_R = (X^\top X + k I_p)^{-1} X^\top Y, \quad k \ge 0$$
+- Quando $k = 0$, $\hat{\beta}_R = \hat{\beta}_{MQO}$;
+- À medida que $k$ cresce, introduz-se um pequeno viés nos estimadores, mas a variância é reduzida drasticamente;
+- **Teorema da Existência:** Existe sempre um valor $k > 0$ para o qual o Erro Quadrático Médio do estimador Ridge é estritamente menor que o de MQO:
+  $$EQM(\hat{\beta}_R) < EQM(\hat{\beta}_{MQO})$$
+- O parâmetro ótimo de penalização $k$ é determinado inspecionando o gráfico do **Traço Ridge** (*Ridge Trace*) ou por validação cruzada.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Decomposição do Erro Quadrático Médio na Penalização Ridge
+O Erro Quadrático Médio de um estimador vetorial $\hat{\beta}$ decompõe-se na soma da variância total com a norma ao quadrado do viés:
+$$EQM(\hat{\beta}) = \mathbb{E}\left[ \|\hat{\beta} - \beta\|^2 \right] = \mathrm{tr}[\mathrm{Var}(\hat{\beta})] + \|\mathbb{E}(\hat{\beta}) - \beta\|^2$$
+
+Para o estimador Ridge $\hat{\beta}_R = (X^\top X + k I)^{-1} X^\top Y = Z_k \hat{\beta}_{MQO}$, com $Z_k = (X^\top X + k I)^{-1} X^\top X$:
+1. **Viés:** $\mathbb{E}(\hat{\beta}_R) - \beta = (Z_k - I)\beta$, que é uma função monotonicamente crescente de $k$ (em $k = 0$, viés é nulo; cresce com $k$).
+2. **Variância:** $\mathrm{Var}(\hat{\beta}_R) = \sigma^2 Z_k (X^\top X)^{-1} Z_k^\top$, cuja derivada em relação a $k$ avaliada em $k = 0^+$ é estritamente **negativa**.
+Como a derivada da variância decresce mais rápido do que a derivada do quadrado do viés aumenta na vizinhança de $k = 0$, a curva total de $EQM(k)$ atinge um mínimo global estrito em $k^* > 0$.
+
+### Implementação da Regressão Ridge em R e Python
+
+```r
+# Regressao Ridge com o pacote glmnet em R
+library(glmnet)
+
+# Matriz de covariáveis e resposta
+X_mat <- as.matrix(mtcars[, c("cyl", "disp", "hp", "drat", "wt", "qsec")])
+y_vec <- mtcars$mpg
+
+# Validacao cruzada para encontrar o lambda otimo (k)
+cv_ridge <- cv.glmnet(X_mat, y_vec, alpha = 0) # alpha = 0 define penalizacao L2 (Ridge)
+
+# Grafico do Traco Ridge
+plot(cv_ridge$glmnet.fit, xvar = "lambda", label = TRUE)
+cat("Lambda ótimo mínimo:", cv_ridge$lambda.min, "\n")
+```
+
+```python
+# Regressao Ridge com scikit-learn em Python
+import numpy as np
+from sklearn.linear_model import RidgeCV
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X_mat)
+
+# Ajuste com validacao cruzada integrada
+ridge_cv = RidgeCV(alphas=np.logspace(-3, 3, 100), cv=5)
+ridge_cv.fit(X_scaled, y_vec)
+
+print(f"Alpha ótimo: {ridge_cv.alpha_:.4f}")
+print("Coeficientes encolhidos:", ridge_cv.coef_)
+```
+:::
+
+---
+
+## 4.2 Seleção de Variáveis e Métodos de Regularização
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Critérios Numéricos para Seleção de Modelos
+Diante de $K$ preditoras candidatas, existem $2^K$ modelos lineares possíveis. Para selecionar o melhor subconjunto, utilizam-se critérios formais:
+
+1. **$R^2$ Ajustado ($R^2_{adj}$):**
+   Busca-se o modelo que maximiza $R^2_{adj} = 1 - \frac{QMRes_p}{QMTot}$.
+
+2. **Estatística $C_p$ de Mallows (1964):**
+   $$C_p = \frac{SQRes_p}{QMRes_{\text{completo}}} - (n - 2p)$$
+   onde $QMRes_{\text{completo}}$ provém do modelo com todas as variáveis.
+   - Modelos sem viés de especificação têm $\mathbb{E}(C_p) \approx p$;
+   - O modelo preferível é aquele que apresenta $C_p \approx p$ com o menor valor de $p$ possível.
+
+3. **Critério de Informação de Akaike ($AIC$):**
+   Baseado na divergência de Kullback-Leibler:
+   $$AIC = 2p - 2\ln L \approx n \ln\left( \frac{SQRes_p}{n} \right) + 2p$$
+
+4. **Critério de Informação Bayesiano / Schwarz ($BIC$):**
+   $$BIC = p \ln(n) - 2\ln L \approx n \ln\left( \frac{SQRes_p}{n} \right) + p \ln(n)$$
+   O $BIC$ aplica uma penalização mais severa por parâmetro adicionado quando $\ln(n) > 2$ ($n \ge 8$), tendendo a selecionar modelos mais enxutos e parcimoniosos.
+
+### Procedimentos Automatizados Sequenciais
+- **Forward Selection:** Começa com o intercepto e adiciona iterativamente a variável que produz o maior teste $F$ parcial (ou menor valor-$p$), até que nenhum regressor remanescente atenda ao nível de entrada $\alpha_{in}$.
+- **Backward Elimination:** Começa com todas as variáveis e remove iterativamente a menos significante, até que todos os coeficientes satisfaçam o limiar $\alpha_{out}$.
+- **Stepwise Regression:** Combina Forward e Backward: testa a inclusão de novas preditoras e reexamina as variáveis já incluídas, descartando aquelas que se tornaram redundantes após as novas adições.
+
+### Regressão Lasso (Tibshirani, 1996)
+Enquanto a penalização Ridge utiliza a norma quadrática $L_2$, o Lasso (*Least Absolute Shrinkage and Selection Operator*) adota a norma absoluta $L_1$:
+$$\min_{\beta} \left\{ \sum_{i=1}^n (Y_i - x_i^\top \beta)^2 + \lambda \sum_{j=1}^p |\beta_j| \right\}$$
+Devido à geometria dos vértices pontiagudos da região de restrição de norma $L_1$, o Lasso não apenas encolhe as estimativas, mas **zera exatamente** coeficientes irrelevantes, executando seleção automática de variáveis e estimação simultaneamente.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Geometria das Penalizações: Ridge ($L_2$) versus Lasso ($L_1$)
+A intuição geométrica da diferença entre Ridge e Lasso decorre da forma de suas curvas de nível de restrição no espaço de parâmetros $(\beta_1, \beta_2)$:
+- A restrição Ridge $\beta_1^2 + \beta_2^2 \le s$ forma uma **esfera circular suave** sem cantos vivos. As elipses da função de perda por mínimos quadrados tangenciam o círculo quase sempre fora dos eixos cartesianos, mantendo os parâmetros pequenos, mas diferentes de zero.
+- A restrição Lasso $|\beta_1| + |\beta_2| \le s$ forma um **poliedro em losango com cantos vivos nos eixos**. As elipses da soma de quadrados tocam prioritariamente nos vértices do losango, forçando coordenadas exatas a assumirem valor zero.
+
+```r
+# Selecao Lasso em R com pacote glmnet
+library(glmnet)
+
+# alpha = 1 especifica a penalizacao L1 (Lasso)
+cv_lasso <- cv.glmnet(X_mat, y_vec, alpha = 1)
+
+# Visualizacao do caminho de regularizacao dos coeficientes
+plot(cv_lasso$glmnet.fit, xvar = "lambda", label = TRUE)
+
+# Coeficientes no lambda otimo (1 desvio padrao)
+coef(cv_lasso, s = "lambda.1se")
+```
+:::
+
+---
+
+## 4.3 Validação de Modelos e Avaliação Preditiva
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### O Problema do Superajuste (*Overfitting*)
+Um modelo que minimiza perfeitamente os resíduos na amostra de calibração pode falhar gravemente ao ser aplicado a observações não vistas, decorrente da memorização do ruído amostral. A verdadeira métrica de qualidade reside na **capacidade de generalização externa**.
+
+### Técnicas de Validação
+1. **Coleta de Novos Dados:** Comparar as previsões do modelo contra uma amostra independente obtida em momento posterior.
+2. **Divisão de Amostra (*Data Splitting*):**
+   - Conjunto de Treinamento (ex: $70\% - 80\%$): utilizado para ajuste dos parâmetros e seleção de variáveis;
+   - Conjunto de Validação / Teste (ex: $20\% - 30\%$): mantido inviolável, utilizado exclusivamente para avaliação final do erro fora da amostra.
+3. **Validação Cruzada ($k$-fold Cross-Validation):**
+   - Os dados são particionados aleatoriamente em $k$ blocos disjuntos $L_1, \dots, L_k$;
+   - O modelo é ajustado em $k - 1$ blocos e avaliado no bloco omitido;
+   - O processo é repetido $k$ vezes, e o erro médio quadrático global é calculado pela média:
+     $$EQM_{CV} = \frac{1}{n} \sum_{i=1}^n (Y_i - \hat{Y}_{(-k(i))})^2$$
+4. **Leave-One-Out Cross-Validation (LOOCV) e $R^2$ de Predição:**
+   Caso extremo em que $k = n$, correspondente à estatística PRESS:
+   $$R^2_{pred} = 1 - \frac{PRESS}{SQTot}$$
+   Mede a proporção da variabilidade de novas observações que o modelo consegue predizer com sucesso.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### O Esquema Treino, Validação e Teste (*Train-Validation-Test*)
+Quando se comparam múltiplos algoritmos ou hiperparâmetros (como o $\lambda$ do Ridge/Lasso ou o grau do polinômio), o conjunto de validação sofre contaminação indireta por seleção de modelo (*data snooping*). O protocolo padrão da ciência de dados divide os dados em **três partes**:
+1. **Treino:** calibração dos coeficientes $\beta$;
+2. **Validação:** calibração dos hiperparâmetros de regularização $\lambda$ ou seleção de subconjuntos de variáveis;
+3. **Teste Final (*Hold-out*):** avaliação cega e não tendenciosa da capacidade preditiva final do modelo selecionado.
+:::
+
+---
+
+## 4.4 O Paradigma Bayesiano na Regressão
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Introdução ao Método Bayesiano
+No paradigma bayesiano, os parâmetros desconhecidos do modelo ($\beta$ e $\sigma^2$) não são vistos como constantes fixas da natureza, mas como **variáveis aleatórias** providas de uma distribuição de probabilidade a priori que reflete a crença ou conhecimento prévio do pesquisador.
+
+Pelo Teorema de Bayes:
+$$p(\beta, \sigma^2 \mid Y) = \frac{L(Y \mid \beta, \sigma^2) \, p(\beta, \sigma^2)}{p(Y)} \propto L(Y \mid \beta, \sigma^2) \, p(\beta, \sigma^2)$$
+
+### Priori Não-Informativa de Jeffreys
+Na ausência de informação prévia substancial, adota-se a priori difusa padrão:
+$$p(\beta, \sigma^2) \propto \frac{1}{\sigma^2}$$
+A distribuição a posteriori condicional para $\beta$ dado $\sigma^2$ é:
+$$\beta \mid \sigma^2, Y \sim \mathcal{N}_p\left( \hat{\beta}_{MQO}, \, \sigma^2 (X^\top X)^{-1} \right)$$
+E a distribuição a posteriori marginal para a variância $\sigma^2$ segue uma distribuição Inversa-Gama com parâmetros dependentes de $SQRes$ e dos graus de liberdade $n - p$.
+A distribuição marginal a posteriori para $\beta$ segue uma $t$ de Student multivariada, centrada precisamente na estimativa pontual de mínimos quadrados $\hat{\beta}_{MQO}$.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Conexão entre a Priori Bayesiana e a Regularização Ridge
+Existe uma conexão entre a inferência Bayesiana e a regularização clássica: se assumirmos uma distribuição a priori Normal independente e centrada em zero para os coeficientes:
+$$\beta_j \sim \mathcal{N}\left(0, \tau^2\right)$$
+A estimativa do ponto de máxima densidade a posteriori (MAP - *Maximum A Posteriori*) coincide **exatamente com o estimador da Regressão Ridge**:
+$$\hat{\beta}_{MAP} = \arg\max_\beta \left\{ \ell(Y \mid \beta) - \frac{1}{2\tau^2} \|\beta\|^2 \right\} \equiv \hat{\beta}_R$$
+onde o parâmetro de penalização Ridge corresponde à razão de variâncias $k = \sigma^2 / \tau^2$.
+De forma análoga, assumir uma priori com caudas pesadas do tipo **Laplace / Exponencial Dupla** sobre $\beta$ reproduz analiticamente a solução da **Regressão Lasso**!
+:::
+
+---
+
+## 4.5 Extensões ao Modelo Normal: Modelos Lineares Generalizados (GLM)
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Limitações do Modelo Normal Linear
+O modelo linear clássico assume que a variável resposta $Y$ tem suporte em toda a reta real $\mathbb{R}$ com variância constante. Essa suposição falha flagrantemente quando:
+- A resposta $Y$ é estritamente binária ($Y \in \{0, 1\}$, presença/ausência de doença, aprovação/reprovação);
+- A resposta $Y$ consiste em contagens não-negativas ($Y \in \{0, 1, 2, \dots\}$, número de sinistros, contagem de células);
+- A variância intrínseca é uma função direta da média $\mu = \mathbb{E}(Y)$ (assimetria acentuada).
+
+### Estrutura dos Modelos Lineares Generalizados (Nelder & Wedderburn, 1972)
+Um GLM é constituído por três componentes:
+1. **Componente Aleatório:** A variável resposta $Y_i$ pertence à família exponencial biparamétrica:
+   $$f(y_i; \theta_i, \phi) = \exp\left\{ \frac{y_i \theta_i - b(\theta_i)}{a(\phi)} + c(y_i, \phi) \right\}$$
+   com média $\mu_i = b'(\theta_i)$ e variância $\mathrm{Var}(Y_i) = b''(\theta_i) a(\phi) = V(\mu_i)\phi$.
+2. **Componente Sistemático:** O preditor linear formado pela combinação das covariáveis:
+   $$\eta_i = x_i^\top \beta = \beta_1 x_{i1} + \dots + \beta_p x_{ip}$$
+3. **Função de Ligação:** Função monótona e diferenciável $g(\cdot)$ que conecta a esperança matemática da resposta $\mu_i$ ao preditor linear $\eta_i$:
+   $$\eta_i = g(\mu_i) \iff \mu_i = g^{-1}(x_i^\top \beta)$$
+
+### Modelos de Destaque
+- **Regressão Logística (Dados Binários):**
+  $Y_i \sim \text{Bernoulli}(\pi_i)$, onde a função de ligação canônica é o logito:
+  $$\ln\left( \frac{\pi_i}{1 - \pi_i} \right) = x_i^\top \beta \implies \pi_i = \frac{1}{1 + e^{-x_i^\top \beta}}$$
+- **Regressão de Poisson (Dados de Contagem):**
+  $Y_i \sim \text{Poisson}(\mu_i)$, com ligação canônica logarítmica:
+  $$\ln(\mu_i) = x_i^\top \beta \implies \mu_i = \exp(x_i^\top \beta)$$
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Interpretação dos Parâmetros em Regressão Logística (Odds Ratio)
+Na regressão logística, o coeficiente $\beta_j$ possui interpretação direta em termos de **Razão de Chances (*Odds Ratio* - OR)**:
+$$\text{Chance}(x) = \frac{\pi(x)}{1 - \pi(x)} = \exp(\beta_1 + \beta_2 x_2 + \dots + \beta_j x_j + \dots)$$
+Aumentando a variável $x_j$ em 1 unidade, a nova chance é:
+$$\text{Chance}(x_j + 1) = \text{Chance}(x_j) \cdot \exp(\beta_j) \implies OR = \frac{\text{Chance}(x_j + 1)}{\text{Chance}(x_j)} = e^{\beta_j}$$
+- Se $\beta_j = 0 \implies OR = 1$ (nenhum efeito na chance);
+- Se $\beta_j > 0 \implies OR > 1$ (o aumento de uma unidade em $x_j$ multiplica as chances de sucesso pelo fator $e^{\beta_j}$);
+- Se $\beta_j < 0 \implies OR < 1$ (redução proporcional nas chances de ocorrência).
+
+```r
+# Exemplo de Regressao Logistica em R
+dados_bin <- mtcars
+dados_bin$vs <- as.factor(dados_bin$vs) # vs: motor em V (0) vs motor em linha (1)
+
+modelo_logit <- glm(vs ~ wt + hp, data = dados_bin, family = binomial(link = "logit"))
+summary(modelo_logit)
+
+# Razao de Chances com Intervalo de Confianca
+exp(cbind(OR = coef(modelo_logit), confint(modelo_logit)))
+```
+:::
+
+---
+
+## 4.6 Aprendizado de Máquinas e o Balanço entre Viés e Variância
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### As Duas Culturas da Modelagem Estatística (Breiman, 2001)
+Leo Breiman identificou duas posturas na ciência de dados:
+1. **Cultura da Modelagem de Dados (*Data Modeling Culture*):** Assume que a natureza gera dados segundo um modelo estocástico específico (ex: regressão normal). O foco reside na estimação dos parâmetros populacionais, testes formais de hipóteses e inferência probabilística.
+2. **Cultura da Modelagem Algorítmica (*Algorithmic Modeling Culture*):** Considera a caixa-preta da natureza complexa e desconhecida. O foco reside na acurácia preditiva em dados futuros e validação empírica cruzada.
+
+### Função de Perda e Risco Teórico
+Medimos o desempenho de um preditor $g(X)$ por meio de uma função de perda $L(Y, g(X))$. Sob a perda quadrática $L(Y, g(X)) = (Y - g(X))^2$, o **Risco Teórico** é a esperança populacional da perda:
+$$R(g) = \mathbb{E}\left[ (Y - g(X))^2 \right]$$
+A função ótima que minimiza o risco teórico é a **esperança condicional**:
+$$g^*(x) = \mathbb{E}[Y \mid X = x]$$
+
+### Decomposição Viés-Variância
+O risco de predição em um novo ponto $x_0$ para um modelo ajustado $\hat{g}$ decompõe-se exatamente em três componentes:
+$$\mathbb{E}\left[ (Y_0 - \hat{g}(x_0))^2 \right] = \underbrace{\left[ \mathbb{E}(\hat{g}(x_0)) - g(x_0) \right]^2}_{\text{Viés ao Quadrado}} + \underbrace{\mathrm{Var}(\hat{g}(x_0))}_{\text{Variância}} + \underbrace{\sigma^2}_{\text{Ruído Irredutível}}$$
+
+- **Modelos muito simples (poucos parâmetros):** Baixa variância, mas alto viés de subajuste (*underfitting*);
+- **Modelos excessivamente complexos (muitos parâmetros / alta flexibilidade):** Baixo viés, mas variância amostral explosiva levando ao superajuste (*overfitting*);
+- **Objetivo central:** Encontrar a complexidade algorítmica ótima que minimiza o erro total fora da amostra no ponto de equilíbrio do trade-off viés-variância.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Síntese Comparativa: Regressão Estatística Clássica vs Machine Learning
+
+| Critério | Estatística Clássica (Econometria / Bioestatística) | Aprendizado de Máquina (Data Science / ML) |
+| :--- | :--- | :--- |
+| **Meta Principal** | Inferência, interpretabilidade e testes de hipóteses | Acurácia preditiva fora da amostra |
+| **Papel do Modelo** | Aproximação teórica do mecanismo gerador de dados | Algoritmo minimizador do risco empírico |
+| **Validação** | ANOVA, testes $t$, $F$, análise de resíduos e $AIC$ | Validação cruzada $k$-fold e conjunto de teste |
+| **Suposições** | Normalidade, homocedasticidade e independência | Distribuições idênticas e independentes ($i.i.d.$) |
+| **Tratamento de $p > n$** | Inviável no MQO clássico (singularidade de $X^\top X$) | Tratado via penalizações $L_1/L_2$ ou árvores/ensembles |
+
+### Simulação do Trade-off Viés-Variância em Python
+
+```python
+# Simulacao do balanco Vies-Variancia com polinomios em Python
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.linear_model import LinearRegression
+
+# Funcao geradora real
+def f_real(x):
+    return np.sin(1.5 * np.pi * x)
+
+np.random.seed(42)
+n_samples = 30
+x = np.sort(np.random.rand(n_samples))
+y = f_real(x) + np.random.normal(0, 0.2, n_samples)
+x_plot = np.linspace(0, 1, 100)
+
+graus = [1, 3, 15]
+titulos = ["Subajuste (Alto Viés)", "Ajuste Ideal (Equilíbrio)", "Superajuste (Alta Variância)"]
+
+plt.figure(figsize=(14, 4))
+for idx, (grau, tit) in enumerate(zip(graus, titulos)):
+    ax = plt.subplot(1, 3, idx + 1)
+    pipeline = make_pipeline(PolynomialFeatures(grau), LinearRegression())
+    pipeline.fit(x[:, np.newaxis], y)
+    
+    plt.plot(x_plot, f_real(x_plot), "k--", label="Função Real", lw=1.5)
+    plt.plot(x_plot, pipeline.predict(x_plot[:, np.newaxis]), color="crimson", lw=2, label=f"Polinômio grau {grau}")
+    plt.scatter(x, y, edgecolor="b", s=25, facecolors="none", label="Dados Observados")
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.ylim((-1.6, 1.6))
+    plt.title(tit)
+    if idx == 0:
+        plt.legend(loc="lower left")
+
+plt.tight_layout()
+plt.show()
+```
+:::

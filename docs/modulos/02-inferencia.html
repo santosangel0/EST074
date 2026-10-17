@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>2&nbsp; Módulo 2: Análise de Variância, Inferência e Predição – EST074 - Análise de Regressão</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../modulos/03-diagnostico.html" rel="next">
+<link href="../modulos/01-intro-mqo.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4b352893ee45d6aea91c5d81184de3a4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../modulos/02-inferencia.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">EST074 - Análise de Regressão</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Apresentação do Curso</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/01-intro-mqo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/02-inferencia.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/03-diagnostico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/04-multivariada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#análise-de-variância-anova-e-partição-da-soma-de-quadrados" id="toc-análise-de-variância-anova-e-partição-da-soma-de-quadrados" class="nav-link active" data-scroll-target="#análise-de-variância-anova-e-partição-da-soma-de-quadrados"><span class="header-section-number">2.1</span> 2.1 Análise de Variância (ANOVA) e Partição da Soma de Quadrados</a></li>
+  <li><a href="#testes-de-hipóteses-exatos-e-assintóticos" id="toc-testes-de-hipóteses-exatos-e-assintóticos" class="nav-link" data-scroll-target="#testes-de-hipóteses-exatos-e-assintóticos"><span class="header-section-number">2.2</span> 2.2 Testes de Hipóteses Exatos e Assintóticos</a></li>
+  <li><a href="#intervalos-de-confiança-individuais-e-conjuntos" id="toc-intervalos-de-confiança-individuais-e-conjuntos" class="nav-link" data-scroll-target="#intervalos-de-confiança-individuais-e-conjuntos"><span class="header-section-number">2.3</span> 2.3 Intervalos de Confiança Individuais e Conjuntos</a></li>
+  <li><a href="#predição-de-novas-observações-e-bandas-de-confiança" id="toc-predição-de-novas-observações-e-bandas-de-confiança" class="nav-link" data-scroll-target="#predição-de-novas-observações-e-bandas-de-confiança"><span class="header-section-number">2.4</span> 2.4 Predição de Novas Observações e Bandas de Confiança</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Este módulo abrange o núcleo inferencial da disciplina EST074 (slides <strong>p05</strong>, <strong>p06</strong>, <strong>p07</strong> e <strong>p08</strong>), integrando a partição de variabilidade pela ANOVA, testes de hipóteses exatos e assintóticos, intervalos de confiança individuais e conjuntos, e os procedimentos preditivos de novas observações.</p>
+<hr>
+<section id="análise-de-variância-anova-e-partição-da-soma-de-quadrados" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="análise-de-variância-anova-e-partição-da-soma-de-quadrados"><span class="header-section-number">2.1</span> 2.1 Análise de Variância (ANOVA) e Partição da Soma de Quadrados</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<section id="partição-das-somas-de-quadrados" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="partição-das-somas-de-quadrados"><span class="header-section-number">2.1.1</span> Partição das Somas de Quadrados</h3>
+<p>A variação total observada na variável resposta <span class="math inline">\(Y\)</span> pode ser particionada em duas componentes ortogonais: a variação explicada pelo modelo de regressão e a variação não explicada (residual). <span class="math display">\[SQTot = SQReg + SQRes\]</span> em que: - <strong><span class="math inline">\(SQTot\)</span> (Soma de Quadrados Total):</strong> <span class="math inline">\(\sum_{i=1}^n (Y_i - \bar{Y})^2 = Y^\top \left(I_n - \frac{1}{n}J_n\right) Y\)</span> - <strong><span class="math inline">\(SQReg\)</span> (Soma de Quadrados da Regressão):</strong> <span class="math inline">\(\sum_{i=1}^n (\hat{Y}_i - \bar{Y})^2 = Y^\top \left(H - \frac{1}{n}J_n\right) Y\)</span> - <strong><span class="math inline">\(SQRes\)</span> (Soma de Quadrados dos Resíduos):</strong> <span class="math inline">\(\sum_{i=1}^n (Y_i - \hat{Y}_i)^2 = Y^\top (I_n - H) Y\)</span> sendo <span class="math inline">\(J_n\)</span> a matriz de dimensão <span class="math inline">\(n \times n\)</span> com todos os elementos iguais a 1.</p>
+</section>
+<section id="graus-de-liberdade" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="graus-de-liberdade"><span class="header-section-number">2.1.2</span> Graus de Liberdade</h3>
+<p>A partição dos graus de liberdade correspondente é: <span class="math display">\[\underbrace{n - 1}_{gl(SQTot)} = \underbrace{p - 1}_{gl(SQReg)} + \underbrace{n - p}_{gl(SQRes)}\]</span></p>
+</section>
+<section id="tabela-da-análise-de-variância-anova" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="tabela-da-análise-de-variância-anova"><span class="header-section-number">2.1.3</span> Tabela da Análise de Variância (ANOVA)</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Fonte de Variação</th>
+<th style="text-align: center;">Graus de Liberdade (<span class="math inline">\(gl\)</span>)</th>
+<th style="text-align: center;">Soma de Quadrados (<span class="math inline">\(SQ\)</span>)</th>
+<th style="text-align: center;">Quadrado Médio (<span class="math inline">\(QM\)</span>)</th>
+<th style="text-align: center;">Estatística <span class="math inline">\(F_c\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Regressão</strong></td>
+<td style="text-align: center;"><span class="math inline">\(p - 1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(SQReg\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(QMReg = \frac{SQReg}{p - 1}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(\frac{QMReg}{QMRes}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Resíduo</strong></td>
+<td style="text-align: center;"><span class="math inline">\(n - p\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(SQRes\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(QMRes = \frac{SQRes}{n - p}\)</span></td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Total</strong></td>
+<td style="text-align: center;"><span class="math inline">\(n - 1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(SQTot\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(QMTot = \frac{SQTot}{n - 1}\)</span></td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<p>Sob a hipótese nula de que nenhum dos regressores exerce efeito sobre a resposta (<span class="math inline">\(H_0: \beta_2 = \dots = \beta_p = 0\)</span>), a estatística calculada segue distribuição <span class="math inline">\(F\)</span> de Snedecor com <span class="math inline">\(p - 1\)</span> e <span class="math inline">\(n - p\)</span> graus de liberdade: <span class="math display">\[F_c \sim \mathcal{F}(p - 1, \, n - p)\]</span></p>
+</section>
+<section id="coeficiente-de-determinação-r2-e-r2_adj" class="level3" data-number="2.1.4">
+<h3 data-number="2.1.4" class="anchored" data-anchor-id="coeficiente-de-determinação-r2-e-r2_adj"><span class="header-section-number">2.1.4</span> Coeficiente de Determinação (<span class="math inline">\(R^2\)</span> e <span class="math inline">\(R^2_{adj}\)</span>)</h3>
+<p>O <strong>Coeficiente de Determinação</strong> mede a proporção da variabilidade total explicada pela regressão: <span class="math display">\[R^2 = \frac{SQReg}{SQTot} = 1 - \frac{SQRes}{SQTot}, \quad 0 \le R^2 \le 1\]</span> <strong>Propriedade crítica:</strong> <span class="math inline">\(R^2\)</span> é uma função monotonamente não decrescente com o acréscimo de novas variáveis ao modelo, independentemente de sua utilidade preditiva real.</p>
+<p>Para penalizar a inclusão indiscriminada de variáveis preditoras, define-se o <strong><span class="math inline">\(R^2\)</span> Ajustado</strong>: <span class="math display">\[R^2_{adj} = 1 - \frac{QMRes}{QMTot} = 1 - \left(\frac{n - 1}{n - p}\right)(1 - R^2)\]</span> <span class="math inline">\(R^2_{adj}\)</span> pode diminuir quando uma variável irrelevante é adicionada ao modelo e pode inclusive assumir valores negativos se <span class="math inline">\(F_c &lt; 1\)</span>.</p>
+</section>
+<section id="princípio-da-soma-de-quadrados-extra" class="level3" data-number="2.1.5">
+<h3 data-number="2.1.5" class="anchored" data-anchor-id="princípio-da-soma-de-quadrados-extra"><span class="header-section-number">2.1.5</span> Princípio da Soma de Quadrados Extra</h3>
+<p>Representa o aumento na soma de quadrados da regressão (ou a redução na soma de quadrados dos resíduos) ao se adicionar um subconjunto de variáveis <span class="math inline">\(X_2\)</span> a um modelo que já continha <span class="math inline">\(X_1\)</span>: <span class="math display">\[SQ(X_2 \mid X_1) = SQRes(X_1) - SQRes(X_1, X_2) = SQReg(X_1, X_2) - SQReg(X_1)\]</span></p>
+</section>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<section id="decomposição-algébrica-fundamental" class="level3" data-number="2.1.6">
+<h3 data-number="2.1.6" class="anchored" data-anchor-id="decomposição-algébrica-fundamental"><span class="header-section-number">2.1.6</span> Decomposição Algébrica Fundamental</h3>
+<p>A demonstração de que os produtos cruzados se anulam decorre diretamente das propriedades de ortogonalidade de MQO: <span class="math display">\[Y_i - \bar{Y} = (\hat{Y}_i - \bar{Y}) + (Y_i - \hat{Y}_i)\]</span> Elevando ao quadrado e somando: <span class="math display">\[\sum (Y_i - \bar{Y})^2 = \sum (\hat{Y}_i - \bar{Y})^2 + \sum (Y_i - \hat{Y}_i)^2 + 2 \sum (\hat{Y}_i - \bar{Y})(Y_i - \hat{Y}_i)\]</span> O termo cruzado é: <span class="math display">\[\sum (\hat{Y}_i - \bar{Y}) e_i = \sum \hat{Y}_i e_i - \bar{Y} \sum e_i = \hat{Y}^\top e - \bar{Y} (0) = 0 - 0 = 0\]</span> Pois <span class="math inline">\(\sum e_i = 0\)</span> (o modelo possui intercepto) e <span class="math inline">\(\hat{Y}^\top e = 0\)</span> (ortogonalidade da projeção). Logo, a igualdade <span class="math inline">\(SQTot = SQReg + SQRes\)</span> é exata.</p>
+</section>
+<section id="o-teorema-de-cochran" class="level3" data-number="2.1.7">
+<h3 data-number="2.1.7" class="anchored" data-anchor-id="o-teorema-de-cochran"><span class="header-section-number">2.1.7</span> O Teorema de Cochran</h3>
+<p>Na teoria estatística avançada <span class="citation" data-cites="graybill1983 scheffe1959">(<a href="#ref-graybill1983" role="doc-biblioref">Graybill 1983</a>; <a href="#ref-scheffe1959" role="doc-biblioref">Scheffé 1959</a>)</span>, a ANOVA baseia-se no <strong>Teorema de Cochran</strong>: se <span class="math inline">\(Y \sim \mathcal{N}_n(\mu, \sigma^2 I_n)\)</span> e a forma quadrática <span class="math inline">\(Y^\top Y\)</span> é expressa pela soma de <span class="math inline">\(k\)</span> formas quadráticas <span class="math inline">\(Y^\top A_j Y\)</span> tais que <span class="math inline">\(\sum A_j = I_n\)</span>, então as formas quadráticas <span class="math inline">\(Y^\top A_j Y / \sigma^2\)</span> têm distribuições qui-quadrado independentes se e somente se <span class="math inline">\(\sum r(A_j) = n\)</span>. No modelo linear: - <span class="math inline">\(\frac{SQRes}{\sigma^2} \sim \chi^2_{n - p}\)</span> - Sob <span class="math inline">\(H_0\)</span>, <span class="math inline">\(\frac{SQReg}{\sigma^2} \sim \chi^2_{p - 1}\)</span> - E como <span class="math inline">\(H\)</span> e <span class="math inline">\((I - H)\)</span> satisfazem <span class="math inline">\(H(I - H) = 0\)</span>, <span class="math inline">\(SQReg\)</span> e <span class="math inline">\(SQRes\)</span> são variáveis aleatórias <strong>estocasticamente independentes</strong>. Isso justifica formalmente que o quociente dos quadrados médios segue distribuição <span class="math inline">\(F\)</span> central: <span class="math display">\[\frac{QMReg / \sigma^2}{QMRes / \sigma^2} = \frac{SQReg / (p - 1)}{SQRes / (n - p)} \sim \mathcal{F}(p - 1, \, n - p)\]</span></p>
+</section>
+<section id="exemplo-computacional-da-anova-em-r" class="level3" data-number="2.1.8">
+<h3 data-number="2.1.8" class="anchored" data-anchor-id="exemplo-computacional-da-anova-em-r"><span class="header-section-number">2.1.8</span> Exemplo Computacional da ANOVA em R</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ANOVA e somas de quadrados extra</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>mod_completo <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp <span class="sc">+</span> qsec, <span class="at">data =</span> mtcars)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mod_reduzido <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt, <span class="at">data =</span> mtcars)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabela ANOVA da regressao</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_completo)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Teste F de soma de quadrados extra para a adicao de (hp, qsec) dado wt</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_reduzido, mod_completo)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="testes-de-hipóteses-exatos-e-assintóticos" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="testes-de-hipóteses-exatos-e-assintóticos"><span class="header-section-number">2.2</span> 2.2 Testes de Hipóteses Exatos e Assintóticos</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<section id="teste-de-hipóteses-para-um-coeficiente-individual-beta_m" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="teste-de-hipóteses-para-um-coeficiente-individual-beta_m"><span class="header-section-number">2.2.1</span> Teste de Hipóteses para um Coeficiente Individual (<span class="math inline">\(\beta_m\)</span>)</h3>
+<p>Sob a suposição de normalidade dos erros: <span class="math display">\[\hat{\beta} \sim \mathcal{N}_p(\beta, \, \sigma^2 (X^\top X)^{-1})\]</span> Seja <span class="math inline">\(c_{mm} = [(X^\top X)^{-1}]_{mm}\)</span> o <span class="math inline">\(m\)</span>-ésimo elemento diagonal da matriz inversa. A variância do estimador <span class="math inline">\(\hat{\beta}_m\)</span> é <span class="math inline">\(\mathrm{Var}(\hat{\beta}_m) = \sigma^2 c_{mm}\)</span>. Estimando <span class="math inline">\(\sigma^2\)</span> por <span class="math inline">\(QMRes\)</span>, o erro padrão amostral é: <span class="math display">\[\widehat{EP}(\hat{\beta}_m) = \sqrt{QMRes \cdot c_{mm}}\]</span></p>
+<p>Para testar as hipóteses: <span class="math display">\[H_0: \beta_m = \beta_{m0} \quad \text{vs} \quad H_1: \beta_m \neq \beta_{m0}\]</span> A estatística de teste exata é: <span class="math display">\[t_c = \frac{\hat{\beta}_m - \beta_{m0}}{\sqrt{QMRes \cdot c_{mm}}} \sim t(n - p)\]</span> Rejeita-se <span class="math inline">\(H_0\)</span> ao nível de significância <span class="math inline">\(\alpha\)</span> se <span class="math inline">\(|t_c| &gt; t_{1 - \alpha/2, \, n - p}\)</span> ou se o valor-<span class="math inline">\(p &lt; \alpha\)</span>.</p>
+</section>
+<section id="teste-f-parcial-subconjunto-de-coeficientes" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="teste-f-parcial-subconjunto-de-coeficientes"><span class="header-section-number">2.2.2</span> Teste F Parcial (Subconjunto de Coeficientes)</h3>
+<p>Suponha que o vetor de parâmetros é particionado em <span class="math inline">\(\beta = (\beta_1^\top, \beta_2^\top)^\top\)</span>, onde <span class="math inline">\(\beta_1\)</span> tem dimensão <span class="math inline">\((p - q) \times 1\)</span> e <span class="math inline">\(\beta_2\)</span> tem dimensão <span class="math inline">\(q \times 1\)</span>. Deseja-se testar se o conjunto de variáveis associadas a <span class="math inline">\(\beta_2\)</span> é estatisticamente redundante: <span class="math display">\[H_0: \beta_2 = 0 \quad \text{vs} \quad H_1: \beta_2 \neq 0\]</span> A estatística <span class="math inline">\(F\)</span> parcial compara a soma de quadrados dos resíduos do modelo reduzido (<span class="math inline">\(R\)</span>, sem <span class="math inline">\(\beta_2\)</span>) com a do modelo completo (<span class="math inline">\(C\)</span>, com todos os regressores): <span class="math display">\[F_c = \frac{\left[ SQRes(R) - SQRes(C) \right] / q}{QMRes(C)} \sim \mathcal{F}(q, \, n - p)\]</span></p>
+</section>
+<section id="teste-linear-geral-h_0-lbeta-c" class="level3" data-number="2.2.3">
+<h3 data-number="2.2.3" class="anchored" data-anchor-id="teste-linear-geral-h_0-lbeta-c"><span class="header-section-number">2.2.3</span> Teste Linear Geral (<span class="math inline">\(H_0: L\beta = c\)</span>)</h3>
+<p>Para qualquer conjunto de <span class="math inline">\(s\)</span> restrições lineares linearmente independentes, descritas por uma matriz de coeficientes <span class="math inline">\(L_{s \times p}\)</span> de posto <span class="math inline">\(s\)</span> e vetor <span class="math inline">\(c_{s \times 1}\)</span>: <span class="math display">\[H_0: L\beta = c \quad \text{vs} \quad H_1: L\beta \neq c\]</span> A estatística de teste exata é: <span class="math display">\[F_c = \frac{(L\hat{\beta} - c)^\top \left[ L(X^\top X)^{-1} L^\top \right]^{-1} (L\hat{\beta} - c)}{s \cdot QMRes} \sim \mathcal{F}(s, \, n - p)\]</span></p>
+</section>
+<section id="estatísticas-qui-quadrado-assintóticas-grandes-amostras" class="level3" data-number="2.2.4">
+<h3 data-number="2.2.4" class="anchored" data-anchor-id="estatísticas-qui-quadrado-assintóticas-grandes-amostras"><span class="header-section-number">2.2.4</span> Estatísticas Qui-Quadrado Assintóticas (Grandes Amostras)</h3>
+<p>Para amostras grandes, podem-se empregar quatro estatísticas clássicas fundamentadas na verossimilhança (Buse, 1982; Rao, 1948; Wald, 1943; Wilks, 1938): 1. <strong>Razão de Verossimilhanças (RV / Likelihood Ratio):</strong> <span class="math display">\[LR = 2 \left[ \ell(\hat{\beta}) - \ell(\tilde{\beta}_{H_0}) \right] = n \ln\left( \frac{\tilde{\sigma}^2_{H_0}}{\tilde{\sigma}^2} \right)\]</span> 2. <strong>Estatística de Wald (<span class="math inline">\(W\)</span>):</strong> <span class="math display">\[W = (L\hat{\beta} - c)^\top \left[ L \mathcal{I}^{-1}(\hat{\beta}) L^\top \right]^{-1} (L\hat{\beta} - c)\]</span> 3. <strong>Escore de Rao / Multiplicador de Lagrange (<span class="math inline">\(LM\)</span>):</strong> Avalia a inclinação da função de verossimilhança calculada na estimativa restrita sob <span class="math inline">\(H_0\)</span>. 4. <strong>Estatística Gradiente (Terrell, 2002):</strong> Combina aspectos do gradiente e da distância entre estimadores.</p>
+<p>Sob <span class="math inline">\(H_0\)</span>, as quatro estatísticas convergem em distribuição para uma qui-quadrado com <span class="math inline">\(s\)</span> graus de liberdade: <span class="math display">\[LR, W, LM, G \xrightarrow{d} \chi^2(s)\]</span> No modelo linear clássico, verifica-se a ordenação numérica estrita: <span class="math display">\[W \ge LR \ge LM\]</span></p>
+</section>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<section id="intuição-geométrica-da-tríade-de-verossimilhança-buse-1982" class="level3" data-number="2.2.5">
+<h3 data-number="2.2.5" class="anchored" data-anchor-id="intuição-geométrica-da-tríade-de-verossimilhança-buse-1982"><span class="header-section-number">2.2.5</span> Intuição Geométrica da Tríade de Verossimilhança (Buse, 1982)</h3>
+<p>Adolf Buse <span class="citation" data-cites="buse1982">(<a href="#ref-buse1982" role="doc-biblioref">Buse 1982</a>)</span> oferece uma elucidação geométrica definitiva para a relação entre Wald, Razão de Verossimilhanças e Escore de Rao na curva de log-verossimilhança: - O teste de <strong>Wald</strong> mede a distância horizontal ao quadrado entre a estimativa irrestrita <span class="math inline">\(\hat{\beta}\)</span> e o valor hipotetizado <span class="math inline">\(\beta_0\)</span>, ponderada pela curvatura no ponto irrestrito. - A <strong>Razão de Verossimilhanças (LR)</strong> mede a diferença vertical de altitude: <span class="math inline">\(2[\ell(\hat{\beta}) - \ell(\beta_0)]\)</span>. - O <strong>Escore de Rao (LM)</strong> avalia a inclinação (gradiente) da função no ponto sob a hipótese nula <span class="math inline">\(\beta_0\)</span>: se <span class="math inline">\(\beta_0\)</span> estivesse próximo do verdadeiro máximo, a derivada da verossimilhança calculada nele deveria ser quase nula.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ilustração conceitual das estatísticas em Python</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Exemplo numérico de teste linear geral L * beta = c</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Supondo regressão com p = 3 (intercepto + 2 preditores)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">123</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.column_stack([np.ones(n), np.random.normal(<span class="dv">10</span>, <span class="dv">2</span>, n), np.random.normal(<span class="dv">5</span>, <span class="dv">1</span>, n)])</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>beta_real <span class="op">=</span> np.array([<span class="fl">2.0</span>, <span class="fl">1.5</span>, <span class="op">-</span><span class="fl">0.8</span>])</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> X <span class="op">@</span> beta_real <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">1.2</span>, n)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>XtX_inv <span class="op">=</span> np.linalg.inv(X.T <span class="op">@</span> X)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>beta_hat <span class="op">=</span> XtX_inv <span class="op">@</span> (X.T <span class="op">@</span> y)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>residuos <span class="op">=</span> y <span class="op">-</span> X <span class="op">@</span> beta_hat</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>qm_res <span class="op">=</span> np.<span class="bu">sum</span>(residuos<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> (n <span class="op">-</span> p)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Testando se beta_1 = beta_2 (isto e, beta_1 - beta_2 = 0)</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># L = [0, 1, -1], c = 0</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> np.array([[<span class="dv">0</span>, <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>]])</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.array([<span class="dv">0</span>])</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>diff <span class="op">=</span> L <span class="op">@</span> beta_hat <span class="op">-</span> c</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>variancia_L <span class="op">=</span> L <span class="op">@</span> XtX_inv <span class="op">@</span> L.T</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>F_stat <span class="op">=</span> (diff.T <span class="op">@</span> np.linalg.inv(variancia_L) <span class="op">@</span> diff) <span class="op">/</span> (<span class="dv">1</span> <span class="op">*</span> qm_res)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>p_valor <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> stats.f.cdf(F_stat[<span class="dv">0</span>, <span class="dv">0</span>], <span class="dv">1</span>, n <span class="op">-</span> p)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Estatística F: </span><span class="sc">{</span>F_stat[<span class="dv">0</span>, <span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Valor-p: </span><span class="sc">{</span>p_valor<span class="sc">:.4e}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="intervalos-de-confiança-individuais-e-conjuntos" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="intervalos-de-confiança-individuais-e-conjuntos"><span class="header-section-number">2.3</span> 2.3 Intervalos de Confiança Individuais e Conjuntos</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<section id="intervalo-de-confiança-para-beta_m" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="intervalo-de-confiança-para-beta_m"><span class="header-section-number">2.3.1</span> Intervalo de Confiança para <span class="math inline">\(\beta_m\)</span></h3>
+<p>A partir da distribuição <span class="math inline">\(t\)</span> da estatística de teste, o intervalo com coeficiente de confiança <span class="math inline">\(1 - \alpha\)</span> para o parâmetro <span class="math inline">\(\beta_m\)</span> é dado por: <span class="math display">\[IC(\beta_m, \, 1 - \alpha) = \left[ \hat{\beta}_m - t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot c_{mm}}, \;\; \hat{\beta}_m + t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot c_{mm}} \right]\]</span></p>
+</section>
+<section id="inferência-sobre-a-resposta-média-mu_h" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="inferência-sobre-a-resposta-média-mu_h"><span class="header-section-number">2.3.2</span> Inferência sobre a Resposta Média (<span class="math inline">\(\mu_h\)</span>)</h3>
+<p>Considere um ponto fixo no espaço de covariáveis <span class="math inline">\(x_h = (1, x_{h2}, \dots, x_{hp})^\top\)</span>. O valor esperado da resposta condicional nesse ponto é: <span class="math display">\[\mu_h = \mathbb{E}(Y \mid x_h) = x_h^\top \beta\]</span> O estimador pontual é: <span class="math display">\[\hat{\mu}_h = x_h^\top \hat{\beta}\]</span> Como <span class="math inline">\(\hat{\mu}_h\)</span> é combinação linear de <span class="math inline">\(\hat{\beta}\)</span>: <span class="math display">\[\mathbb{E}(\hat{\mu}_h) = x_h^\top \beta = \mu_h\]</span> <span class="math display">\[\mathrm{Var}(\hat{\mu}_h) = x_h^\top \mathrm{Var}(\hat{\beta}) x_h = \sigma^2 x_h^\top (X^\top X)^{-1} x_h\]</span> O intervalo de confiança para a resposta média <span class="math inline">\(\mu_h\)</span> ao nível <span class="math inline">\(1 - \alpha\)</span> é: <span class="math display">\[IC(\mu_h, \, 1 - \alpha) = \hat{\mu}_h \pm t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot x_h^\top (X^\top X)^{-1} x_h}\]</span></p>
+</section>
+<section id="intervalo-de-confiança-para-a-variância-sigma2" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="intervalo-de-confiança-para-a-variância-sigma2"><span class="header-section-number">2.3.3</span> Intervalo de Confiança para a Variância (<span class="math inline">\(\sigma^2\)</span>)</h3>
+<p>Como a estatística <span class="math inline">\(\frac{(n - p)QMRes}{\sigma^2}\)</span> segue distribuição Qui-quadrado com <span class="math inline">\(n - p\)</span> graus de liberdade: <span class="math display">\[\frac{(n - p)QMRes}{\sigma^2} \sim \chi^2(n - p)\]</span> O intervalo de confiança exato com nível <span class="math inline">\(1 - \alpha\)</span> para <span class="math inline">\(\sigma^2\)</span> é: <span class="math display">\[IC(\sigma^2, \, 1 - \alpha) = \left[ \frac{(n - p)QMRes}{\chi^2_{1 - \alpha/2, \, n - p}}, \;\; \frac{(n - p)QMRes}{\chi^2_{\alpha/2, \, n - p}} \right]\]</span></p>
+</section>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<section id="inferência-simultânea-por-que-não-usar-múltiplos-ics-isolados" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="inferência-simultânea-por-que-não-usar-múltiplos-ics-isolados"><span class="header-section-number">2.3.4</span> Inferência Simultânea: Por que não usar múltiplos ICs isolados?</h3>
+<p>Se construirmos <span class="math inline">\(g\)</span> intervalos de confiança individuais, cada um ao nível de <span class="math inline">\(95\%\)</span>, a taxa global de erro (<em>Family-Wise Error Rate - FWER</em>) não é <span class="math inline">\(5\%\)</span>, mas pode atingir até: <span class="math display">\[\alpha_{\text{global}} = 1 - (1 - \alpha)^g \xrightarrow{g = 5} 1 - (0{,}95)^5 \approx 22{,}6\%\]</span></p>
+<p>Para controlar a taxa de erro simultânea, utilizam-se duas correções: 1. <strong>Procedimento de Bonferroni:</strong> Substitui-se <span class="math inline">\(\alpha\)</span> por <span class="math inline">\(\alpha / g\)</span>: <span class="math display">\[\hat{\beta}_m \pm t_{1 - \frac{\alpha}{2g}, \, n - p} \cdot \widehat{EP}(\hat{\beta}_m)\]</span> 2. <strong>Procedimento de Scheffé / Elipsoide de Confiança:</strong> Gera intervalos válidos para todas as combinações lineares possíveis dos parâmetros simultaneamente, baseando-se no multiplicador <span class="math inline">\(\sqrt{p \cdot \mathcal{F}_{1 - \alpha, \, p, \, n - p}}\)</span>.</p>
+</section>
+<section id="o-método-delta-para-funções-não-lineares-de-parâmetros" class="level3" data-number="2.3.5">
+<h3 data-number="2.3.5" class="anchored" data-anchor-id="o-método-delta-para-funções-não-lineares-de-parâmetros"><span class="header-section-number">2.3.5</span> O Método Delta para Funções Não-Lineares de Parâmetros</h3>
+<p>Quando há interesse em estimar uma função não-linear <span class="math inline">\(\theta = g(\beta)\)</span> (por exemplo, a razão de dois parâmetros <span class="math inline">\(\beta_2 / \beta_1\)</span> ou um ponto de máximo <span class="math inline">\(-\beta_2 / (2\beta_3)\)</span> em regressão polinomial), utiliza-se o <strong>Método Delta</strong> <span class="citation" data-cites="dorfman1938">(<a href="#ref-dorfman1938" role="doc-biblioref">Dorfman 1938</a>)</span>: <span class="math display">\[\widehat{\mathrm{Var}}(g(\hat{\beta})) \approx \nabla g(\hat{\beta})^\top \left[ QMRes \cdot (X^\top X)^{-1} \right] \nabla g(\hat{\beta})\]</span> onde <span class="math inline">\(\nabla g(\hat{\beta})\)</span> é o vetor das derivadas parciais avaliadas nas estimativas de MQO.</p>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="predição-de-novas-observações-e-bandas-de-confiança" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="predição-de-novas-observações-e-bandas-de-confiança"><span class="header-section-number">2.4</span> 2.4 Predição de Novas Observações e Bandas de Confiança</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<section id="predição-de-novas-observações" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="predição-de-novas-observações"><span class="header-section-number">2.4.1</span> Predição de Novas Observações</h3>
+<p>Uma importante aplicação dos modelos de regressão é predizer uma nova observação da variável resposta <span class="math inline">\(Y\)</span> para um dado vetor de covariáveis <span class="math inline">\(x_0 = (1, x_{02}, \dots, x_{0p})^\top\)</span>.</p>
+<p>Considere a nova observação real a ser observada no futuro: <span class="math display">\[Y_0 = x_0^\top \beta + \varepsilon_0\]</span> em que <span class="math inline">\(\varepsilon_0 \sim \mathcal{D}(0, \sigma^2)\)</span> é independente de todos os erros amostrais anteriores <span class="math inline">\(\varepsilon_1, \dots, \varepsilon_n\)</span>.</p>
+<p>O estimador pontual para <span class="math inline">\(Y_0\)</span> coincide formalmente com a estimativa da média: <span class="math display">\[\hat{Y}_0 = x_0^\top \hat{\beta}\]</span></p>
+</section>
+<section id="erro-de-predição-e-sua-variância" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="erro-de-predição-e-sua-variância"><span class="header-section-number">2.4.2</span> Erro de Predição e sua Variância</h3>
+<p>Defina a variável aleatória erro de predição: <span class="math display">\[e_{pred} = Y_0 - \hat{Y}_0\]</span> A esperança matemática do erro de predição é nula: <span class="math display">\[\mathbb{E}(e_{pred}) = \mathbb{E}(Y_0) - \mathbb{E}(\hat{Y}_0) = x_0^\top \beta - x_0^\top \beta = 0\]</span></p>
+<p>Como a nova observação <span class="math inline">\(Y_0\)</span> é independente dos dados amostrais que geraram <span class="math inline">\(\hat{\beta}\)</span>: <span class="math display">\[\mathrm{Cov}(Y_0, \hat{Y}_0) = 0\]</span> Logo: <span class="math display">\[\mathrm{Var}(e_{pred}) = \mathrm{Var}(Y_0 - \hat{Y}_0) = \mathrm{Var}(Y_0) + \mathrm{Var}(\hat{Y}_0)\]</span> <span class="math display">\[\mathrm{Var}(e_{pred}) = \sigma^2 + \sigma^2 x_0^\top (X^\top X)^{-1} x_0 = \sigma^2 \left[ 1 + x_0^\top (X^\top X)^{-1} x_0 \right]\]</span></p>
+</section>
+<section id="intervalo-de-predição-ip" class="level3" data-number="2.4.3">
+<h3 data-number="2.4.3" class="anchored" data-anchor-id="intervalo-de-predição-ip"><span class="header-section-number">2.4.3</span> Intervalo de Predição (IP)</h3>
+<p>Substituindo <span class="math inline">\(\sigma^2\)</span> por <span class="math inline">\(QMRes\)</span>, o <strong>Intervalo de Predição (IP)</strong> com coeficiente de confiança <span class="math inline">\(1 - \alpha\)</span> para a nova observação <span class="math inline">\(Y_0\)</span> é: <span class="math display">\[IP(Y_0, \, 1 - \alpha) = x_0^\top \hat{\beta} \pm t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \left[ 1 + x_0^\top (X^\top X)^{-1} x_0 \right]}\]</span></p>
+</section>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<section id="distinção-crítica-banda-de-confiança-da-média-vs-banda-de-predição" class="level3" data-number="2.4.4">
+<h3 data-number="2.4.4" class="anchored" data-anchor-id="distinção-crítica-banda-de-confiança-da-média-vs-banda-de-predição"><span class="header-section-number">2.4.4</span> Distinção Crítica: Banda de Confiança da Média vs Banda de Predição</h3>
+<p>É fundamental para a prática estatística distinguir: 1. <strong>Intervalo de Confiança para a Média <span class="math inline">\(\mathbb{E}(Y \mid x_0)\)</span>:</strong> Responde: <em>“Qual é o valor médio esperado de <span class="math inline">\(Y\)</span> para toda a população de indivíduos com características <span class="math inline">\(x_0\)</span>?”</em> <span class="math display">\[\mathrm{Var}(\hat{\mu}_0) = \sigma^2 \left[ x_0^\top (X^\top X)^{-1} x_0 \right]\]</span> Quando o tamanho da amostra <span class="math inline">\(n \to \infty\)</span>, essa variância <strong>tende a zero</strong>, pois estimamos a reta com precisão infinita.</p>
+<ol start="2" type="1">
+<li><strong>Intervalo de Predição para um Indivíduo <span class="math inline">\(Y_0\)</span>:</strong> Responde: <em>“Em que intervalo cairá o valor de <span class="math inline">\(Y\)</span> de um indivíduo específico no futuro?”</em> <span class="math display">\[\mathrm{Var}(Y_0 - \hat{Y}_0) = \sigma^2 + \sigma^2 \left[ x_0^\top (X^\top X)^{-1} x_0 \right]\]</span> Mesmo se <span class="math inline">\(n \to \infty\)</span>, a variância <strong>nunca cai abaixo de <span class="math inline">\(\sigma^2\)</span></strong>, devido ao erro estocástico inerente <span class="math inline">\(\varepsilon_0\)</span> da natureza (erro irredutível). Por consequência matemática invariável, o Intervalo de Predição é <strong>sempre mais largo</strong> que o Intervalo de Confiança para a média no mesmo ponto <span class="math inline">\(x_0\)</span>.</li>
+</ol>
+</section>
+<section id="ilustração-visual-em-r-bandas-hiperbólicas-de-confiança-e-predição" class="level3" data-number="2.4.5">
+<h3 data-number="2.4.5" class="anchored" data-anchor-id="ilustração-visual-em-r-bandas-hiperbólicas-de-confiança-e-predição"><span class="header-section-number">2.4.5</span> Ilustração Visual em R: Bandas Hiperbólicas de Confiança e Predição</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparacao grafica entre IC da Media e IP de Nova Observacao</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">40</span>, <span class="dv">10</span>, <span class="dv">30</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">1.8</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">40</span>, <span class="dv">0</span>, <span class="dv">4</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>dados <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dados)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>grid_x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">8</span>, <span class="dv">32</span>, <span class="at">length.out =</span> <span class="dv">200</span>))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Previsoes com intervalos</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>pred_ic <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> grid_x, <span class="at">interval =</span> <span class="st">"confidence"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>pred_ip <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> grid_x, <span class="at">interval =</span> <span class="st">"prediction"</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico das bandas</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dados<span class="sc">$</span>x, dados<span class="sc">$</span>y, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"gray40"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">32</span>), <span class="at">ylim =</span> <span class="fu">range</span>(pred_ip),</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Covariável X"</span>, <span class="at">ylab =</span> <span class="st">"Resposta Y"</span>, <span class="at">main =</span> <span class="st">"Banda de Confiança vs Banda de Predição"</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mod, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Banda de Confianca da Media (Mais estreita)</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ic[, <span class="st">"lwr"</span>], <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.8</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ic[, <span class="st">"upr"</span>], <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.8</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Banda de Predicao Individual (Mais larga)</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ip[, <span class="st">"lwr"</span>], <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ip[, <span class="st">"upr"</span>], <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Reta de Regressão"</span>, <span class="st">"IC da Média (95%)"</span>, <span class="st">"IP de Nova Observação (95%)"</span>),</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"blue"</span>, <span class="st">"firebrick"</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-buse1982" class="csl-entry" role="listitem">
+Buse, Adolf. 1982. <span>“The Likelihood Ratio, Wald, and Lagrange Multiplier Tests: An Expository Note.”</span> <em>The American Statistician</em> 36 (3a): 153–57.
+</div>
+<div id="ref-dorfman1938" class="csl-entry" role="listitem">
+Dorfman, Robert. 1938. <span>“A Note on the <span class="math inline">\(\delta\)</span>-Method for Finding Variance Formulae.”</span> <em>The Biometric Bulletin</em> 1: 129–37.
+</div>
+<div id="ref-graybill1983" class="csl-entry" role="listitem">
+Graybill, Franklin A. 1983. <em>Matrices with Applications in Statistics</em>. 2nd ed. Belmont, CA: Wadsworth International Group.
+</div>
+<div id="ref-scheffe1959" class="csl-entry" role="listitem">
+Scheffé, Henry. 1959. <em>The Analysis of Variance</em>. New York: John Wiley &amp; Sons.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../modulos/01-intro-mqo.html" class="pagination-link" aria-label="Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../modulos/03-diagnostico.html" class="pagination-link" aria-label="Módulo 3: Análise de Resíduos, Transformações e Diagnóstico">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Módulo 2: Análise de Variância, Inferência e Predição</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>Este módulo abrange o núcleo inferencial da disciplina EST074 (slides **p05**, **p06**, **p07** e **p08**), integrando a partição de variabilidade pela ANOVA, testes de hipóteses exatos e assintóticos, intervalos de confiança individuais e conjuntos, e os procedimentos preditivos de novas observações.</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.1 Análise de Variância (ANOVA) e Partição da Soma de Quadrados</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">### Partição das Somas de Quadrados</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>A variação total observada na variável resposta $Y$ pode ser particionada em duas componentes ortogonais: a variação explicada pelo modelo de regressão e a variação não explicada (residual).</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>$$SQTot = SQReg + SQRes$$</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>em que:</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**$SQTot$ (Soma de Quadrados Total):** $\sum_{i=1}^n (Y_i - \bar{Y})^2 = Y^\top \left(I_n - \frac{1}{n}J_n\right) Y$</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**$SQReg$ (Soma de Quadrados da Regressão):** $\sum_{i=1}^n (\hat{Y}_i - \bar{Y})^2 = Y^\top \left(H - \frac{1}{n}J_n\right) Y$</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**$SQRes$ (Soma de Quadrados dos Resíduos):** $\sum_{i=1}^n (Y_i - \hat{Y}_i)^2 = Y^\top (I_n - H) Y$</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>sendo $J_n$ a matriz de dimensão $n \times n$ com todos os elementos iguais a 1.</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">### Graus de Liberdade</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>A partição dos graus de liberdade correspondente é:</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>$$\underbrace{n - 1}_{gl(SQTot)} = \underbrace{p - 1}_{gl(SQReg)} + \underbrace{n - p}_{gl(SQRes)}$$</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### Tabela da Análise de Variância (ANOVA)</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Fonte de Variação <span class="pp">|</span> Graus de Liberdade ($gl$) <span class="pp">|</span> Soma de Quadrados ($SQ$) <span class="pp">|</span> Quadrado Médio ($QM$) <span class="pp">|</span> Estatística $F_c$ <span class="pp">|</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Regressão** <span class="pp">|</span> $p - 1$ <span class="pp">|</span> $SQReg$ <span class="pp">|</span> $QMReg = \frac{SQReg}{p - 1}$ <span class="pp">|</span> $\frac{QMReg}{QMRes}$ <span class="pp">|</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Resíduo** <span class="pp">|</span> $n - p$ <span class="pp">|</span> $SQRes$ <span class="pp">|</span> $QMRes = \frac{SQRes}{n - p}$ <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Total** <span class="pp">|</span> $n - 1$ <span class="pp">|</span> $SQTot$ <span class="pp">|</span> $QMTot = \frac{SQTot}{n - 1}$ <span class="pp">|</span> — <span class="pp">|</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>Sob a hipótese nula de que nenhum dos regressores exerce efeito sobre a resposta ($H_0: \beta_2 = \dots = \beta_p = 0$), a estatística calculada segue distribuição $F$ de Snedecor com $p - 1$ e $n - p$ graus de liberdade:</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>$$F_c \sim \mathcal{F}(p - 1, \, n - p)$$</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### Coeficiente de Determinação ($R^2$ e $R^2_{adj}$)</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>O **Coeficiente de Determinação** mede a proporção da variabilidade total explicada pela regressão:</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>$$R^2 = \frac{SQReg}{SQTot} = 1 - \frac{SQRes}{SQTot}, \quad 0 \le R^2 \le 1$$</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>**Propriedade crítica:** $R^2$ é uma função monotonamente não decrescente com o acréscimo de novas variáveis ao modelo, independentemente de sua utilidade preditiva real.</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>Para penalizar a inclusão indiscriminada de variáveis preditoras, define-se o **$R^2$ Ajustado**:</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>$$R^2_{adj} = 1 - \frac{QMRes}{QMTot} = 1 - \left(\frac{n - 1}{n - p}\right)(1 - R^2)$$</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>$R^2_{adj}$ pode diminuir quando uma variável irrelevante é adicionada ao modelo e pode inclusive assumir valores negativos se $F_c &lt; 1$.</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="fu">### Princípio da Soma de Quadrados Extra</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>Representa o aumento na soma de quadrados da regressão (ou a redução na soma de quadrados dos resíduos) ao se adicionar um subconjunto de variáveis $X_2$ a um modelo que já continha $X_1$:</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>$$SQ(X_2 \mid X_1) = SQRes(X_1) - SQRes(X_1, X_2) = SQReg(X_1, X_2) - SQReg(X_1)$$</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="fu">### Decomposição Algébrica Fundamental</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>A demonstração de que os produtos cruzados se anulam decorre diretamente das propriedades de ortogonalidade de MQO:</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>$$Y_i - \bar{Y} = (\hat{Y}_i - \bar{Y}) + (Y_i - \hat{Y}_i)$$</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>Elevando ao quadrado e somando:</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>$$\sum (Y_i - \bar{Y})^2 = \sum (\hat{Y}_i - \bar{Y})^2 + \sum (Y_i - \hat{Y}_i)^2 + 2 \sum (\hat{Y}_i - \bar{Y})(Y_i - \hat{Y}_i)$$</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>O termo cruzado é:</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>$$\sum (\hat{Y}_i - \bar{Y}) e_i = \sum \hat{Y}_i e_i - \bar{Y} \sum e_i = \hat{Y}^\top e - \bar{Y} (0) = 0 - 0 = 0$$</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>Pois $\sum e_i = 0$ (o modelo possui intercepto) e $\hat{Y}^\top e = 0$ (ortogonalidade da projeção).</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>Logo, a igualdade $SQTot = SQReg + SQRes$ é exata.</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="fu">### O Teorema de Cochran</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>Na teoria estatística avançada <span class="co">[</span><span class="ot">@graybill1983; @scheffe1959</span><span class="co">]</span>, a ANOVA baseia-se no **Teorema de Cochran**: se $Y \sim \mathcal{N}_n(\mu, \sigma^2 I_n)$ e a forma quadrática $Y^\top Y$ é expressa pela soma de $k$ formas quadráticas $Y^\top A_j Y$ tais que $\sum A_j = I_n$, então as formas quadráticas $Y^\top A_j Y / \sigma^2$ têm distribuições qui-quadrado independentes se e somente se $\sum r(A_j) = n$.</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>No modelo linear:</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\frac{SQRes}{\sigma^2} \sim \chi^2_{n - p}$</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Sob $H_0$, $\frac{SQReg}{\sigma^2} \sim \chi^2_{p - 1}$</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>E como $H$ e $(I - H)$ satisfazem $H(I - H) = 0$, $SQReg$ e $SQRes$ são variáveis aleatórias **estocasticamente independentes**.</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a>Isso justifica formalmente que o quociente dos quadrados médios segue distribuição $F$ central:</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>$$\frac{QMReg / \sigma^2}{QMRes / \sigma^2} = \frac{SQReg / (p - 1)}{SQRes / (n - p)} \sim \mathcal{F}(p - 1, \, n - p)$$</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exemplo Computacional da ANOVA em R</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a><span class="co"># ANOVA e somas de quadrados extra</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>mod_completo <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp <span class="sc">+</span> qsec, <span class="at">data =</span> mtcars)</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>mod_reduzido <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt, <span class="at">data =</span> mtcars)</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabela ANOVA da regressao</span></span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_completo)</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="co"># Teste F de soma de quadrados extra para a adicao de (hp, qsec) dado wt</span></span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod_reduzido, mod_completo)</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.2 Testes de Hipóteses Exatos e Assintóticos</span></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="fu">### Teste de Hipóteses para um Coeficiente Individual ($\beta_m$)</span></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>Sob a suposição de normalidade dos erros:</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>$$\hat{\beta} \sim \mathcal{N}_p(\beta, \, \sigma^2 (X^\top X)^{-1})$$</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>Seja $c_{mm} = <span class="co">[</span><span class="ot">(X^\top X)^{-1}</span><span class="co">]</span>_{mm}$ o $m$-ésimo elemento diagonal da matriz inversa. A variância do estimador $\hat{\beta}_m$ é $\mathrm{Var}(\hat{\beta}_m) = \sigma^2 c_{mm}$.</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>Estimando $\sigma^2$ por $QMRes$, o erro padrão amostral é:</span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>$$\widehat{EP}(\hat{\beta}_m) = \sqrt{QMRes \cdot c_{mm}}$$</span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>Para testar as hipóteses:</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>$$H_0: \beta_m = \beta_{m0} \quad \text{vs} \quad H_1: \beta_m \neq \beta_{m0}$$</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>A estatística de teste exata é:</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>$$t_c = \frac{\hat{\beta}_m - \beta_{m0}}{\sqrt{QMRes \cdot c_{mm}}} \sim t(n - p)$$</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>Rejeita-se $H_0$ ao nível de significância $\alpha$ se $|t_c| &gt; t_{1 - \alpha/2, \, n - p}$ ou se o valor-$p &lt; \alpha$.</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a><span class="fu">### Teste F Parcial (Subconjunto de Coeficientes)</span></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>Suponha que o vetor de parâmetros é particionado em $\beta = (\beta_1^\top, \beta_2^\top)^\top$, onde $\beta_1$ tem dimensão $(p - q) \times 1$ e $\beta_2$ tem dimensão $q \times 1$.</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>Deseja-se testar se o conjunto de variáveis associadas a $\beta_2$ é estatisticamente redundante:</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>$$H_0: \beta_2 = 0 \quad \text{vs} \quad H_1: \beta_2 \neq 0$$</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>A estatística $F$ parcial compara a soma de quadrados dos resíduos do modelo reduzido ($R$, sem $\beta_2$) com a do modelo completo ($C$, com todos os regressores):</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>$$F_c = \frac{\left<span class="co">[</span><span class="ot"> SQRes(R) - SQRes(C) \right</span><span class="co">]</span> / q}{QMRes(C)} \sim \mathcal{F}(q, \, n - p)$$</span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a><span class="fu">### Teste Linear Geral ($H_0: L\beta = c$)</span></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>Para qualquer conjunto de $s$ restrições lineares linearmente independentes, descritas por uma matriz de coeficientes $L_{s \times p}$ de posto $s$ e vetor $c_{s \times 1}$:</span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a>$$H_0: L\beta = c \quad \text{vs} \quad H_1: L\beta \neq c$$</span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a>A estatística de teste exata é:</span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>$$F_c = \frac{(L\hat{\beta} - c)^\top \left<span class="co">[</span><span class="ot"> L(X^\top X)^{-1} L^\top \right</span><span class="co">]</span>^{-1} (L\hat{\beta} - c)}{s \cdot QMRes} \sim \mathcal{F}(s, \, n - p)$$</span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="fu">### Estatísticas Qui-Quadrado Assintóticas (Grandes Amostras)</span></span>
+<span id="cb4-120"><a href="#cb4-120" aria-hidden="true" tabindex="-1"></a>Para amostras grandes, podem-se empregar quatro estatísticas clássicas fundamentadas na verossimilhança (Buse, 1982; Rao, 1948; Wald, 1943; Wilks, 1938):</span>
+<span id="cb4-121"><a href="#cb4-121" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Razão de Verossimilhanças (RV / Likelihood Ratio):**</span>
+<span id="cb4-122"><a href="#cb4-122" aria-hidden="true" tabindex="-1"></a>   $$LR = 2 \left<span class="co">[</span><span class="ot"> \ell(\hat{\beta}) - \ell(\tilde{\beta}_{H_0}) \right</span><span class="co">]</span> = n \ln\left( \frac{\tilde{\sigma}^2_{H_0}}{\tilde{\sigma}^2} \right)$$</span>
+<span id="cb4-123"><a href="#cb4-123" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Estatística de Wald ($W$):**</span>
+<span id="cb4-124"><a href="#cb4-124" aria-hidden="true" tabindex="-1"></a>   $$W = (L\hat{\beta} - c)^\top \left<span class="co">[</span><span class="ot"> L \mathcal{I}^{-1}(\hat{\beta}) L^\top \right</span><span class="co">]</span>^{-1} (L\hat{\beta} - c)$$</span>
+<span id="cb4-125"><a href="#cb4-125" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Escore de Rao / Multiplicador de Lagrange ($LM$):**</span>
+<span id="cb4-126"><a href="#cb4-126" aria-hidden="true" tabindex="-1"></a>   Avalia a inclinação da função de verossimilhança calculada na estimativa restrita sob $H_0$.</span>
+<span id="cb4-127"><a href="#cb4-127" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Estatística Gradiente (Terrell, 2002):**</span>
+<span id="cb4-128"><a href="#cb4-128" aria-hidden="true" tabindex="-1"></a>   Combina aspectos do gradiente e da distância entre estimadores.</span>
+<span id="cb4-129"><a href="#cb4-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-130"><a href="#cb4-130" aria-hidden="true" tabindex="-1"></a>Sob $H_0$, as quatro estatísticas convergem em distribuição para uma qui-quadrado com $s$ graus de liberdade:</span>
+<span id="cb4-131"><a href="#cb4-131" aria-hidden="true" tabindex="-1"></a>$$LR, W, LM, G \xrightarrow{d} \chi^2(s)$$</span>
+<span id="cb4-132"><a href="#cb4-132" aria-hidden="true" tabindex="-1"></a>No modelo linear clássico, verifica-se a ordenação numérica estrita:</span>
+<span id="cb4-133"><a href="#cb4-133" aria-hidden="true" tabindex="-1"></a>$$W \ge LR \ge LM$$</span>
+<span id="cb4-134"><a href="#cb4-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-135"><a href="#cb4-135" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb4-136"><a href="#cb4-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-137"><a href="#cb4-137" aria-hidden="true" tabindex="-1"></a><span class="fu">### Intuição Geométrica da Tríade de Verossimilhança (Buse, 1982)</span></span>
+<span id="cb4-138"><a href="#cb4-138" aria-hidden="true" tabindex="-1"></a>Adolf Buse <span class="co">[</span><span class="ot">@buse1982</span><span class="co">]</span> oferece uma elucidação geométrica definitiva para a relação entre Wald, Razão de Verossimilhanças e Escore de Rao na curva de log-verossimilhança:</span>
+<span id="cb4-139"><a href="#cb4-139" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>O teste de **Wald** mede a distância horizontal ao quadrado entre a estimativa irrestrita $\hat{\beta}$ e o valor hipotetizado $\beta_0$, ponderada pela curvatura no ponto irrestrito.</span>
+<span id="cb4-140"><a href="#cb4-140" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A **Razão de Verossimilhanças (LR)** mede a diferença vertical de altitude: $2<span class="co">[</span><span class="ot">\ell(\hat{\beta}) - \ell(\beta_0)</span><span class="co">]</span>$.</span>
+<span id="cb4-141"><a href="#cb4-141" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>O **Escore de Rao (LM)** avalia a inclinação (gradiente) da função no ponto sob a hipótese nula $\beta_0$: se $\beta_0$ estivesse próximo do verdadeiro máximo, a derivada da verossimilhança calculada nele deveria ser quase nula.</span>
+<span id="cb4-142"><a href="#cb4-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-143"><a href="#cb4-143" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb4-144"><a href="#cb4-144" aria-hidden="true" tabindex="-1"></a><span class="co"># Ilustração conceitual das estatísticas em Python</span></span>
+<span id="cb4-145"><a href="#cb4-145" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-146"><a href="#cb4-146" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> stats</span>
+<span id="cb4-147"><a href="#cb4-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-148"><a href="#cb4-148" aria-hidden="true" tabindex="-1"></a><span class="co"># Exemplo numérico de teste linear geral L * beta = c</span></span>
+<span id="cb4-149"><a href="#cb4-149" aria-hidden="true" tabindex="-1"></a><span class="co"># Supondo regressão com p = 3 (intercepto + 2 preditores)</span></span>
+<span id="cb4-150"><a href="#cb4-150" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb4-151"><a href="#cb4-151" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb4-152"><a href="#cb4-152" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">123</span>)</span>
+<span id="cb4-153"><a href="#cb4-153" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.column_stack([np.ones(n), np.random.normal(<span class="dv">10</span>, <span class="dv">2</span>, n), np.random.normal(<span class="dv">5</span>, <span class="dv">1</span>, n)])</span>
+<span id="cb4-154"><a href="#cb4-154" aria-hidden="true" tabindex="-1"></a>beta_real <span class="op">=</span> np.array([<span class="fl">2.0</span>, <span class="fl">1.5</span>, <span class="op">-</span><span class="fl">0.8</span>])</span>
+<span id="cb4-155"><a href="#cb4-155" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> X <span class="op">@</span> beta_real <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">1.2</span>, n)</span>
+<span id="cb4-156"><a href="#cb4-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-157"><a href="#cb4-157" aria-hidden="true" tabindex="-1"></a>XtX_inv <span class="op">=</span> np.linalg.inv(X.T <span class="op">@</span> X)</span>
+<span id="cb4-158"><a href="#cb4-158" aria-hidden="true" tabindex="-1"></a>beta_hat <span class="op">=</span> XtX_inv <span class="op">@</span> (X.T <span class="op">@</span> y)</span>
+<span id="cb4-159"><a href="#cb4-159" aria-hidden="true" tabindex="-1"></a>residuos <span class="op">=</span> y <span class="op">-</span> X <span class="op">@</span> beta_hat</span>
+<span id="cb4-160"><a href="#cb4-160" aria-hidden="true" tabindex="-1"></a>qm_res <span class="op">=</span> np.<span class="bu">sum</span>(residuos<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> (n <span class="op">-</span> p)</span>
+<span id="cb4-161"><a href="#cb4-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-162"><a href="#cb4-162" aria-hidden="true" tabindex="-1"></a><span class="co"># Testando se beta_1 = beta_2 (isto e, beta_1 - beta_2 = 0)</span></span>
+<span id="cb4-163"><a href="#cb4-163" aria-hidden="true" tabindex="-1"></a><span class="co"># L = [0, 1, -1], c = 0</span></span>
+<span id="cb4-164"><a href="#cb4-164" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> np.array([[<span class="dv">0</span>, <span class="dv">1</span>, <span class="op">-</span><span class="dv">1</span>]])</span>
+<span id="cb4-165"><a href="#cb4-165" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> np.array([<span class="dv">0</span>])</span>
+<span id="cb4-166"><a href="#cb4-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-167"><a href="#cb4-167" aria-hidden="true" tabindex="-1"></a>diff <span class="op">=</span> L <span class="op">@</span> beta_hat <span class="op">-</span> c</span>
+<span id="cb4-168"><a href="#cb4-168" aria-hidden="true" tabindex="-1"></a>variancia_L <span class="op">=</span> L <span class="op">@</span> XtX_inv <span class="op">@</span> L.T</span>
+<span id="cb4-169"><a href="#cb4-169" aria-hidden="true" tabindex="-1"></a>F_stat <span class="op">=</span> (diff.T <span class="op">@</span> np.linalg.inv(variancia_L) <span class="op">@</span> diff) <span class="op">/</span> (<span class="dv">1</span> <span class="op">*</span> qm_res)</span>
+<span id="cb4-170"><a href="#cb4-170" aria-hidden="true" tabindex="-1"></a>p_valor <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> stats.f.cdf(F_stat[<span class="dv">0</span>, <span class="dv">0</span>], <span class="dv">1</span>, n <span class="op">-</span> p)</span>
+<span id="cb4-171"><a href="#cb4-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-172"><a href="#cb4-172" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Estatística F: </span><span class="sc">{</span>F_stat[<span class="dv">0</span>, <span class="dv">0</span>]<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb4-173"><a href="#cb4-173" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Valor-p: </span><span class="sc">{</span>p_valor<span class="sc">:.4e}</span><span class="ss">"</span>)</span>
+<span id="cb4-174"><a href="#cb4-174" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-175"><a href="#cb4-175" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-176"><a href="#cb4-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-177"><a href="#cb4-177" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-178"><a href="#cb4-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-179"><a href="#cb4-179" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.3 Intervalos de Confiança Individuais e Conjuntos</span></span>
+<span id="cb4-180"><a href="#cb4-180" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-181"><a href="#cb4-181" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-182"><a href="#cb4-182" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb4-183"><a href="#cb4-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-184"><a href="#cb4-184" aria-hidden="true" tabindex="-1"></a><span class="fu">### Intervalo de Confiança para $\beta_m$</span></span>
+<span id="cb4-185"><a href="#cb4-185" aria-hidden="true" tabindex="-1"></a>A partir da distribuição $t$ da estatística de teste, o intervalo com coeficiente de confiança $1 - \alpha$ para o parâmetro $\beta_m$ é dado por:</span>
+<span id="cb4-186"><a href="#cb4-186" aria-hidden="true" tabindex="-1"></a>$$IC(\beta_m, \, 1 - \alpha) = \left<span class="co">[</span><span class="ot"> \hat{\beta}_m - t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot c_{mm}}, \;\; \hat{\beta}_m + t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot c_{mm}} \right</span><span class="co">]</span>$$</span>
+<span id="cb4-187"><a href="#cb4-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-188"><a href="#cb4-188" aria-hidden="true" tabindex="-1"></a><span class="fu">### Inferência sobre a Resposta Média ($\mu_h$)</span></span>
+<span id="cb4-189"><a href="#cb4-189" aria-hidden="true" tabindex="-1"></a>Considere um ponto fixo no espaço de covariáveis $x_h = (1, x_{h2}, \dots, x_{hp})^\top$. O valor esperado da resposta condicional nesse ponto é:</span>
+<span id="cb4-190"><a href="#cb4-190" aria-hidden="true" tabindex="-1"></a>$$\mu_h = \mathbb{E}(Y \mid x_h) = x_h^\top \beta$$</span>
+<span id="cb4-191"><a href="#cb4-191" aria-hidden="true" tabindex="-1"></a>O estimador pontual é:</span>
+<span id="cb4-192"><a href="#cb4-192" aria-hidden="true" tabindex="-1"></a>$$\hat{\mu}_h = x_h^\top \hat{\beta}$$</span>
+<span id="cb4-193"><a href="#cb4-193" aria-hidden="true" tabindex="-1"></a>Como $\hat{\mu}_h$ é combinação linear de $\hat{\beta}$:</span>
+<span id="cb4-194"><a href="#cb4-194" aria-hidden="true" tabindex="-1"></a>$$\mathbb{E}(\hat{\mu}_h) = x_h^\top \beta = \mu_h$$</span>
+<span id="cb4-195"><a href="#cb4-195" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(\hat{\mu}_h) = x_h^\top \mathrm{Var}(\hat{\beta}) x_h = \sigma^2 x_h^\top (X^\top X)^{-1} x_h$$</span>
+<span id="cb4-196"><a href="#cb4-196" aria-hidden="true" tabindex="-1"></a>O intervalo de confiança para a resposta média $\mu_h$ ao nível $1 - \alpha$ é:</span>
+<span id="cb4-197"><a href="#cb4-197" aria-hidden="true" tabindex="-1"></a>$$IC(\mu_h, \, 1 - \alpha) = \hat{\mu}_h \pm t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot x_h^\top (X^\top X)^{-1} x_h}$$</span>
+<span id="cb4-198"><a href="#cb4-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-199"><a href="#cb4-199" aria-hidden="true" tabindex="-1"></a><span class="fu">### Intervalo de Confiança para a Variância ($\sigma^2$)</span></span>
+<span id="cb4-200"><a href="#cb4-200" aria-hidden="true" tabindex="-1"></a>Como a estatística $\frac{(n - p)QMRes}{\sigma^2}$ segue distribuição Qui-quadrado com $n - p$ graus de liberdade:</span>
+<span id="cb4-201"><a href="#cb4-201" aria-hidden="true" tabindex="-1"></a>$$\frac{(n - p)QMRes}{\sigma^2} \sim \chi^2(n - p)$$</span>
+<span id="cb4-202"><a href="#cb4-202" aria-hidden="true" tabindex="-1"></a>O intervalo de confiança exato com nível $1 - \alpha$ para $\sigma^2$ é:</span>
+<span id="cb4-203"><a href="#cb4-203" aria-hidden="true" tabindex="-1"></a>$$IC(\sigma^2, \, 1 - \alpha) = \left<span class="co">[</span><span class="ot"> \frac{(n - p)QMRes}{\chi^2_{1 - \alpha/2, \, n - p}}, \;\; \frac{(n - p)QMRes}{\chi^2_{\alpha/2, \, n - p}} \right</span><span class="co">]</span>$$</span>
+<span id="cb4-204"><a href="#cb4-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-205"><a href="#cb4-205" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb4-206"><a href="#cb4-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-207"><a href="#cb4-207" aria-hidden="true" tabindex="-1"></a><span class="fu">### Inferência Simultânea: Por que não usar múltiplos ICs isolados?</span></span>
+<span id="cb4-208"><a href="#cb4-208" aria-hidden="true" tabindex="-1"></a>Se construirmos $g$ intervalos de confiança individuais, cada um ao nível de $95\%$, a taxa global de erro (*Family-Wise Error Rate - FWER*) não é $5\%$, mas pode atingir até:</span>
+<span id="cb4-209"><a href="#cb4-209" aria-hidden="true" tabindex="-1"></a>$$\alpha_{\text{global}} = 1 - (1 - \alpha)^g \xrightarrow{g = 5} 1 - (0{,}95)^5 \approx 22{,}6\%$$</span>
+<span id="cb4-210"><a href="#cb4-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-211"><a href="#cb4-211" aria-hidden="true" tabindex="-1"></a>Para controlar a taxa de erro simultânea, utilizam-se duas correções:</span>
+<span id="cb4-212"><a href="#cb4-212" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Procedimento de Bonferroni:** Substitui-se $\alpha$ por $\alpha / g$:</span>
+<span id="cb4-213"><a href="#cb4-213" aria-hidden="true" tabindex="-1"></a>   $$\hat{\beta}_m \pm t_{1 - \frac{\alpha}{2g}, \, n - p} \cdot \widehat{EP}(\hat{\beta}_m)$$</span>
+<span id="cb4-214"><a href="#cb4-214" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Procedimento de Scheffé / Elipsoide de Confiança:**</span>
+<span id="cb4-215"><a href="#cb4-215" aria-hidden="true" tabindex="-1"></a>   Gera intervalos válidos para todas as combinações lineares possíveis dos parâmetros simultaneamente, baseando-se no multiplicador $\sqrt{p \cdot \mathcal{F}_{1 - \alpha, \, p, \, n - p}}$.</span>
+<span id="cb4-216"><a href="#cb4-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-217"><a href="#cb4-217" aria-hidden="true" tabindex="-1"></a><span class="fu">### O Método Delta para Funções Não-Lineares de Parâmetros</span></span>
+<span id="cb4-218"><a href="#cb4-218" aria-hidden="true" tabindex="-1"></a>Quando há interesse em estimar uma função não-linear $\theta = g(\beta)$ (por exemplo, a razão de dois parâmetros $\beta_2 / \beta_1$ ou um ponto de máximo $-\beta_2 / (2\beta_3)$ em regressão polinomial), utiliza-se o **Método Delta** <span class="co">[</span><span class="ot">@dorfman1938</span><span class="co">]</span>:</span>
+<span id="cb4-219"><a href="#cb4-219" aria-hidden="true" tabindex="-1"></a>$$\widehat{\mathrm{Var}}(g(\hat{\beta})) \approx \nabla g(\hat{\beta})^\top \left<span class="co">[</span><span class="ot"> QMRes \cdot (X^\top X)^{-1} \right</span><span class="co">]</span> \nabla g(\hat{\beta})$$</span>
+<span id="cb4-220"><a href="#cb4-220" aria-hidden="true" tabindex="-1"></a>onde $\nabla g(\hat{\beta})$ é o vetor das derivadas parciais avaliadas nas estimativas de MQO.</span>
+<span id="cb4-221"><a href="#cb4-221" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-222"><a href="#cb4-222" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-223"><a href="#cb4-223" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-224"><a href="#cb4-224" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-225"><a href="#cb4-225" aria-hidden="true" tabindex="-1"></a><span class="fu">## 2.4 Predição de Novas Observações e Bandas de Confiança</span></span>
+<span id="cb4-226"><a href="#cb4-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-227"><a href="#cb4-227" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-228"><a href="#cb4-228" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb4-229"><a href="#cb4-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-230"><a href="#cb4-230" aria-hidden="true" tabindex="-1"></a><span class="fu">### Predição de Novas Observações</span></span>
+<span id="cb4-231"><a href="#cb4-231" aria-hidden="true" tabindex="-1"></a>Uma importante aplicação dos modelos de regressão é predizer uma nova observação da variável resposta $Y$ para um dado vetor de covariáveis $x_0 = (1, x_{02}, \dots, x_{0p})^\top$.</span>
+<span id="cb4-232"><a href="#cb4-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-233"><a href="#cb4-233" aria-hidden="true" tabindex="-1"></a>Considere a nova observação real a ser observada no futuro:</span>
+<span id="cb4-234"><a href="#cb4-234" aria-hidden="true" tabindex="-1"></a>$$Y_0 = x_0^\top \beta + \varepsilon_0$$</span>
+<span id="cb4-235"><a href="#cb4-235" aria-hidden="true" tabindex="-1"></a>em que $\varepsilon_0 \sim \mathcal{D}(0, \sigma^2)$ é independente de todos os erros amostrais anteriores $\varepsilon_1, \dots, \varepsilon_n$.</span>
+<span id="cb4-236"><a href="#cb4-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-237"><a href="#cb4-237" aria-hidden="true" tabindex="-1"></a>O estimador pontual para $Y_0$ coincide formalmente com a estimativa da média:</span>
+<span id="cb4-238"><a href="#cb4-238" aria-hidden="true" tabindex="-1"></a>$$\hat{Y}_0 = x_0^\top \hat{\beta}$$</span>
+<span id="cb4-239"><a href="#cb4-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-240"><a href="#cb4-240" aria-hidden="true" tabindex="-1"></a><span class="fu">### Erro de Predição e sua Variância</span></span>
+<span id="cb4-241"><a href="#cb4-241" aria-hidden="true" tabindex="-1"></a>Defina a variável aleatória erro de predição:</span>
+<span id="cb4-242"><a href="#cb4-242" aria-hidden="true" tabindex="-1"></a>$$e_{pred} = Y_0 - \hat{Y}_0$$</span>
+<span id="cb4-243"><a href="#cb4-243" aria-hidden="true" tabindex="-1"></a>A esperança matemática do erro de predição é nula:</span>
+<span id="cb4-244"><a href="#cb4-244" aria-hidden="true" tabindex="-1"></a>$$\mathbb{E}(e_{pred}) = \mathbb{E}(Y_0) - \mathbb{E}(\hat{Y}_0) = x_0^\top \beta - x_0^\top \beta = 0$$</span>
+<span id="cb4-245"><a href="#cb4-245" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-246"><a href="#cb4-246" aria-hidden="true" tabindex="-1"></a>Como a nova observação $Y_0$ é independente dos dados amostrais que geraram $\hat{\beta}$:</span>
+<span id="cb4-247"><a href="#cb4-247" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Cov}(Y_0, \hat{Y}_0) = 0$$</span>
+<span id="cb4-248"><a href="#cb4-248" aria-hidden="true" tabindex="-1"></a>Logo:</span>
+<span id="cb4-249"><a href="#cb4-249" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(e_{pred}) = \mathrm{Var}(Y_0 - \hat{Y}_0) = \mathrm{Var}(Y_0) + \mathrm{Var}(\hat{Y}_0)$$</span>
+<span id="cb4-250"><a href="#cb4-250" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(e_{pred}) = \sigma^2 + \sigma^2 x_0^\top (X^\top X)^{-1} x_0 = \sigma^2 \left<span class="co">[</span><span class="ot"> 1 + x_0^\top (X^\top X)^{-1} x_0 \right</span><span class="co">]</span>$$</span>
+<span id="cb4-251"><a href="#cb4-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-252"><a href="#cb4-252" aria-hidden="true" tabindex="-1"></a><span class="fu">### Intervalo de Predição (IP)</span></span>
+<span id="cb4-253"><a href="#cb4-253" aria-hidden="true" tabindex="-1"></a>Substituindo $\sigma^2$ por $QMRes$, o **Intervalo de Predição (IP)** com coeficiente de confiança $1 - \alpha$ para a nova observação $Y_0$ é:</span>
+<span id="cb4-254"><a href="#cb4-254" aria-hidden="true" tabindex="-1"></a>$$IP(Y_0, \, 1 - \alpha) = x_0^\top \hat{\beta} \pm t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \left<span class="co">[</span><span class="ot"> 1 + x_0^\top (X^\top X)^{-1} x_0 \right</span><span class="co">]</span>}$$</span>
+<span id="cb4-255"><a href="#cb4-255" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-256"><a href="#cb4-256" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb4-257"><a href="#cb4-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-258"><a href="#cb4-258" aria-hidden="true" tabindex="-1"></a><span class="fu">### Distinção Crítica: Banda de Confiança da Média vs Banda de Predição</span></span>
+<span id="cb4-259"><a href="#cb4-259" aria-hidden="true" tabindex="-1"></a>É fundamental para a prática estatística distinguir:</span>
+<span id="cb4-260"><a href="#cb4-260" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Intervalo de Confiança para a Média $\mathbb{E}(Y \mid x_0)$:**</span>
+<span id="cb4-261"><a href="#cb4-261" aria-hidden="true" tabindex="-1"></a>   Responde: *"Qual é o valor médio esperado de $Y$ para toda a população de indivíduos com características $x_0$?"*</span>
+<span id="cb4-262"><a href="#cb4-262" aria-hidden="true" tabindex="-1"></a>   $$\mathrm{Var}(\hat{\mu}_0) = \sigma^2 \left<span class="co">[</span><span class="ot"> x_0^\top (X^\top X)^{-1} x_0 \right</span><span class="co">]</span>$$</span>
+<span id="cb4-263"><a href="#cb4-263" aria-hidden="true" tabindex="-1"></a>   Quando o tamanho da amostra $n \to \infty$, essa variância **tende a zero**, pois estimamos a reta com precisão infinita.</span>
+<span id="cb4-264"><a href="#cb4-264" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Intervalo de Predição para um Indivíduo $Y_0$:**</span>
+<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a>   Responde: *"Em que intervalo cairá o valor de $Y$ de um indivíduo específico no futuro?"*</span>
+<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a>   $$\mathrm{Var}(Y_0 - \hat{Y}_0) = \sigma^2 + \sigma^2 \left<span class="co">[</span><span class="ot"> x_0^\top (X^\top X)^{-1} x_0 \right</span><span class="co">]</span>$$</span>
+<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a>   Mesmo se $n \to \infty$, a variância **nunca cai abaixo de $\sigma^2$**, devido ao erro estocástico inerente $\varepsilon_0$ da natureza (erro irredutível).</span>
+<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a>   Por consequência matemática invariável, o Intervalo de Predição é **sempre mais largo** que o Intervalo de Confiança para a média no mesmo ponto $x_0$.</span>
+<span id="cb4-270"><a href="#cb4-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-271"><a href="#cb4-271" aria-hidden="true" tabindex="-1"></a><span class="fu">### Ilustração Visual em R: Bandas Hiperbólicas de Confiança e Predição</span></span>
+<span id="cb4-272"><a href="#cb4-272" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-273"><a href="#cb4-273" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb4-274"><a href="#cb4-274" aria-hidden="true" tabindex="-1"></a><span class="co"># Comparacao grafica entre IC da Media e IP de Nova Observacao</span></span>
+<span id="cb4-275"><a href="#cb4-275" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb4-276"><a href="#cb4-276" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">40</span>, <span class="dv">10</span>, <span class="dv">30</span>)</span>
+<span id="cb4-277"><a href="#cb4-277" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">1.8</span> <span class="sc">*</span> x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">40</span>, <span class="dv">0</span>, <span class="dv">4</span>)</span>
+<span id="cb4-278"><a href="#cb4-278" aria-hidden="true" tabindex="-1"></a>dados <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)</span>
+<span id="cb4-279"><a href="#cb4-279" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-280"><a href="#cb4-280" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dados)</span>
+<span id="cb4-281"><a href="#cb4-281" aria-hidden="true" tabindex="-1"></a>grid_x <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">8</span>, <span class="dv">32</span>, <span class="at">length.out =</span> <span class="dv">200</span>))</span>
+<span id="cb4-282"><a href="#cb4-282" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-283"><a href="#cb4-283" aria-hidden="true" tabindex="-1"></a><span class="co"># Previsoes com intervalos</span></span>
+<span id="cb4-284"><a href="#cb4-284" aria-hidden="true" tabindex="-1"></a>pred_ic <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> grid_x, <span class="at">interval =</span> <span class="st">"confidence"</span>)</span>
+<span id="cb4-285"><a href="#cb4-285" aria-hidden="true" tabindex="-1"></a>pred_ip <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> grid_x, <span class="at">interval =</span> <span class="st">"prediction"</span>)</span>
+<span id="cb4-286"><a href="#cb4-286" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-287"><a href="#cb4-287" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico das bandas</span></span>
+<span id="cb4-288"><a href="#cb4-288" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(dados<span class="sc">$</span>x, dados<span class="sc">$</span>y, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"gray40"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">32</span>), <span class="at">ylim =</span> <span class="fu">range</span>(pred_ip),</span>
+<span id="cb4-289"><a href="#cb4-289" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Covariável X"</span>, <span class="at">ylab =</span> <span class="st">"Resposta Y"</span>, <span class="at">main =</span> <span class="st">"Banda de Confiança vs Banda de Predição"</span>)</span>
+<span id="cb4-290"><a href="#cb4-290" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mod, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb4-291"><a href="#cb4-291" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-292"><a href="#cb4-292" aria-hidden="true" tabindex="-1"></a><span class="co"># Banda de Confianca da Media (Mais estreita)</span></span>
+<span id="cb4-293"><a href="#cb4-293" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ic[, <span class="st">"lwr"</span>], <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.8</span>)</span>
+<span id="cb4-294"><a href="#cb4-294" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ic[, <span class="st">"upr"</span>], <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.8</span>)</span>
+<span id="cb4-295"><a href="#cb4-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-296"><a href="#cb4-296" aria-hidden="true" tabindex="-1"></a><span class="co"># Banda de Predicao Individual (Mais larga)</span></span>
+<span id="cb4-297"><a href="#cb4-297" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ip[, <span class="st">"lwr"</span>], <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb4-298"><a href="#cb4-298" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(grid_x<span class="sc">$</span>x, pred_ip[, <span class="st">"upr"</span>], <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lty =</span> <span class="dv">3</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb4-299"><a href="#cb4-299" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-300"><a href="#cb4-300" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Reta de Regressão"</span>, <span class="st">"IC da Média (95%)"</span>, <span class="st">"IP de Nova Observação (95%)"</span>),</span>
+<span id="cb4-301"><a href="#cb4-301" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"blue"</span>, <span class="st">"firebrick"</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">bty =</span> <span class="st">"n"</span>)</span>
+<span id="cb4-302"><a href="#cb4-302" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-303"><a href="#cb4-303" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>EST074 - Análise de Regressão (UFJF)</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Compilado com Quarto para GitHub Pages</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

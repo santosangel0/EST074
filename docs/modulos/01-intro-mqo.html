@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>1&nbsp; Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados – EST074 - Análise de Regressão</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../modulos/02-inferencia.html" rel="next">
+<link href="../index.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4b352893ee45d6aea91c5d81184de3a4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../modulos/01-intro-mqo.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">EST074 - Análise de Regressão</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Apresentação do Curso</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/01-intro-mqo.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/02-inferencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/03-diagnostico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/04-multivariada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#motivação-e-origem-da-análise-de-regressão" id="toc-motivação-e-origem-da-análise-de-regressão" class="nav-link active" data-scroll-target="#motivação-e-origem-da-análise-de-regressão"><span class="header-section-number">1.1</span> 1.1 Motivação e Origem da Análise de Regressão</a></li>
+  <li><a href="#o-modelo-de-regressão-linear-simples-e-aplicação-inicial" id="toc-o-modelo-de-regressão-linear-simples-e-aplicação-inicial" class="nav-link" data-scroll-target="#o-modelo-de-regressão-linear-simples-e-aplicação-inicial"><span class="header-section-number">1.2</span> 1.2 O Modelo de Regressão Linear Simples e Aplicação Inicial</a></li>
+  <li><a href="#álgebra-linear-aplicada-e-propriedades-dos-estimadores" id="toc-álgebra-linear-aplicada-e-propriedades-dos-estimadores" class="nav-link" data-scroll-target="#álgebra-linear-aplicada-e-propriedades-dos-estimadores"><span class="header-section-number">1.3</span> 1.3 Álgebra Linear Aplicada e Propriedades dos Estimadores</a></li>
+  <li><a href="#formulação-matricial-do-modelo-linear-e-suposições-clássicas" id="toc-formulação-matricial-do-modelo-linear-e-suposições-clássicas" class="nav-link" data-scroll-target="#formulação-matricial-do-modelo-linear-e-suposições-clássicas"><span class="header-section-number">1.4</span> 1.4 Formulação Matricial do Modelo Linear e Suposições Clássicas</a></li>
+  <li><a href="#estimação-matricial-por-mínimos-quadrados-e-máxima-verossimilhança" id="toc-estimação-matricial-por-mínimos-quadrados-e-máxima-verossimilhança" class="nav-link" data-scroll-target="#estimação-matricial-por-mínimos-quadrados-e-máxima-verossimilhança"><span class="header-section-number">1.5</span> 1.5 Estimação Matricial por Mínimos Quadrados e Máxima Verossimilhança</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Este módulo compreende as notas e transcrições dos tópicos iniciais da disciplina EST074 (slides <strong>p01</strong>, <strong>p02</strong>, <strong>p03</strong> e <strong>p04</strong>), cobrindo a evolução conceitual da análise de regressão, ferramentas matriciais essenciais, definição formal do modelo linear clássico, suposições de Gauss-Markov e a teoria da estimação por Mínimos Quadrados Ordinários (MQO) e Máxima Verossimilhança (MV).</p>
+<hr>
+<section id="motivação-e-origem-da-análise-de-regressão" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="motivação-e-origem-da-análise-de-regressão"><span class="header-section-number">1.1</span> 1.1 Motivação e Origem da Análise de Regressão</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<section id="motivação" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="motivação"><span class="header-section-number">1.1.1</span> Motivação</h3>
+<p>Os primeiros conceitos de regressão foram propostos por Galton (1889), aplicados na Antropometria, em que o objetivo era equacionar as relações de dependência entre a altura dos pais (variável explicativa, variável preditora ou covariável) e a altura dos filhos (variável de interesse, variável resposta ou desfecho).</p>
+<p>Porém, esses conceitos puderam ser aplicados em qualquer contexto, como: - Na necessidade de uma empresa em analisar os fatores que podem interferir nas vendas; - Na predição de mortalidade de uma pessoa ao contrair uma doença, baseada nas suas características, como idade e doenças pré-existentes; - Caracterização de um cliente em bom ou mau pagador, baseada no máximo de dias de atraso nos últimos 6 meses, se fez ou não saque no cartão e no tempo que o cliente tem o cartão; - Distância de uma galáxia até a Terra, baseada no valor dos tons de cinza de cada pixel de uma foto da galáxia em observação.</p>
+<p>A análise de regressão é uma técnica estatística para investigar e modelar a relação entre as variáveis. Na verdade, a análise de regressão pode ser a técnica estatística mais utilizada (Montgomery et al., 2021).</p>
+<p>Os modelos de regressão ganharam ainda mais notoriedade com a popularização do Aprendizado de Máquina (<em>machine learning</em>), especificamente no Aprendizado Supervisionado (<em>supervised learning</em>), em que o foco é preditivo, isto é, a partir de valores de entrada (covariáveis), se deseja prever o resultado esperado (variável resposta).</p>
+</section>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<section id="contexto-histórico-e-o-fenômeno-da-regressão-à-média" class="level3" data-number="1.1.2">
+<h3 data-number="1.1.2" class="anchored" data-anchor-id="contexto-histórico-e-o-fenômeno-da-regressão-à-média"><span class="header-section-number">1.1.2</span> Contexto Histórico e o Fenômeno da “Regressão à Média”</h3>
+<p>O termo “regressão” tem origem histórica curiosa: Francis Galton <span class="citation" data-cites="galton1889">(<a href="#ref-galton1889" role="doc-biblioref">Galton 1889</a>)</span>, estudando hereditariedade biológica, observou que pais com estatura excepcionalmente alta tendiam a ter filhos que, em média, eram ligeiramente mais baixos que eles (mais próximos da média da população geral), enquanto pais muito baixos geravam filhos ligeiramente mais altos que eles. Galton denominou essa dinâmica de <em>“regression towards mediocrity”</em> (regressão em direção à mediocridade/média).</p>
+<p>Hoje, na teoria estatística contemporânea <span class="citation" data-cites="montgomery2021 kutner2005">(<a href="#ref-montgomery2021" role="doc-biblioref">Montgomery, Peck, and Vining 2021</a>; <a href="#ref-kutner2005" role="doc-biblioref">Kutner et al. 2005</a>)</span>, o termo designa o estudo da <strong>distribuição condicional</strong> da variável resposta <span class="math inline">\(Y\)</span> dado o conhecimento das variáveis explicativas <span class="math inline">\(X\)</span>, ou seja, a modelagem da esperança condicional: <span class="math display">\[\mu(x) = \mathbb{E}[Y \mid X = x]\]</span></p>
+</section>
+<section id="diferenciação-entre-causalidade-e-associação-estatística" class="level3" data-number="1.1.3">
+<h3 data-number="1.1.3" class="anchored" data-anchor-id="diferenciação-entre-causalidade-e-associação-estatística"><span class="header-section-number">1.1.3</span> Diferenciação entre Causalidade e Associação Estatística</h3>
+<p>Um modelo de regressão descreve <strong>associação matemática</strong> e covariabilidade condicional, não necessariamente causalidade intrínseca. Para atribuir causalidade a um coeficiente estimado <span class="math inline">\(\hat{\beta}_j\)</span>, é obrigatório que o mecanismo gerador de dados derive de um experimento controlado aleatorizado (<em>Randomized Controlled Trial - RCT</em>) ou que se adotem hipóteses estritas de identificação causal e controle de variáveis de confusão (DAGs / Equações Estruturais).</p>
+</section>
+<section id="simulação-em-r-o-fenômeno-de-galton" class="level3" data-number="1.1.4">
+<h3 data-number="1.1.4" class="anchored" data-anchor-id="simulação-em-r-o-fenômeno-de-galton"><span class="header-section-number">1.1.4</span> Simulação em R: O Fenômeno de Galton</h3>
+<p>O código abaixo reproduz em R a dispersão bivariada com a reta de regressão e a linha diagonal de identidade <span class="math inline">\(Y = X\)</span>, ilustrando o fenômeno de regressão em direção à média populacional:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulação do fenômeno de regressão à média (Galton)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>altura_pais <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">175</span>, <span class="at">sd =</span> <span class="dv">8</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Filhos herdam parte da estatura mais um componente aleatório ambiental</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>altura_filhos <span class="ot">&lt;-</span> <span class="dv">175</span> <span class="sc">+</span> <span class="fl">0.55</span> <span class="sc">*</span> (altura_pais <span class="sc">-</span> <span class="dv">175</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>df_galton <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">pais =</span> altura_pais, <span class="at">filhos =</span> altura_filhos)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(filhos <span class="sc">~</span> pais, <span class="at">data =</span> df_galton)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualização gráfica</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df_galton<span class="sc">$</span>pais, df_galton<span class="sc">$</span>filhos, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">rgb</span>(<span class="fl">0.1</span>, <span class="fl">0.4</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Altura dos Pais (cm)"</span>, <span class="at">ylab =</span> <span class="st">"Altura dos Filhos (cm)"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Fenômeno da Regressão à Média (Galton, 1889)"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mod, <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>) <span class="co"># Reta de regressão (declive ~ 0.55)</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a =</span> <span class="dv">0</span>, <span class="at">b =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"darkgray"</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.8</span>) <span class="co"># Linha Y = X</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">175</span>, <span class="at">h =</span> <span class="dv">175</span>, <span class="at">col =</span> <span class="st">"gray80"</span>, <span class="at">lty =</span> <span class="dv">3</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Reta de Regressão"</span>, <span class="st">"Identidade (Y = X)"</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"firebrick"</span>, <span class="st">"darkgray"</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">bty =</span> <span class="st">"n"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Equivalente em Python usando statsmodels e matplotlib</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.normal(<span class="dv">175</span>, <span class="dv">8</span>, n)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">175</span> <span class="op">+</span> <span class="fl">0.55</span> <span class="op">*</span> (x <span class="op">-</span> <span class="dv">175</span>) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">6</span>, n)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>X_const <span class="op">=</span> sm.add_constant(x)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> sm.OLS(y, X_const).fit()</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>plt.scatter(x, y, alpha<span class="op">=</span><span class="fl">0.6</span>, color<span class="op">=</span><span class="st">"#1f77b4"</span>, edgecolors<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>plt.plot(x, model.predict(X_const), color<span class="op">=</span><span class="st">"crimson"</span>, lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="ss">f"Regressão: $</span><span class="ch">\\</span><span class="ss">hat</span><span class="ch">{{</span><span class="ss">Y</span><span class="ch">}}</span><span class="ss"> = </span><span class="sc">{</span>model<span class="sc">.</span>params[<span class="dv">0</span>]<span class="sc">:.1f}</span><span class="ss"> + </span><span class="sc">{</span>model<span class="sc">.</span>params[<span class="dv">1</span>]<span class="sc">:.2f}</span><span class="ss">X$"</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>plt.plot([<span class="dv">150</span>, <span class="dv">200</span>], [<span class="dv">150</span>, <span class="dv">200</span>], <span class="st">"k--"</span>, lw<span class="op">=</span><span class="fl">1.5</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">"Diagonal Y = X"</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Altura dos Pais (cm)"</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Altura dos Filhos (cm)"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Regressão em Direção à Média"</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">":"</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="o-modelo-de-regressão-linear-simples-e-aplicação-inicial" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="o-modelo-de-regressão-linear-simples-e-aplicação-inicial"><span class="header-section-number">1.2</span> 1.2 O Modelo de Regressão Linear Simples e Aplicação Inicial</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<section id="modelo-de-regressão-linear-simples" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="modelo-de-regressão-linear-simples"><span class="header-section-number">1.2.1</span> Modelo de Regressão Linear Simples</h3>
+<p>Como nós vimos, existem fenômenos (variável resposta, <span class="math inline">\(Y\)</span>) que podem ser descritos por uma variável preditora (<span class="math inline">\(x\)</span>), isto é feito da seguinte forma: <span class="math display">\[Y \sim \mathcal{D}(\mu, \sigma^2)\]</span> em que <span class="math inline">\(\mu = \beta_1 + \beta_2 x\)</span> e <span class="math inline">\(\sigma^2\)</span> são, respectivamente, a média e variância da distribuição de <span class="math inline">\(Y\)</span>, <span class="math inline">\(x\)</span> é um valor conhecido, <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span> e <span class="math inline">\(\sigma^2\)</span> são parâmetros desconhecidos. Além disso, <span class="math inline">\(\beta_1\)</span> e <span class="math inline">\(\beta_2\)</span> são chamados de coeficientes de regressão.</p>
+<p>É conveniente escrever a relação entre as variáveis resposta e preditora da seguinte forma: <span class="math display">\[Y = \beta_1 + \beta_2 x + \varepsilon\]</span> em que <span class="math inline">\(\varepsilon \sim \mathcal{D}(0, \sigma^2)\)</span>, sendo <span class="math inline">\(\varepsilon\)</span> denominado de erro. <em>Observação:</em> essa formatação é sempre possível nas famílias de locação-escala.</p>
+</section>
+<section id="interpretação-dos-parâmetros-do-modelo" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="interpretação-dos-parâmetros-do-modelo"><span class="header-section-number">1.2.2</span> Interpretação dos Parâmetros do Modelo</h3>
+<ul>
+<li><strong>Parâmetro <span class="math inline">\(\beta_1\)</span>:</strong> Ele é o intercepto da reta de regressão. Ele é o valor esperado da variável resposta quando a variável preditora vale zero.</li>
+<li><strong>Parâmetro <span class="math inline">\(\beta_2\)</span>:</strong> Ele é o declive da reta de regressão, o coeficiente angular. Ele indica o acréscimo esperado na variável resposta quando aumenta-se uma unidade na variável preditora.</li>
+</ul>
+</section>
+<section id="amostra-e-estimação-escalar" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="amostra-e-estimação-escalar"><span class="header-section-number">1.2.3</span> Amostra e Estimação Escalar</h3>
+<p>A fim de estimar <span class="math inline">\(\beta_1\)</span>, <span class="math inline">\(\beta_2\)</span> e <span class="math inline">\(\sigma^2\)</span>, e explicitar a relação entre as variáveis, é necessário retirar uma amostra independente de tamanho <span class="math inline">\(n\)</span> do par <span class="math inline">\((Y, x)\)</span>, i.e., <span class="math inline">\((Y_1, x_1), (Y_2, x_2), \dots, (Y_n, x_n)\)</span>, com <span class="math display">\[Y_\ell \sim \mathcal{D}(\mu_\ell, \sigma^2), \quad \text{em que } \mu_\ell = \beta_1 + \beta_2 x_\ell, \quad \ell = 1, 2, \dots, n\]</span> De forma alternativa: <span class="math display">\[Y_\ell = \beta_1 + \beta_2 x_\ell + \varepsilon_\ell, \quad \text{com } \varepsilon_\ell \sim \mathcal{D}(0, \sigma^2), \quad \ell = 1, 2, \dots, n\]</span> Em outras palavras, <span class="math inline">\(\varepsilon_1, \varepsilon_2, \dots, \varepsilon_n\)</span> são variáveis aleatórias independentes e com a mesma variância <span class="math inline">\(\sigma^2\)</span>.</p>
+</section>
+<section id="suposições" class="level3" data-number="1.2.4">
+<h3 data-number="1.2.4" class="anchored" data-anchor-id="suposições"><span class="header-section-number">1.2.4</span> Suposições</h3>
+<p>Resumindo, as suposições de um modelo de regressão linear simples são de que: 1. A relação entre as variáveis resposta e as preditoras é linear; 2. Os erros têm média zero; 3. Variância constante (<span class="math inline">\(\sigma^2\)</span>); 4. E são não correlacionados.</p>
+</section>
+<section id="estimadores-de-mínimos-quadrados" class="level3" data-number="1.2.5">
+<h3 data-number="1.2.5" class="anchored" data-anchor-id="estimadores-de-mínimos-quadrados"><span class="header-section-number">1.2.5</span> Estimadores de Mínimos Quadrados</h3>
+<p>Pelo Método de Mínimos Quadrados, os estimadores de <span class="math inline">\(\beta_1\)</span> e <span class="math inline">\(\beta_2\)</span> são dados, respectivamente, por: <span class="math display">\[\hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X} \quad \text{e} \quad \hat{\beta}_2 = \frac{\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^n (X_i - \bar{X})^2} \tag{1}\]</span> Os estimadores de mínimos quadrados são não viesados.</p>
+<p>O estimador da variância <span class="math inline">\(\sigma^2\)</span> é dado por: <span class="math display">\[\hat{\sigma}^2 = \frac{\sum_{\ell=1}^n (Y_\ell - \hat{\beta}_1 - \hat{\beta}_2 X_\ell)^2}{n - 2} \tag{2}\]</span> O estimador <span class="math inline">\(\hat{\sigma}^2\)</span>, dado em (2), também é denominado de <strong>quadrado médio do resíduo</strong> (<span class="math inline">\(QMRes\)</span>) e ele é um estimador não viciado para <span class="math inline">\(\sigma^2\)</span>.</p>
+</section>
+<section id="aplicação-brasileirão-pontos-corridos" class="level3" data-number="1.2.6">
+<h3 data-number="1.2.6" class="anchored" data-anchor-id="aplicação-brasileirão-pontos-corridos"><span class="header-section-number">1.2.6</span> Aplicação: Brasileirão (Pontos Corridos)</h3>
+<p>O campeonato brasileiro de futebol masculino, o Brasileirão, tem sido disputado no sistema de pontos corridos desde 2003. Avalia-se se existe uma relação linear entre o aproveitamento de pontos (%) e o saldo de gols dos times campeões.</p>
+<p>Após o ajuste (estimação dos parâmetros), utilizando (1) e (2), obtém-se o modelo estimado: <span class="math display">\[\hat{Y}_\ell = 57{,}2 + 0{,}3 x_{\ell 2}\]</span> em que <span class="math inline">\(\hat{Y}_\ell\)</span>: aproveitamento de pontos (%) esperado do <span class="math inline">\(\ell\)</span>-ésimo time campeão, <span class="math inline">\(x_{\ell 2}\)</span>: saldo de gols do <span class="math inline">\(\ell\)</span>-ésimo time campeão, <span class="math inline">\(\ell = 1, 2, \dots, 23\)</span> e <span class="math inline">\(QMRes = 11{,}9\)</span>.</p>
+<ul>
+<li><span class="math inline">\(\hat{\beta}_1 = 57{,}2\)</span>: se o saldo de gols fosse zero, o aproveitamento médio de pontos do time campeão seria de <span class="math inline">\(57{,}2\%\)</span>.</li>
+<li><span class="math inline">\(\hat{\beta}_2 = 0{,}3\)</span>: a cada um gol a mais no saldo, ocorreria um aumento médio de <span class="math inline">\(0{,}3\)</span> ponto percentual no aproveitamento do time campeão.</li>
+</ul>
+</section>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<section id="dedução-analítica-dos-estimadores-escalares-de-mqo" class="level3" data-number="1.2.7">
+<h3 data-number="1.2.7" class="anchored" data-anchor-id="dedução-analítica-dos-estimadores-escalares-de-mqo"><span class="header-section-number">1.2.7</span> Dedução Analítica dos Estimadores Escalares de MQO</h3>
+<p>O objetivo do Método dos Mínimos Quadrados Ordinários é encontrar a reta que minimiza a soma dos quadrados das distâncias verticais (erros) entre os pontos observados e a reta candidata: <span class="math display">\[S(\beta_1, \beta_2) = \sum_{i=1}^n \varepsilon_i^2 = \sum_{i=1}^n (Y_i - \beta_1 - \beta_2 X_i)^2\]</span></p>
+<p>Para minimizar uma função convexa sem restrições, calculamos as derivadas parciais e igualamos a zero:</p>
+<ol type="1">
+<li><p>Derivada em relação a <span class="math inline">\(\beta_1\)</span>: <span class="math display">\[\frac{\partial S}{\partial \beta_1} = -2 \sum_{i=1}^n (Y_i - \beta_1 - \beta_2 X_i) = 0 \implies \sum_{i=1}^n Y_i - n\beta_1 - \beta_2 \sum_{i=1}^n X_i = 0\]</span> Dividindo toda a expressão por <span class="math inline">\(n\)</span>: <span class="math display">\[\bar{Y} - \beta_1 - \beta_2 \bar{X} = 0 \implies \hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X}\]</span> <em>Conclusão geométrica fundamental:</em> A reta de regressão por MQO <strong>sempre passa pelo centro de gravidade dos dados</strong> <span class="math inline">\((\bar{X}, \bar{Y})\)</span>.</p></li>
+<li><p>Derivada em relação a <span class="math inline">\(\beta_2\)</span>: <span class="math display">\[\frac{\partial S}{\partial \beta_2} = -2 \sum_{i=1}^n X_i (Y_i - \beta_1 - \beta_2 X_i) = 0 \implies \sum_{i=1}^n X_i Y_i - \beta_1 \sum_{i=1}^n X_i - \beta_2 \sum_{i=1}^n X_i^2 = 0\]</span> Substituindo <span class="math inline">\(\hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X}\)</span>: <span class="math display">\[\sum_{i=1}^n X_i Y_i - (\bar{Y} - \hat{\beta}_2 \bar{X})(n\bar{X}) - \hat{\beta}_2 \sum_{i=1}^n X_i^2 = 0\]</span> <span class="math display">\[\sum_{i=1}^n X_i Y_i - n\bar{X}\bar{Y} = \hat{\beta}_2 \left( \sum_{i=1}^n X_i^2 - n\bar{X}^2 \right)\]</span> Lembrando das identidades de somas de produtos cruzados (<span class="math inline">\(S_{XY}\)</span>) e somas de quadrados (<span class="math inline">\(S_{XX}\)</span>): <span class="math display">\[\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y}) = \sum_{i=1}^n X_i Y_i - n\bar{X}\bar{Y} = S_{XY}\]</span> <span class="math display">\[\sum_{i=1}^n (X_i - \bar{X})^2 = \sum_{i=1}^n X_i^2 - n\bar{X}^2 = S_{XX}\]</span> Portanto: <span class="math display">\[\hat{\beta}_2 = \frac{S_{XY}}{S_{XX}} = \frac{\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^n (X_i - \bar{X})^2}\]</span></p></li>
+</ol>
+</section>
+<section id="graus-de-liberdade-do-estimador-hatsigma2" class="level3" data-number="1.2.8">
+<h3 data-number="1.2.8" class="anchored" data-anchor-id="graus-de-liberdade-do-estimador-hatsigma2"><span class="header-section-number">1.2.8</span> Graus de Liberdade do Estimador <span class="math inline">\(\hat{\sigma}^2\)</span></h3>
+<p>Por que o denominador em <span class="math inline">\(\hat{\sigma}^2\)</span> é <span class="math inline">\(n - 2\)</span>? Ao estimar a variância dos resíduos, temos <span class="math inline">\(n\)</span> observações iniciais. No entanto, o cálculo dos resíduos <span class="math inline">\(e_i = Y_i - \hat{\beta}_1 - \hat{\beta}_2 X_i\)</span> impõe duas restrições lineares estritas advindas das equações normais: 1. <span class="math inline">\(\sum_{i=1}^n e_i = 0\)</span> 2. <span class="math inline">\(\sum_{i=1}^n X_i e_i = 0\)</span></p>
+<p>Isso consome exatamente <span class="math inline">\(2\)</span> graus de liberdade. Logo, a soma dos quadrados dos resíduos tem distribuição proporcional a uma <span class="math inline">\(\chi^2\)</span> com <span class="math inline">\(n - 2\)</span> graus de liberdade, fazendo com que dividir por <span class="math inline">\(n - 2\)</span> torne o estimador estritamente <strong>não viciado</strong>: <span class="math inline">\(\mathbb{E}[QMRes] = \sigma^2\)</span>.</p>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="álgebra-linear-aplicada-e-propriedades-dos-estimadores" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="álgebra-linear-aplicada-e-propriedades-dos-estimadores"><span class="header-section-number">1.3</span> 1.3 Álgebra Linear Aplicada e Propriedades dos Estimadores</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<section id="resultados-matriciais" class="level3" data-number="1.3.1">
+<h3 data-number="1.3.1" class="anchored" data-anchor-id="resultados-matriciais"><span class="header-section-number">1.3.1</span> Resultados Matriciais</h3>
+<ul>
+<li>A soma das raízes características (autovalores) de <span class="math inline">\(A\)</span> é o traço de <span class="math inline">\(A\)</span>, <span class="math inline">\(\mathrm{tr}(A) = \sum \lambda_i\)</span>.</li>
+<li>Se o posto de <span class="math inline">\(A\)</span> é igual a <span class="math inline">\(r\)</span>, <span class="math inline">\(r(A) = r\)</span>, o autovalor zero é raiz da equação característica com multiplicidade <span class="math inline">\(n - r\)</span>.</li>
+</ul>
+</section>
+<section id="formas-quadráticas" class="level3" data-number="1.3.2">
+<h3 data-number="1.3.2" class="anchored" data-anchor-id="formas-quadráticas"><span class="header-section-number">1.3.2</span> Formas Quadráticas</h3>
+<p>A função <span class="math inline">\(f(x_1, \dots, x_n)\)</span> de <span class="math inline">\(n\)</span> variáveis reais é uma forma quadrática se: <span class="math display">\[f(x_1, \dots, x_n) = \sum_{i=1}^n \sum_{j=1}^n a_{ij} x_i x_j = x^\top A x\]</span> em que <span class="math inline">\(x = (x_1, \dots, x_n)^\top\)</span> e <span class="math inline">\(A = (a_{ij})\)</span> é uma matriz simétrica <span class="math inline">\(n \times n\)</span>, denominada matriz da forma quadrática.</p>
+<p><strong>Classificação:</strong> 1. <span class="math inline">\(x^\top A x\)</span> é <strong>positiva definida</strong> se <span class="math inline">\(x^\top A x &gt; 0\)</span>, para todo <span class="math inline">\(x \neq 0\)</span>; 2. <span class="math inline">\(x^\top A x\)</span> é <strong>positiva semidefinida</strong> se <span class="math inline">\(x^\top A x \ge 0\)</span>, para pelo menos um <span class="math inline">\(x \neq 0\)</span>; 3. <span class="math inline">\(A\)</span> é dita <strong>não negativa</strong> se for positiva definida ou positiva semidefinida; 4. <span class="math inline">\(x^\top A x\)</span> é <strong>negativa definida</strong> se <span class="math inline">\(-x^\top A x\)</span> é positiva definida.</p>
+<p><strong>Exemplo (Matriz de Covariâncias):</strong> Seja <span class="math inline">\(X\)</span> um vetor aleatório <span class="math inline">\(n\)</span>-dimensional com matriz de covariâncias <span class="math inline">\(\Sigma\)</span>. Se <span class="math inline">\(a\)</span> é um vetor não aleatório: <span class="math display">\[\mathrm{Var}(a^\top X) = a^\top \Sigma a \ge 0, \quad \forall a \neq 0\]</span> Logo, <span class="math inline">\(\Sigma\)</span> é não negativa definida. A matriz <span class="math inline">\(\Sigma\)</span> será estritamente positiva definida se e somente se não existirem relações lineares exatas entre as variáveis aleatórias.</p>
+</section>
+<section id="teoremas-fundamentais-graybill-1983" class="level3" data-number="1.3.3">
+<h3 data-number="1.3.3" class="anchored" data-anchor-id="teoremas-fundamentais-graybill-1983"><span class="header-section-number">1.3.3</span> Teoremas Fundamentais (Graybill, 1983)</h3>
+<ul>
+<li><strong>Teorema 1:</strong> Se <span class="math inline">\(A_{n \times n}\)</span> é positiva semidefinida, então <span class="math inline">\(r(A) &lt; n\)</span>, <span class="math inline">\(a_{ii} \ge 0\)</span>, e se <span class="math inline">\(a_{jj} = 0\)</span>, todos os elementos da <span class="math inline">\(j\)</span>-ésima linha e coluna são zero. Para qualquer <span class="math inline">\(P\)</span>, <span class="math inline">\(P^\top A P\)</span> é positiva semidefinida.</li>
+<li><strong>Teorema 2:</strong> Se <span class="math inline">\(A_{n \times n}\)</span> é positiva definida, então <span class="math inline">\(r(A) = n\)</span>, <span class="math inline">\(a_{ii} &gt; 0\)</span>, e <span class="math inline">\(P^\top A P\)</span> é positiva definida para qualquer <span class="math inline">\(P\)</span> não singular.</li>
+<li><strong>Critério de Sylvester:</strong> <span class="math inline">\(A\)</span> é positiva definida se e somente se todos os menores principais líderes forem positivos: <span class="math display">\[a_{11} &gt; 0, \quad \det \begin{pmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22} \end{pmatrix} &gt; 0, \quad \dots, \quad \det(A) &gt; 0\]</span></li>
+</ul>
+</section>
+<section id="derivadas-matriciais" class="level3" data-number="1.3.4">
+<h3 data-number="1.3.4" class="anchored" data-anchor-id="derivadas-matriciais"><span class="header-section-number">1.3.4</span> Derivadas Matriciais</h3>
+<p>Seja <span class="math inline">\(x = (x_1, \dots, x_n)^\top\)</span> e <span class="math inline">\(f(x)\)</span> uma função real. A derivada de <span class="math inline">\(f(x)\)</span> em relação ao vetor <span class="math inline">\(x\)</span> é o vetor gradiente: <span class="math display">\[\frac{\partial f(x)}{\partial x} = \begin{pmatrix} \frac{\partial f(x)}{\partial x_1} &amp; \dots &amp; \frac{\partial f(x)}{\partial x_n} \end{pmatrix}^\top\]</span></p>
+<ul>
+<li><strong>Teorema 1:</strong> Se <span class="math inline">\(a\)</span> é um vetor de constantes e <span class="math inline">\(f(x) = a^\top x = x^\top a\)</span>, então: <span class="math display">\[\frac{\partial (a^\top x)}{\partial x} = a\]</span></li>
+<li><strong>Teorema 2:</strong> Se <span class="math inline">\(f(x) = x^\top A x\)</span>, com <span class="math inline">\(A\)</span> simétrica de constantes, então: <span class="math display">\[\frac{\partial (x^\top A x)}{\partial x} = 2Ax\]</span></li>
+</ul>
+</section>
+<section id="decomposições-matriciais" class="level3" data-number="1.3.5">
+<h3 data-number="1.3.5" class="anchored" data-anchor-id="decomposições-matriciais"><span class="header-section-number">1.3.5</span> Decomposições Matriciais</h3>
+<ul>
+<li><strong>Fatoração <span class="math inline">\(LDL^\top\)</span>:</strong> Matriz simétrica <span class="math inline">\(A = LDL^\top\)</span> (<span class="math inline">\(L\)</span> triangular inferior com 1s na diagonal, <span class="math inline">\(D\)</span> diagonal).</li>
+<li><strong>Decomposição de Cholesky:</strong> Matriz <span class="math inline">\(A\)</span> simétrica e positiva definida fatora de forma única em <span class="math inline">\(A = T^\top T\)</span> (onde <span class="math inline">\(T\)</span> é triangular superior com <span class="math inline">\(t_{ii} &gt; 0\)</span>), ou equivalentemente <span class="math inline">\(A = W W^\top\)</span>.</li>
+<li><strong>Decomposição Espectral:</strong> Qualquer matriz simétrica <span class="math inline">\(A_{p \times p}\)</span> decompõe-se como: <span class="math display">\[A = \Gamma D \Gamma^\top = \sum_{i=1}^p \lambda_i x_i x_i^\top\]</span> em que <span class="math inline">\(D = \mathrm{diag}(\lambda_1, \dots, \lambda_p)\)</span> e <span class="math inline">\(\Gamma = (x_1, \dots, x_p)\)</span> é matriz ortogonal formada pelos autovetores normalizados (<span class="math inline">\(x_i^\top x_i = 1\)</span> e <span class="math inline">\(x_i^\top x_j = 0\)</span> para <span class="math inline">\(i \neq j\)</span>).</li>
+</ul>
+</section>
+<section id="propriedades-teóricas-dos-estimadores" class="level3" data-number="1.3.6">
+<h3 data-number="1.3.6" class="anchored" data-anchor-id="propriedades-teóricas-dos-estimadores"><span class="header-section-number">1.3.6</span> Propriedades Teóricas dos Estimadores</h3>
+<ul>
+<li><strong>Não viciado:</strong> <span class="math inline">\(\mathbb{E}(\hat{\theta}) = \theta\)</span>.</li>
+<li><strong>Consistente:</strong> <span class="math inline">\(\lim_{n \to \infty} P(|\hat{\theta} - \theta| \ge \varepsilon) = 0, \forall \varepsilon &gt; 0\)</span>.</li>
+<li><strong>Suficiente:</strong> A distribuição condicional dos dados dado <span class="math inline">\(\hat{\theta}\)</span> independe de <span class="math inline">\(\theta\)</span>.</li>
+<li><strong>Mínima Variância:</strong> Para qualquer outro estimador <span class="math inline">\(\theta^*\)</span>, <span class="math inline">\(\mathrm{Var}(\hat{\theta}) \le \mathrm{Var}(\theta^*)\)</span>.</li>
+</ul>
+</section>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<section id="demonstração-das-derivadas-vetoriais" class="level3" data-number="1.3.7">
+<h3 data-number="1.3.7" class="anchored" data-anchor-id="demonstração-das-derivadas-vetoriais"><span class="header-section-number">1.3.7</span> Demonstração das Derivadas Vetoriais</h3>
+<p>A álgebra matricial simplifica drasticamente a inferência em regressão múltipla. Vamos demonstrar os dois teoremas de derivação elemento por elemento:</p>
+<ol type="1">
+<li><p><strong>Derivada da forma linear:</strong> <span class="math display">\[a^\top x = \sum_{j=1}^n a_j x_j \implies \frac{\partial}{\partial x_k}\left(\sum_{j=1}^n a_j x_j\right) = a_k\]</span> Reunindo todos os <span class="math inline">\(k = 1, \dots, n\)</span> no vetor coluna, obtemos diretamente: <span class="math display">\[\frac{\partial (a^\top x)}{\partial x} = a\]</span></p></li>
+<li><p><strong>Derivada da forma quadrática:</strong> <span class="math display">\[x^\top A x = \sum_{i=1}^n \sum_{j=1}^n a_{ij} x_i x_j = a_{kk} x_k^2 + x_k \sum_{j \neq k} a_{kj} x_j + x_k \sum_{i \neq k} a_{ik} x_i + \sum_{i \neq k}\sum_{j \neq k} a_{ij} x_i x_j\]</span> Derivando em relação a <span class="math inline">\(x_k\)</span>: <span class="math display">\[\frac{\partial (x^\top A x)}{\partial x_k} = 2 a_{kk} x_k + \sum_{j \neq k} a_{kj} x_j + \sum_{i \neq k} a_{ik} x_i = \sum_{j=1}^n a_{kj} x_j + \sum_{i=1}^n a_{ik} x_i\]</span> Como <span class="math inline">\(A\)</span> é simétrica (<span class="math inline">\(a_{ik} = a_{ki}\)</span>), ambas as somas são o produto da <span class="math inline">\(k\)</span>-ésima linha de <span class="math inline">\(A\)</span> pelo vetor <span class="math inline">\(x\)</span>: <span class="math display">\[\frac{\partial (x^\top A x)}{\partial x_k} = 2 \sum_{j=1}^n a_{kj} x_j = 2 (Ax)_k \implies \frac{\partial (x^\top A x)}{\partial x} = 2Ax\]</span></p></li>
+</ol>
+</section>
+<section id="cholesky-e-decomposição-espectral-na-prática-computacional" class="level3" data-number="1.3.8">
+<h3 data-number="1.3.8" class="anchored" data-anchor-id="cholesky-e-decomposição-espectral-na-prática-computacional"><span class="header-section-number">1.3.8</span> Cholesky e Decomposição Espectral na Prática Computacional</h3>
+<p>A decomposição de Cholesky é o algoritmo padrão utilizado por pacotes como R (<code>chol()</code>) e NumPy/SciPy (<code>np.linalg.cholesky</code>) para inverter matrizes de covariâncias e calcular estimadores com máxima estabilidade numérica e custo computacional reduzido (<span class="math inline">\(\mathcal{O}(p^3 / 3)\)</span> contra <span class="math inline">\(\mathcal{O}(p^3)\)</span> do algoritmo clássico de Gauss-Jordan).</p>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="formulação-matricial-do-modelo-linear-e-suposições-clássicas" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="formulação-matricial-do-modelo-linear-e-suposições-clássicas"><span class="header-section-number">1.4</span> 1.4 Formulação Matricial do Modelo Linear e Suposições Clássicas</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<section id="modelo-de-regressão-linear-em-forma-matricial" class="level3" data-number="1.4.1">
+<h3 data-number="1.4.1" class="anchored" data-anchor-id="modelo-de-regressão-linear-em-forma-matricial"><span class="header-section-number">1.4.1</span> Modelo de Regressão Linear em Forma Matricial</h3>
+<p>Suponham que <span class="math inline">\(Y_1, Y_2, \dots, Y_n\)</span> sejam variáveis aleatórias tais que: <span class="math display">\[Y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + \dots + \beta_p x_{ip} + \varepsilon_i, \quad i = 1, \dots, n\]</span> Em forma matricial compacta: <span class="math display">\[Y = X\beta + \varepsilon\]</span> em que: <span class="math display">\[Y = \begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{pmatrix}, \quad X = \begin{pmatrix} x_{11} &amp; x_{12} &amp; \dots &amp; x_{1p} \\ x_{21} &amp; x_{22} &amp; \dots &amp; x_{2p} \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ x_{n1} &amp; x_{n2} &amp; \dots &amp; x_{np} \end{pmatrix}, \quad \beta = \begin{pmatrix} \beta_1 \\ \beta_2 \\ \vdots \\ \beta_p \end{pmatrix}, \quad \varepsilon = \begin{pmatrix} \varepsilon_1 \\ \varepsilon_2 \\ \vdots \\ \varepsilon_n \end{pmatrix}\]</span> Geralmente, a primeira coluna de <span class="math inline">\(X\)</span> é formada apenas pelo número 1 (<span class="math inline">\(x_{i1} = 1\)</span>), correspondendo ao intercepto.</p>
+</section>
+<section id="suposições-do-modelo-linear-clássico" class="level3" data-number="1.4.2">
+<h3 data-number="1.4.2" class="anchored" data-anchor-id="suposições-do-modelo-linear-clássico"><span class="header-section-number">1.4.2</span> Suposições do Modelo Linear Clássico</h3>
+<ol type="1">
+<li><span class="math inline">\(\mathbb{E}(\varepsilon) = 0\)</span>, isto é, <span class="math inline">\(\mathbb{E}(\varepsilon_i) = 0\)</span> para todo <span class="math inline">\(i = 1, \dots, n\)</span>;</li>
+<li><span class="math inline">\(\mathrm{Var}(\varepsilon) = \mathbb{E}(\varepsilon \varepsilon^\top) = \sigma^2 I_n\)</span>, isto é, os erros têm variância comum <span class="math inline">\(\sigma^2\)</span> (homocedasticidade) e covariância nula entre diferentes observações, <span class="math inline">\(\mathrm{Cov}(\varepsilon_i, \varepsilon_j) = 0, \forall i \neq j\)</span>;</li>
+<li>A matriz <span class="math inline">\(X\)</span> é não estocástica (valores fixos conhecidos) com posto completo <span class="math inline">\(r(X) = p &lt; n\)</span>, garantindo que <span class="math inline">\(X^\top X\)</span> seja invertível;</li>
+<li><strong>Normalidade:</strong> Quando assumimos o modelo normal linear, <span class="math inline">\(\varepsilon \sim \mathcal{N}_n(0, \sigma^2 I_n)\)</span>, o que implica: <span class="math display">\[Y \sim \mathcal{N}_n(X\beta, \sigma^2 I_n)\]</span></li>
+</ol>
+</section>
+<section id="padronização-de-variáveis" class="level3" data-number="1.4.3">
+<h3 data-number="1.4.3" class="anchored" data-anchor-id="padronização-de-variáveis"><span class="header-section-number">1.4.3</span> Padronização de Variáveis</h3>
+<ul>
+<li><strong>Escala de tamanho unitário:</strong> Centra-se a variável na média e divide-se pela raiz da soma de quadrados dos desvios: <span class="math display">\[z_{ij} = \frac{x_{ij} - \bar{x}_j}{\sqrt{\sum_{i=1}^n (x_{ij} - \bar{x}_j)^2}}\]</span> Dessa forma, cada variável transformada tem média zero e comprimento euclidiano unitário <span class="math inline">\(\sum_{i=1}^n z_{ij}^2 = 1\)</span>. A matriz de correlação das preditoras passa a ser simplesmente <span class="math inline">\(Z^\top Z\)</span>.</li>
+</ul>
+</section>
+<section id="covariáveis-qualitativas-dummies" class="level3" data-number="1.4.4">
+<h3 data-number="1.4.4" class="anchored" data-anchor-id="covariáveis-qualitativas-dummies"><span class="header-section-number">1.4.4</span> Covariáveis Qualitativas (Dummies)</h3>
+<p>Para incluir uma variável categórica com <span class="math inline">\(k\)</span> níveis, utilizam-se <span class="math inline">\(k - 1\)</span> variáveis indicadoras binárias (dummies): <span class="math display">\[D_{i\ell} = \begin{cases} 1, &amp; \text{se a observação pertence à categoria } \ell \\ 0, &amp; \text{caso contrário} \end{cases}\]</span> A categoria omitida atua como <strong>categoria de referência</strong>, sendo absorvida pelo intercepto <span class="math inline">\(\beta_1\)</span>.</p>
+</section>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<section id="a-armadilha-da-variável-dummy-dummy-variable-trap" class="level3" data-number="1.4.5">
+<h3 data-number="1.4.5" class="anchored" data-anchor-id="a-armadilha-da-variável-dummy-dummy-variable-trap"><span class="header-section-number">1.4.5</span> A Armadilha da Variável Dummy (<em>Dummy Variable Trap</em>)</h3>
+<p>Se incluíssemos <span class="math inline">\(k\)</span> variáveis dummy para um fator de <span class="math inline">\(k\)</span> níveis mantendo o intercepto (coluna de 1s), a soma de todas as dummies seria idêntica ao vetor de 1s: <span class="math display">\[\sum_{\ell=1}^k D_{i\ell} = 1 = x_{i1}\]</span> Isso criaria dependência linear estrita entre as colunas de <span class="math inline">\(X\)</span>. Consequentemente, o posto de <span class="math inline">\(X\)</span> seria menor que <span class="math inline">\(p\)</span> (<span class="math inline">\(r(X) &lt; p\)</span>), o determinante de <span class="math inline">\(X^\top X\)</span> seria nulo (<span class="math inline">\(\det(X^\top X) = 0\)</span>), tornando a matriz singular e impossibilitando o cálculo de <span class="math inline">\((X^\top X)^{-1}\)</span>. A exclusão de uma categoria de referência é, portanto, um requisito matemático fundamental.</p>
+</section>
+<section id="interpretação-dos-contrastes-categóricos" class="level3" data-number="1.4.6">
+<h3 data-number="1.4.6" class="anchored" data-anchor-id="interpretação-dos-contrastes-categóricos"><span class="header-section-number">1.4.6</span> Interpretação dos Contrastes Categóricos</h3>
+<p>Considere um modelo que prevê o salário (<span class="math inline">\(Y\)</span>) a partir do nível de escolaridade (Níveis: Médio, Superior, Pós-graduação), com Nível Médio como referência: <span class="math display">\[Y = \beta_1 + \beta_2 D_{\text{Sup}} + \beta_3 D_{\text{Pos}} + \varepsilon\]</span> - <span class="math inline">\(\mathbb{E}[Y \mid \text{Médio}] = \beta_1\)</span>: salário esperado do nível de referência. - <span class="math inline">\(\mathbb{E}[Y \mid \text{Superior}] = \beta_1 + \beta_2 \implies \beta_2 = \mathbb{E}[Y \mid \text{Superior}] - \mathbb{E}[Y \mid \text{Médio}]\)</span>. - <span class="math inline">\(\beta_2\)</span> representa o acréscimo médio no salário em relação a quem possui ensino médio.</p>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="estimação-matricial-por-mínimos-quadrados-e-máxima-verossimilhança" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="estimação-matricial-por-mínimos-quadrados-e-máxima-verossimilhança"><span class="header-section-number">1.5</span> 1.5 Estimação Matricial por Mínimos Quadrados e Máxima Verossimilhança</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<section id="método-dos-mínimos-quadrados-matricial" class="level3" data-number="1.5.1">
+<h3 data-number="1.5.1" class="anchored" data-anchor-id="método-dos-mínimos-quadrados-matricial"><span class="header-section-number">1.5.1</span> Método dos Mínimos Quadrados Matricial</h3>
+<p>O vetor de estimadores de mínimos quadrados <span class="math inline">\(\hat{\beta}\)</span> minimiza a soma dos quadrados dos resíduos: <span class="math display">\[S(\beta) = \varepsilon^\top \varepsilon = (Y - X\beta)^\top (Y - X\beta) = Y^\top Y - 2\beta^\top X^\top Y + \beta^\top X^\top X \beta\]</span> Derivando em relação ao vetor <span class="math inline">\(\beta\)</span> e igualando ao vetor nulo: <span class="math display">\[\frac{\partial S(\beta)}{\partial \beta} = -2 X^\top Y + 2 X^\top X \beta = 0\]</span> Obtém-se o sistema de <strong>Equações Normais</strong>: <span class="math display">\[X^\top X \hat{\beta} = X^\top Y\]</span> Como <span class="math inline">\(r(X) = p\)</span>, a matriz <span class="math inline">\(X^\top X\)</span> é simétrica e positiva definida, logo invertível. O estimador de Mínimos Quadrados Ordinários (EMQ) é: <span class="math display">\[\hat{\beta} = (X^\top X)^{-1} X^\top Y \tag{3}\]</span></p>
+</section>
+<section id="propriedades-do-estimador-de-mínimos-quadrados" class="level3" data-number="1.5.2">
+<h3 data-number="1.5.2" class="anchored" data-anchor-id="propriedades-do-estimador-de-mínimos-quadrados"><span class="header-section-number">1.5.2</span> Propriedades do Estimador de Mínimos Quadrados</h3>
+<ol type="1">
+<li><strong>Não viciado:</strong> <span class="math display">\[\mathbb{E}(\hat{\beta}) = \mathbb{E}\left[(X^\top X)^{-1} X^\top Y\right] = (X^\top X)^{-1} X^\top (X\beta) = \beta\]</span></li>
+<li><strong>Matriz de Variâncias e Covariâncias:</strong> <span class="math display">\[\mathrm{Var}(\hat{\beta}) = \mathrm{Var}\left[(X^\top X)^{-1} X^\top Y\right] = (X^\top X)^{-1} X^\top \left(\sigma^2 I_n\right) X (X^\top X)^{-1} = \sigma^2 (X^\top X)^{-1}\]</span></li>
+<li><strong>Teorema de Gauss-Markov:</strong> O estimador de mínimos quadrados <span class="math inline">\(\hat{\beta}\)</span> é o melhor estimador linear não viciado (<em>Best Linear Unbiased Estimator</em> - BLUE), possuindo variância mínima entre todos os estimadores lineares não viesados.</li>
+</ol>
+</section>
+<section id="valores-ajustados-e-a-matriz-chapéu" class="level3" data-number="1.5.3">
+<h3 data-number="1.5.3" class="anchored" data-anchor-id="valores-ajustados-e-a-matriz-chapéu"><span class="header-section-number">1.5.3</span> Valores Ajustados e a Matriz Chapéu</h3>
+<p>O vetor de valores preditos pelo modelo é: <span class="math display">\[\hat{Y} = X \hat{\beta} = X (X^\top X)^{-1} X^\top Y = H Y\]</span> A matriz <span class="math inline">\(H = X(X^\top X)^{-1} X^\top\)</span> é denominada <strong>Matriz Chapéu</strong> (<em>Hat Matrix</em>). - <span class="math inline">\(H\)</span> é simétrica: <span class="math inline">\(H^\top = H\)</span>; - <span class="math inline">\(H\)</span> é idempotente: <span class="math inline">\(H^2 = H \cdot H = H\)</span>; - O traço de <span class="math inline">\(H\)</span> é o número de parâmetros: <span class="math inline">\(\mathrm{tr}(H) = p\)</span>.</p>
+</section>
+<section id="vetor-de-resíduos-e-estimador-da-variância" class="level3" data-number="1.5.4">
+<h3 data-number="1.5.4" class="anchored" data-anchor-id="vetor-de-resíduos-e-estimador-da-variância"><span class="header-section-number">1.5.4</span> Vetor de Resíduos e Estimador da Variância</h3>
+<p>O vetor de resíduos é: <span class="math display">\[e = Y - \hat{Y} = Y - HY = (I_n - H) Y\]</span> A matriz <span class="math inline">\((I_n - H)\)</span> também é simétrica e idempotente, com traço e posto iguais a <span class="math inline">\(n - p\)</span>. A soma de quadrados dos resíduos é: <span class="math display">\[SQRes = e^\top e = Y^\top (I_n - H) Y\]</span> O estimador não viciado da variância <span class="math inline">\(\sigma^2\)</span> é: <span class="math display">\[\hat{\sigma}^2 = \frac{e^\top e}{n - p} = \frac{SQRes}{n - p} = QMRes\]</span></p>
+</section>
+<section id="método-da-máxima-verossimilhança-normalidade" class="level3" data-number="1.5.5">
+<h3 data-number="1.5.5" class="anchored" data-anchor-id="método-da-máxima-verossimilhança-normalidade"><span class="header-section-number">1.5.5</span> Método da Máxima Verossimilhança (Normalidade)</h3>
+<p>Sob a suposição de que <span class="math inline">\(\varepsilon \sim \mathcal{N}_n(0, \sigma^2 I_n)\)</span>, a função de verossimilhança conjunta é: <span class="math display">\[L(\beta, \sigma^2) = (2\pi \sigma^2)^{-n/2} \exp\left\{ -\frac{1}{2\sigma^2} (Y - X\beta)^\top (Y - X\beta) \right\}\]</span> A log-verossimilhança é: <span class="math display">\[\ell(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}(Y - X\beta)^\top (Y - X\beta)\]</span> Maximizando em relação a <span class="math inline">\(\beta\)</span> e <span class="math inline">\(\sigma^2\)</span>: <span class="math display">\[\hat{\beta}_{MV} = (X^\top X)^{-1} X^\top Y \equiv \hat{\beta}_{MQO}\]</span> <span class="math display">\[\tilde{\sigma}^2_{MV} = \frac{SQRes}{n} = \frac{n - p}{n} \hat{\sigma}^2\]</span> O estimador de MV da variância é viciado para amostras finitas (<span class="math inline">\(\mathbb{E}[\tilde{\sigma}^2_{MV}] = \frac{n-p}{n}\sigma^2\)</span>), embora assintoticamente não viesado e consistente quando <span class="math inline">\(n \to \infty\)</span>.</p>
+</section>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<section id="demonstração-do-teorema-de-gauss-markov" class="level3" data-number="1.5.6">
+<h3 data-number="1.5.6" class="anchored" data-anchor-id="demonstração-do-teorema-de-gauss-markov"><span class="header-section-number">1.5.6</span> Demonstração do Teorema de Gauss-Markov</h3>
+<p>Seja <span class="math inline">\(\tilde{\beta} = C Y\)</span> outro estimador linear qualquer de <span class="math inline">\(\beta\)</span>, onde <span class="math inline">\(C\)</span> é uma matriz <span class="math inline">\(p \times n\)</span>. Para que <span class="math inline">\(\tilde{\beta}\)</span> seja não viciado: <span class="math display">\[\mathbb{E}(\tilde{\beta}) = C \mathbb{E}(Y) = C X \beta = \beta \implies C X = I_p\]</span> Podemos decompor <span class="math inline">\(C\)</span> como <span class="math inline">\(C = (X^\top X)^{-1} X^\top + D\)</span>, onde <span class="math inline">\(D = C - (X^\top X)^{-1} X^\top\)</span>. A condição de não viés impõe: <span class="math display">\[C X = \left[(X^\top X)^{-1} X^\top + D\right]X = I_p + DX = I_p \implies D X = 0\]</span></p>
+<p>Agora calculamos a matriz de covariância de <span class="math inline">\(\tilde{\beta}\)</span>: <span class="math display">\[\mathrm{Var}(\tilde{\beta}) = C \mathrm{Var}(Y) C^\top = \sigma^2 C C^\top\]</span> Expandindo <span class="math inline">\(C C^\top\)</span>: <span class="math display">\[C C^\top = \left[(X^\top X)^{-1} X^\top + D\right] \left[X (X^\top X)^{-1} + D^\top\right]\]</span> <span class="math display">\[= (X^\top X)^{-1} X^\top X (X^\top X)^{-1} + (X^\top X)^{-1} X^\top D^\top + D X (X^\top X)^{-1} + D D^\top\]</span> Como <span class="math inline">\(D X = 0\)</span> e <span class="math inline">\(X^\top D^\top = (DX)^\top = 0\)</span>: <span class="math display">\[C C^\top = (X^\top X)^{-1} + D D^\top\]</span> Multiplicando por <span class="math inline">\(\sigma^2\)</span>: <span class="math display">\[\mathrm{Var}(\tilde{\beta}) = \sigma^2 (X^\top X)^{-1} + \sigma^2 D D^\top = \mathrm{Var}(\hat{\beta}) + \sigma^2 D D^\top\]</span> Como <span class="math inline">\(D D^\top\)</span> é uma matriz semidefinida positiva para qualquer matriz real <span class="math inline">\(D\)</span> (<span class="math inline">\(a^\top D D^\top a = \|D^\top a\|^2 \ge 0\)</span>), concluímos que: <span class="math display">\[\mathrm{Var}(\tilde{\beta}) - \mathrm{Var}(\hat{\beta}) = \sigma^2 D D^\top \ge 0\]</span> Portanto, a variância de qualquer combinação linear de <span class="math inline">\(\hat{\beta}\)</span> é sempre menor ou igual à variância de qualquer outro estimador linear não viciado <span class="math inline">\(\tilde{\beta}\)</span>, com igualdade ocorrendo se e somente se <span class="math inline">\(D = 0\)</span>, isto é, quando <span class="math inline">\(\tilde{\beta} \equiv \hat{\beta}\)</span>. Isso conclui a prova da otimalidade BLUE de Gauss-Markov.</p>
+</section>
+<section id="demonstração-da-matriz-chapéu-e-projeção-geométrica" class="level3" data-number="1.5.7">
+<h3 data-number="1.5.7" class="anchored" data-anchor-id="demonstração-da-matriz-chapéu-e-projeção-geométrica"><span class="header-section-number">1.5.7</span> Demonstração da Matriz Chapéu e Projeção Geométrica</h3>
+<p>Geometricamente, o vetor <span class="math inline">\(Y\)</span> reside no espaço euclidiano <span class="math inline">\(\mathbb{R}^n\)</span>. A matriz <span class="math inline">\(X_{n \times p}\)</span> define um subespaço de dimensão <span class="math inline">\(p\)</span>, denominado espaço coluna de <span class="math inline">\(X\)</span>, <span class="math inline">\(\mathcal{C}(X)\)</span>. O estimador <span class="math inline">\(\hat{Y} = X\hat{\beta}\)</span> é o ponto em <span class="math inline">\(\mathcal{C}(X)\)</span> mais próximo de <span class="math inline">\(Y\)</span>. A matriz <span class="math inline">\(H = X(X^\top X)^{-1}X^\top\)</span> é exatamente o <strong>operador de projeção ortogonal</strong> sobre <span class="math inline">\(\mathcal{C}(X)\)</span>, e a matriz <span class="math inline">\(M = I_n - H\)</span> é a projeção ortogonal sobre o complemento ortogonal <span class="math inline">\(\mathcal{C}(X)^\perp\)</span>.</p>
+<p>Disso decorrem imediatamente as relações de ortogonalidade: <span class="math display">\[X^\top e = X^\top (I_n - H) Y = (X^\top - X^\top X(X^\top X)^{-1} X^\top) Y = (X^\top - X^\top) Y = 0\]</span> <span class="math display">\[\hat{Y}^\top e = (HY)^\top (I_n - H)Y = Y^\top H (I_n - H) Y = Y^\top (H - H^2) Y = 0\]</span> Os resíduos de mínimos quadrados são perfeitamente ortogonais às variáveis preditoras e aos valores ajustados.</p>
+</section>
+<section id="implementação-matricial-do-mqo-em-r-e-python" class="level3" data-number="1.5.8">
+<h3 data-number="1.5.8" class="anchored" data-anchor-id="implementação-matricial-do-mqo-em-r-e-python"><span class="header-section-number">1.5.8</span> Implementação Matricial do MQO em R e Python</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Implementação matricial direta do MQO</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ajustar_mqo <span class="ot">&lt;-</span> <span class="cf">function</span>(X, y) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Adiciona coluna de 1s para o intercepto caso não exista</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(X[, <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>)) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    X <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">Intercepto =</span> <span class="dv">1</span>, X)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(X)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Equações normais: beta_hat = (X'X)^(-1) X'Y</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  XtX <span class="ot">&lt;-</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> X</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  XtY <span class="ot">&lt;-</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> y</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  beta_hat <span class="ot">&lt;-</span> <span class="fu">solve</span>(XtX, XtY)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Matriz chapeu e projecoes</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  H <span class="ot">&lt;-</span> X <span class="sc">%*%</span> <span class="fu">solve</span>(XtX) <span class="sc">%*%</span> <span class="fu">t</span>(X)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  y_hat <span class="ot">&lt;-</span> H <span class="sc">%*%</span> y</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  residuos <span class="ot">&lt;-</span> y <span class="sc">-</span> y_hat</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Variancia dos residuos e matriz de covariancia</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  sq_res <span class="ot">&lt;-</span> <span class="fu">sum</span>(residuos<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  sigma2_hat <span class="ot">&lt;-</span> sq_res <span class="sc">/</span> (n <span class="sc">-</span> p)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  var_beta <span class="ot">&lt;-</span> sigma2_hat <span class="sc">*</span> <span class="fu">solve</span>(XtX)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  ep_beta <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(var_beta))</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">coeficientes =</span> <span class="fu">as.vector</span>(beta_hat),</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">erros_padrao =</span> ep_beta,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">sigma2 =</span> sigma2_hat,</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">graus_liberdade =</span> n <span class="sc">-</span> p</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Equivalente matricial em Python com numpy</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ajustar_mqo(X, y):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    n, p_vars <span class="op">=</span> X.shape</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adiciona vetor unitario para o intercepto</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    X_design <span class="op">=</span> np.column_stack([np.ones(n), X])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> X_design.shape[<span class="dv">1</span>]</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Inversao via sistema linear (mais estavel que inv())</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    XtX <span class="op">=</span> X_design.T <span class="op">@</span> X_design</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    XtY <span class="op">=</span> X_design.T <span class="op">@</span> y</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    beta_hat <span class="op">=</span> np.linalg.solve(XtX, XtY)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Residuos e QMRes</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    y_hat <span class="op">=</span> X_design <span class="op">@</span> beta_hat</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    residuos <span class="op">=</span> y <span class="op">-</span> y_hat</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    sq_res <span class="op">=</span> np.<span class="bu">sum</span>(residuos<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    qm_res <span class="op">=</span> sq_res <span class="op">/</span> (n <span class="op">-</span> p)</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    var_beta <span class="op">=</span> qm_res <span class="op">*</span> np.linalg.inv(XtX)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    erros_padrao <span class="op">=</span> np.sqrt(np.diag(var_beta))</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"coeficientes"</span>: beta_hat,</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">"erros_padrao"</span>: erros_padrao,</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>        <span class="st">"qm_res"</span>: qm_res,</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"df"</span>: n <span class="op">-</span> p</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-galton1889" class="csl-entry" role="listitem">
+Galton, Francis. 1889. <em>Natural Inheritance</em>. London: Macmillan.
+</div>
+<div id="ref-kutner2005" class="csl-entry" role="listitem">
+Kutner, Michael H., Christopher J. Nachtsheim, John Neter, and William Li. 2005. <em>Applied Linear Statistical Models</em>. 5th ed. Chicago: McGraw-Hill Irwin.
+</div>
+<div id="ref-montgomery2021" class="csl-entry" role="listitem">
+Montgomery, Douglas C., Elizabeth A. Peck, and G. Geoffrey Vining. 2021. <em>Introduction to Linear Regression Analysis</em>. 6th ed. New York: John Wiley &amp; Sons.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../index.html" class="pagination-link" aria-label="Apresentação do Curso">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Apresentação do Curso</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../modulos/02-inferencia.html" class="pagination-link" aria-label="Módulo 2: Análise de Variância, Inferência e Predição">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Este módulo compreende as notas e transcrições dos tópicos iniciais da disciplina EST074 (slides **p01**, **p02**, **p03** e **p04**), cobrindo a evolução conceitual da análise de regressão, ferramentas matriciais essenciais, definição formal do modelo linear clássico, suposições de Gauss-Markov e a teoria da estimação por Mínimos Quadrados Ordinários (MQO) e Máxima Verossimilhança (MV).</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.1 Motivação e Origem da Análise de Regressão</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">### Motivação</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>Os primeiros conceitos de regressão foram propostos por Galton (1889), aplicados na Antropometria, em que o objetivo era equacionar as relações de dependência entre a altura dos pais (variável explicativa, variável preditora ou covariável) e a altura dos filhos (variável de interesse, variável resposta ou desfecho).</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>Porém, esses conceitos puderam ser aplicados em qualquer contexto, como:</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Na necessidade de uma empresa em analisar os fatores que podem interferir nas vendas;</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Na predição de mortalidade de uma pessoa ao contrair uma doença, baseada nas suas características, como idade e doenças pré-existentes;</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Caracterização de um cliente em bom ou mau pagador, baseada no máximo de dias de atraso nos últimos 6 meses, se fez ou não saque no cartão e no tempo que o cliente tem o cartão;</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Distância de uma galáxia até a Terra, baseada no valor dos tons de cinza de cada pixel de uma foto da galáxia em observação.</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>A análise de regressão é uma técnica estatística para investigar e modelar a relação entre as variáveis. Na verdade, a análise de regressão pode ser a técnica estatística mais utilizada (Montgomery et al., 2021).</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>Os modelos de regressão ganharam ainda mais notoriedade com a popularização do Aprendizado de Máquina (*machine learning*), especificamente no Aprendizado Supervisionado (*supervised learning*), em que o foco é preditivo, isto é, a partir de valores de entrada (covariáveis), se deseja prever o resultado esperado (variável resposta).</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="fu">### Contexto Histórico e o Fenômeno da "Regressão à Média"</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>O termo "regressão" tem origem histórica curiosa: Francis Galton <span class="co">[</span><span class="ot">@galton1889</span><span class="co">]</span>, estudando hereditariedade biológica, observou que pais com estatura excepcionalmente alta tendiam a ter filhos que, em média, eram ligeiramente mais baixos que eles (mais próximos da média da população geral), enquanto pais muito baixos geravam filhos ligeiramente mais altos que eles. Galton denominou essa dinâmica de *"regression towards mediocrity"* (regressão em direção à mediocridade/média). </span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>Hoje, na teoria estatística contemporânea <span class="co">[</span><span class="ot">@montgomery2021; @kutner2005</span><span class="co">]</span>, o termo designa o estudo da **distribuição condicional** da variável resposta $Y$ dado o conhecimento das variáveis explicativas $X$, ou seja, a modelagem da esperança condicional:</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>$$\mu(x) = \mathbb{E}<span class="co">[</span><span class="ot">Y \mid X = x</span><span class="co">]</span>$$</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a><span class="fu">### Diferenciação entre Causalidade e Associação Estatística</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>Um modelo de regressão descreve **associação matemática** e covariabilidade condicional, não necessariamente causalidade intrínseca. Para atribuir causalidade a um coeficiente estimado $\hat{\beta}_j$, é obrigatório que o mecanismo gerador de dados derive de um experimento controlado aleatorizado (*Randomized Controlled Trial - RCT*) ou que se adotem hipóteses estritas de identificação causal e controle de variáveis de confusão (DAGs / Equações Estruturais).</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="fu">### Simulação em R: O Fenômeno de Galton</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>O código abaixo reproduz em R a dispersão bivariada com a reta de regressão e a linha diagonal de identidade $Y = X$, ilustrando o fenômeno de regressão em direção à média populacional:</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulação do fenômeno de regressão à média (Galton)</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">300</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>altura_pais <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">175</span>, <span class="at">sd =</span> <span class="dv">8</span>)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Filhos herdam parte da estatura mais um componente aleatório ambiental</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>altura_filhos <span class="ot">&lt;-</span> <span class="dv">175</span> <span class="sc">+</span> <span class="fl">0.55</span> <span class="sc">*</span> (altura_pais <span class="sc">-</span> <span class="dv">175</span>) <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>df_galton <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">pais =</span> altura_pais, <span class="at">filhos =</span> altura_filhos)</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(filhos <span class="sc">~</span> pais, <span class="at">data =</span> df_galton)</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualização gráfica</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(df_galton<span class="sc">$</span>pais, df_galton<span class="sc">$</span>filhos, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="fu">rgb</span>(<span class="fl">0.1</span>, <span class="fl">0.4</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>),</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Altura dos Pais (cm)"</span>, <span class="at">ylab =</span> <span class="st">"Altura dos Filhos (cm)"</span>,</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Fenômeno da Regressão à Média (Galton, 1889)"</span>)</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(mod, <span class="at">col =</span> <span class="st">"firebrick"</span>, <span class="at">lwd =</span> <span class="fl">2.5</span>) <span class="co"># Reta de regressão (declive ~ 0.55)</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">a =</span> <span class="dv">0</span>, <span class="at">b =</span> <span class="dv">1</span>, <span class="at">col =</span> <span class="st">"darkgray"</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.8</span>) <span class="co"># Linha Y = X</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">175</span>, <span class="at">h =</span> <span class="dv">175</span>, <span class="at">col =</span> <span class="st">"gray80"</span>, <span class="at">lty =</span> <span class="dv">3</span>)</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Reta de Regressão"</span>, <span class="st">"Identidade (Y = X)"</span>),</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"firebrick"</span>, <span class="st">"darkgray"</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">bty =</span> <span class="st">"n"</span>)</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Equivalente em Python usando statsmodels e matplotlib</span></span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.random.normal(<span class="dv">175</span>, <span class="dv">8</span>, n)</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="dv">175</span> <span class="op">+</span> <span class="fl">0.55</span> <span class="op">*</span> (x <span class="op">-</span> <span class="dv">175</span>) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">6</span>, n)</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>X_const <span class="op">=</span> sm.add_constant(x)</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> sm.OLS(y, X_const).fit()</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>plt.scatter(x, y, alpha<span class="op">=</span><span class="fl">0.6</span>, color<span class="op">=</span><span class="st">"#1f77b4"</span>, edgecolors<span class="op">=</span><span class="st">"none"</span>)</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>plt.plot(x, model.predict(X_const), color<span class="op">=</span><span class="st">"crimson"</span>, lw<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="ss">f"Regressão: $</span><span class="ch">\\</span><span class="ss">hat</span><span class="ch">{{</span><span class="ss">Y</span><span class="ch">}}</span><span class="ss"> = </span><span class="sc">{</span>model<span class="sc">.</span>params[<span class="dv">0</span>]<span class="sc">:.1f}</span><span class="ss"> + </span><span class="sc">{</span>model<span class="sc">.</span>params[<span class="dv">1</span>]<span class="sc">:.2f}</span><span class="ss">X$"</span>)</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>plt.plot([<span class="dv">150</span>, <span class="dv">200</span>], [<span class="dv">150</span>, <span class="dv">200</span>], <span class="st">"k--"</span>, lw<span class="op">=</span><span class="fl">1.5</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="st">"Diagonal Y = X"</span>)</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Altura dos Pais (cm)"</span>)</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Altura dos Filhos (cm)"</span>)</span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Regressão em Direção à Média"</span>)</span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">":"</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.2 O Modelo de Regressão Linear Simples e Aplicação Inicial</span></span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modelo de Regressão Linear Simples</span></span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>Como nós vimos, existem fenômenos (variável resposta, $Y$) que podem ser descritos por uma variável preditora ($x$), isto é feito da seguinte forma:</span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a>$$Y \sim \mathcal{D}(\mu, \sigma^2)$$</span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a>em que $\mu = \beta_1 + \beta_2 x$ e $\sigma^2$ são, respectivamente, a média e variância da distribuição de $Y$, $x$ é um valor conhecido, $\beta_1$, $\beta_2$ e $\sigma^2$ são parâmetros desconhecidos. Além disso, $\beta_1$ e $\beta_2$ são chamados de coeficientes de regressão.</span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>É conveniente escrever a relação entre as variáveis resposta e preditora da seguinte forma:</span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a>$$Y = \beta_1 + \beta_2 x + \varepsilon$$</span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a>em que $\varepsilon \sim \mathcal{D}(0, \sigma^2)$, sendo $\varepsilon$ denominado de erro. </span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a>*Observação:* essa formatação é sempre possível nas famílias de locação-escala.</span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a><span class="fu">### Interpretação dos Parâmetros do Modelo</span></span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Parâmetro $\beta_1$:** Ele é o intercepto da reta de regressão. Ele é o valor esperado da variável resposta quando a variável preditora vale zero.</span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Parâmetro $\beta_2$:** Ele é o declive da reta de regressão, o coeficiente angular. Ele indica o acréscimo esperado na variável resposta quando aumenta-se uma unidade na variável preditora.</span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a><span class="fu">### Amostra e Estimação Escalar</span></span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>A fim de estimar $\beta_1$, $\beta_2$ e $\sigma^2$, e explicitar a relação entre as variáveis, é necessário retirar uma amostra independente de tamanho $n$ do par $(Y, x)$, i.e., $(Y_1, x_1), (Y_2, x_2), \dots, (Y_n, x_n)$, com</span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>$$Y_\ell \sim \mathcal{D}(\mu_\ell, \sigma^2), \quad \text{em que } \mu_\ell = \beta_1 + \beta_2 x_\ell, \quad \ell = 1, 2, \dots, n$$</span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a>De forma alternativa:</span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>$$Y_\ell = \beta_1 + \beta_2 x_\ell + \varepsilon_\ell, \quad \text{com } \varepsilon_\ell \sim \mathcal{D}(0, \sigma^2), \quad \ell = 1, 2, \dots, n$$</span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a>Em outras palavras, $\varepsilon_1, \varepsilon_2, \dots, \varepsilon_n$ são variáveis aleatórias independentes e com a mesma variância $\sigma^2$.</span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a><span class="fu">### Suposições</span></span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a>Resumindo, as suposições de um modelo de regressão linear simples são de que:</span>
+<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>A relação entre as variáveis resposta e as preditoras é linear;</span>
+<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Os erros têm média zero;</span>
+<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Variância constante ($\sigma^2$);</span>
+<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>E são não correlacionados.</span>
+<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a><span class="fu">### Estimadores de Mínimos Quadrados</span></span>
+<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a>Pelo Método de Mínimos Quadrados, os estimadores de $\beta_1$ e $\beta_2$ são dados, respectivamente, por:</span>
+<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a>$$\hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X} \quad \text{e} \quad \hat{\beta}_2 = \frac{\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^n (X_i - \bar{X})^2} \tag{1}$$</span>
+<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a>Os estimadores de mínimos quadrados são não viesados.</span>
+<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a>O estimador da variância $\sigma^2$ é dado por:</span>
+<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a>$$\hat{\sigma}^2 = \frac{\sum_{\ell=1}^n (Y_\ell - \hat{\beta}_1 - \hat{\beta}_2 X_\ell)^2}{n - 2} \tag{2}$$</span>
+<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a>O estimador $\hat{\sigma}^2$, dado em (2), também é denominado de **quadrado médio do resíduo** ($QMRes$) e ele é um estimador não viciado para $\sigma^2$.</span>
+<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a><span class="fu">### Aplicação: Brasileirão (Pontos Corridos)</span></span>
+<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a>O campeonato brasileiro de futebol masculino, o Brasileirão, tem sido disputado no sistema de pontos corridos desde 2003. Avalia-se se existe uma relação linear entre o aproveitamento de pontos (%) e o saldo de gols dos times campeões.</span>
+<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a>Após o ajuste (estimação dos parâmetros), utilizando (1) e (2), obtém-se o modelo estimado:</span>
+<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a>$$\hat{Y}_\ell = 57{,}2 + 0{,}3 x_{\ell 2}$$</span>
+<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a>em que $\hat{Y}_\ell$: aproveitamento de pontos (%) esperado do $\ell$-ésimo time campeão, $x_{\ell 2}$: saldo de gols do $\ell$-ésimo time campeão, $\ell = 1, 2, \dots, 23$ e $QMRes = 11{,}9$.</span>
+<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\hat{\beta}_1 = 57{,}2$: se o saldo de gols fosse zero, o aproveitamento médio de pontos do time campeão seria de $57{,}2\%$.</span>
+<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\hat{\beta}_2 = 0{,}3$: a cada um gol a mais no saldo, ocorreria um aumento médio de $0{,}3$ ponto percentual no aproveitamento do time campeão.</span>
+<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a><span class="fu">### Dedução Analítica dos Estimadores Escalares de MQO</span></span>
+<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a>O objetivo do Método dos Mínimos Quadrados Ordinários é encontrar a reta que minimiza a soma dos quadrados das distâncias verticais (erros) entre os pontos observados e a reta candidata:</span>
+<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a>$$S(\beta_1, \beta_2) = \sum_{i=1}^n \varepsilon_i^2 = \sum_{i=1}^n (Y_i - \beta_1 - \beta_2 X_i)^2$$</span>
+<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a>Para minimizar uma função convexa sem restrições, calculamos as derivadas parciais e igualamos a zero:</span>
+<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Derivada em relação a $\beta_1$:</span>
+<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a>   $$\frac{\partial S}{\partial \beta_1} = -2 \sum_{i=1}^n (Y_i - \beta_1 - \beta_2 X_i) = 0 \implies \sum_{i=1}^n Y_i - n\beta_1 - \beta_2 \sum_{i=1}^n X_i = 0$$</span>
+<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a>   Dividindo toda a expressão por $n$:</span>
+<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a>   $$\bar{Y} - \beta_1 - \beta_2 \bar{X} = 0 \implies \hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X}$$</span>
+<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a>   *Conclusão geométrica fundamental:* A reta de regressão por MQO **sempre passa pelo centro de gravidade dos dados** $(\bar{X}, \bar{Y})$.</span>
+<span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Derivada em relação a $\beta_2$:</span>
+<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a>   $$\frac{\partial S}{\partial \beta_2} = -2 \sum_{i=1}^n X_i (Y_i - \beta_1 - \beta_2 X_i) = 0 \implies \sum_{i=1}^n X_i Y_i - \beta_1 \sum_{i=1}^n X_i - \beta_2 \sum_{i=1}^n X_i^2 = 0$$</span>
+<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a>   Substituindo $\hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X}$:</span>
+<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a>   $$\sum_{i=1}^n X_i Y_i - (\bar{Y} - \hat{\beta}_2 \bar{X})(n\bar{X}) - \hat{\beta}_2 \sum_{i=1}^n X_i^2 = 0$$</span>
+<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a>   $$\sum_{i=1}^n X_i Y_i - n\bar{X}\bar{Y} = \hat{\beta}_2 \left( \sum_{i=1}^n X_i^2 - n\bar{X}^2 \right)$$</span>
+<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a>   Lembrando das identidades de somas de produtos cruzados ($S_{XY}$) e somas de quadrados ($S_{XX}$):</span>
+<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a>   $$\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y}) = \sum_{i=1}^n X_i Y_i - n\bar{X}\bar{Y} = S_{XY}$$</span>
+<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a>   $$\sum_{i=1}^n (X_i - \bar{X})^2 = \sum_{i=1}^n X_i^2 - n\bar{X}^2 = S_{XX}$$</span>
+<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a>   Portanto:</span>
+<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a>   $$\hat{\beta}_2 = \frac{S_{XY}}{S_{XX}} = \frac{\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^n (X_i - \bar{X})^2}$$</span>
+<span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a><span class="fu">### Graus de Liberdade do Estimador $\hat{\sigma}^2$</span></span>
+<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a>Por que o denominador em $\hat{\sigma}^2$ é $n - 2$?</span>
+<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>Ao estimar a variância dos resíduos, temos $n$ observações iniciais. No entanto, o cálculo dos resíduos $e_i = Y_i - \hat{\beta}_1 - \hat{\beta}_2 X_i$ impõe duas restrições lineares estritas advindas das equações normais:</span>
+<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\sum_{i=1}^n e_i = 0$</span>
+<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\sum_{i=1}^n X_i e_i = 0$</span>
+<span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a>Isso consome exatamente $2$ graus de liberdade. Logo, a soma dos quadrados dos resíduos tem distribuição proporcional a uma $\chi^2$ com $n - 2$ graus de liberdade, fazendo com que dividir por $n - 2$ torne o estimador estritamente **não viciado**: $\mathbb{E}<span class="co">[</span><span class="ot">QMRes</span><span class="co">]</span> = \sigma^2$.</span>
+<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.3 Álgebra Linear Aplicada e Propriedades dos Estimadores</span></span>
+<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a><span class="fu">### Resultados Matriciais</span></span>
+<span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>A soma das raízes características (autovalores) de $A$ é o traço de $A$, $\mathrm{tr}(A) = \sum \lambda_i$.</span>
+<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se o posto de $A$ é igual a $r$, $r(A) = r$, o autovalor zero é raiz da equação característica com multiplicidade $n - r$.</span>
+<span id="cb5-186"><a href="#cb5-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-187"><a href="#cb5-187" aria-hidden="true" tabindex="-1"></a><span class="fu">### Formas Quadráticas</span></span>
+<span id="cb5-188"><a href="#cb5-188" aria-hidden="true" tabindex="-1"></a>A função $f(x_1, \dots, x_n)$ de $n$ variáveis reais é uma forma quadrática se:</span>
+<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a>$$f(x_1, \dots, x_n) = \sum_{i=1}^n \sum_{j=1}^n a_{ij} x_i x_j = x^\top A x$$</span>
+<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a>em que $x = (x_1, \dots, x_n)^\top$ e $A = (a_{ij})$ é uma matriz simétrica $n \times n$, denominada matriz da forma quadrática.</span>
+<span id="cb5-191"><a href="#cb5-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-192"><a href="#cb5-192" aria-hidden="true" tabindex="-1"></a>**Classificação:**</span>
+<span id="cb5-193"><a href="#cb5-193" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$x^\top A x$ é **positiva definida** se $x^\top A x &gt; 0$, para todo $x \neq 0$;</span>
+<span id="cb5-194"><a href="#cb5-194" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$x^\top A x$ é **positiva semidefinida** se $x^\top A x \ge 0$, para pelo menos um $x \neq 0$;</span>
+<span id="cb5-195"><a href="#cb5-195" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>$A$ é dita **não negativa** se for positiva definida ou positiva semidefinida;</span>
+<span id="cb5-196"><a href="#cb5-196" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>$x^\top A x$ é **negativa definida** se $-x^\top A x$ é positiva definida.</span>
+<span id="cb5-197"><a href="#cb5-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-198"><a href="#cb5-198" aria-hidden="true" tabindex="-1"></a>**Exemplo (Matriz de Covariâncias):** Seja $X$ um vetor aleatório $n$-dimensional com matriz de covariâncias $\Sigma$. Se $a$ é um vetor não aleatório:</span>
+<span id="cb5-199"><a href="#cb5-199" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(a^\top X) = a^\top \Sigma a \ge 0, \quad \forall a \neq 0$$</span>
+<span id="cb5-200"><a href="#cb5-200" aria-hidden="true" tabindex="-1"></a>Logo, $\Sigma$ é não negativa definida. A matriz $\Sigma$ será estritamente positiva definida se e somente se não existirem relações lineares exatas entre as variáveis aleatórias.</span>
+<span id="cb5-201"><a href="#cb5-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-202"><a href="#cb5-202" aria-hidden="true" tabindex="-1"></a><span class="fu">### Teoremas Fundamentais (Graybill, 1983)</span></span>
+<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Teorema 1:** Se $A_{n \times n}$ é positiva semidefinida, então $r(A) &lt; n$, $a_{ii} \ge 0$, e se $a_{jj} = 0$, todos os elementos da $j$-ésima linha e coluna são zero. Para qualquer $P$, $P^\top A P$ é positiva semidefinida.</span>
+<span id="cb5-204"><a href="#cb5-204" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Teorema 2:** Se $A_{n \times n}$ é positiva definida, então $r(A) = n$, $a_{ii} &gt; 0$, e $P^\top A P$ é positiva definida para qualquer $P$ não singular.</span>
+<span id="cb5-205"><a href="#cb5-205" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Critério de Sylvester:** $A$ é positiva definida se e somente se todos os menores principais líderes forem positivos:</span>
+<span id="cb5-206"><a href="#cb5-206" aria-hidden="true" tabindex="-1"></a>  $$a_{11} &gt; 0, \quad \det \begin{pmatrix} a_{11} &amp; a_{12} \\ a_{21} &amp; a_{22} \end{pmatrix} &gt; 0, \quad \dots, \quad \det(A) &gt; 0$$</span>
+<span id="cb5-207"><a href="#cb5-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-208"><a href="#cb5-208" aria-hidden="true" tabindex="-1"></a><span class="fu">### Derivadas Matriciais</span></span>
+<span id="cb5-209"><a href="#cb5-209" aria-hidden="true" tabindex="-1"></a>Seja $x = (x_1, \dots, x_n)^\top$ e $f(x)$ uma função real. A derivada de $f(x)$ em relação ao vetor $x$ é o vetor gradiente:</span>
+<span id="cb5-210"><a href="#cb5-210" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial f(x)}{\partial x} = \begin{pmatrix} \frac{\partial f(x)}{\partial x_1} &amp; \dots &amp; \frac{\partial f(x)}{\partial x_n} \end{pmatrix}^\top$$</span>
+<span id="cb5-211"><a href="#cb5-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-212"><a href="#cb5-212" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Teorema 1:** Se $a$ é um vetor de constantes e $f(x) = a^\top x = x^\top a$, então:</span>
+<span id="cb5-213"><a href="#cb5-213" aria-hidden="true" tabindex="-1"></a>  $$\frac{\partial (a^\top x)}{\partial x} = a$$</span>
+<span id="cb5-214"><a href="#cb5-214" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Teorema 2:** Se $f(x) = x^\top A x$, com $A$ simétrica de constantes, então:</span>
+<span id="cb5-215"><a href="#cb5-215" aria-hidden="true" tabindex="-1"></a>  $$\frac{\partial (x^\top A x)}{\partial x} = 2Ax$$</span>
+<span id="cb5-216"><a href="#cb5-216" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-217"><a href="#cb5-217" aria-hidden="true" tabindex="-1"></a><span class="fu">### Decomposições Matriciais</span></span>
+<span id="cb5-218"><a href="#cb5-218" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Fatoração $LDL^\top$:** Matriz simétrica $A = LDL^\top$ ($L$ triangular inferior com 1s na diagonal, $D$ diagonal).</span>
+<span id="cb5-219"><a href="#cb5-219" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Decomposição de Cholesky:** Matriz $A$ simétrica e positiva definida fatora de forma única em $A = T^\top T$ (onde $T$ é triangular superior com $t_{ii} &gt; 0$), ou equivalentemente $A = W W^\top$.</span>
+<span id="cb5-220"><a href="#cb5-220" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Decomposição Espectral:** Qualquer matriz simétrica $A_{p \times p}$ decompõe-se como:</span>
+<span id="cb5-221"><a href="#cb5-221" aria-hidden="true" tabindex="-1"></a>  $$A = \Gamma D \Gamma^\top = \sum_{i=1}^p \lambda_i x_i x_i^\top$$</span>
+<span id="cb5-222"><a href="#cb5-222" aria-hidden="true" tabindex="-1"></a>  em que $D = \mathrm{diag}(\lambda_1, \dots, \lambda_p)$ e $\Gamma = (x_1, \dots, x_p)$ é matriz ortogonal formada pelos autovetores normalizados ($x_i^\top x_i = 1$ e $x_i^\top x_j = 0$ para $i \neq j$).</span>
+<span id="cb5-223"><a href="#cb5-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-224"><a href="#cb5-224" aria-hidden="true" tabindex="-1"></a><span class="fu">### Propriedades Teóricas dos Estimadores</span></span>
+<span id="cb5-225"><a href="#cb5-225" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Não viciado:** $\mathbb{E}(\hat{\theta}) = \theta$.</span>
+<span id="cb5-226"><a href="#cb5-226" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Consistente:** $\lim_{n \to \infty} P(|\hat{\theta} - \theta| \ge \varepsilon) = 0, \forall \varepsilon &gt; 0$.</span>
+<span id="cb5-227"><a href="#cb5-227" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Suficiente:** A distribuição condicional dos dados dado $\hat{\theta}$ independe de $\theta$.</span>
+<span id="cb5-228"><a href="#cb5-228" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Mínima Variância:** Para qualquer outro estimador $\theta^*$, $\mathrm{Var}(\hat{\theta}) \le \mathrm{Var}(\theta^*)$.</span>
+<span id="cb5-229"><a href="#cb5-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-230"><a href="#cb5-230" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-231"><a href="#cb5-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-232"><a href="#cb5-232" aria-hidden="true" tabindex="-1"></a><span class="fu">### Demonstração das Derivadas Vetoriais</span></span>
+<span id="cb5-233"><a href="#cb5-233" aria-hidden="true" tabindex="-1"></a>A álgebra matricial simplifica drasticamente a inferência em regressão múltipla. Vamos demonstrar os dois teoremas de derivação elemento por elemento:</span>
+<span id="cb5-234"><a href="#cb5-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-235"><a href="#cb5-235" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Derivada da forma linear:**</span>
+<span id="cb5-236"><a href="#cb5-236" aria-hidden="true" tabindex="-1"></a>   $$a^\top x = \sum_{j=1}^n a_j x_j \implies \frac{\partial}{\partial x_k}\left(\sum_{j=1}^n a_j x_j\right) = a_k$$</span>
+<span id="cb5-237"><a href="#cb5-237" aria-hidden="true" tabindex="-1"></a>   Reunindo todos os $k = 1, \dots, n$ no vetor coluna, obtemos diretamente:</span>
+<span id="cb5-238"><a href="#cb5-238" aria-hidden="true" tabindex="-1"></a>   $$\frac{\partial (a^\top x)}{\partial x} = a$$</span>
+<span id="cb5-239"><a href="#cb5-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-240"><a href="#cb5-240" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Derivada da forma quadrática:**</span>
+<span id="cb5-241"><a href="#cb5-241" aria-hidden="true" tabindex="-1"></a>   $$x^\top A x = \sum_{i=1}^n \sum_{j=1}^n a_{ij} x_i x_j = a_{kk} x_k^2 + x_k \sum_{j \neq k} a_{kj} x_j + x_k \sum_{i \neq k} a_{ik} x_i + \sum_{i \neq k}\sum_{j \neq k} a_{ij} x_i x_j$$</span>
+<span id="cb5-242"><a href="#cb5-242" aria-hidden="true" tabindex="-1"></a>   Derivando em relação a $x_k$:</span>
+<span id="cb5-243"><a href="#cb5-243" aria-hidden="true" tabindex="-1"></a>   $$\frac{\partial (x^\top A x)}{\partial x_k} = 2 a_{kk} x_k + \sum_{j \neq k} a_{kj} x_j + \sum_{i \neq k} a_{ik} x_i = \sum_{j=1}^n a_{kj} x_j + \sum_{i=1}^n a_{ik} x_i$$</span>
+<span id="cb5-244"><a href="#cb5-244" aria-hidden="true" tabindex="-1"></a>   Como $A$ é simétrica ($a_{ik} = a_{ki}$), ambas as somas são o produto da $k$-ésima linha de $A$ pelo vetor $x$:</span>
+<span id="cb5-245"><a href="#cb5-245" aria-hidden="true" tabindex="-1"></a>   $$\frac{\partial (x^\top A x)}{\partial x_k} = 2 \sum_{j=1}^n a_{kj} x_j = 2 (Ax)_k \implies \frac{\partial (x^\top A x)}{\partial x} = 2Ax$$</span>
+<span id="cb5-246"><a href="#cb5-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-247"><a href="#cb5-247" aria-hidden="true" tabindex="-1"></a><span class="fu">### Cholesky e Decomposição Espectral na Prática Computacional</span></span>
+<span id="cb5-248"><a href="#cb5-248" aria-hidden="true" tabindex="-1"></a>A decomposição de Cholesky é o algoritmo padrão utilizado por pacotes como R (<span class="in">`chol()`</span>) e NumPy/SciPy (<span class="in">`np.linalg.cholesky`</span>) para inverter matrizes de covariâncias e calcular estimadores com máxima estabilidade numérica e custo computacional reduzido ($\mathcal{O}(p^3 / 3)$ contra $\mathcal{O}(p^3)$ do algoritmo clássico de Gauss-Jordan).</span>
+<span id="cb5-249"><a href="#cb5-249" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb5-250"><a href="#cb5-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-251"><a href="#cb5-251" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-252"><a href="#cb5-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-253"><a href="#cb5-253" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.4 Formulação Matricial do Modelo Linear e Suposições Clássicas</span></span>
+<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-255"><a href="#cb5-255" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-256"><a href="#cb5-256" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-257"><a href="#cb5-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-258"><a href="#cb5-258" aria-hidden="true" tabindex="-1"></a><span class="fu">### Modelo de Regressão Linear em Forma Matricial</span></span>
+<span id="cb5-259"><a href="#cb5-259" aria-hidden="true" tabindex="-1"></a>Suponham que $Y_1, Y_2, \dots, Y_n$ sejam variáveis aleatórias tais que:</span>
+<span id="cb5-260"><a href="#cb5-260" aria-hidden="true" tabindex="-1"></a>$$Y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + \dots + \beta_p x_{ip} + \varepsilon_i, \quad i = 1, \dots, n$$</span>
+<span id="cb5-261"><a href="#cb5-261" aria-hidden="true" tabindex="-1"></a>Em forma matricial compacta:</span>
+<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a>$$Y = X\beta + \varepsilon$$</span>
+<span id="cb5-263"><a href="#cb5-263" aria-hidden="true" tabindex="-1"></a>em que:</span>
+<span id="cb5-264"><a href="#cb5-264" aria-hidden="true" tabindex="-1"></a>$$Y = \begin{pmatrix} Y_1 <span class="sc">\\</span> Y_2 <span class="sc">\\</span> \vdots <span class="sc">\\</span> Y_n \end{pmatrix}, \quad X = \begin{pmatrix} x_{11} &amp; x_{12} &amp; \dots &amp; x_{1p} <span class="sc">\\</span> x_{21} &amp; x_{22} &amp; \dots &amp; x_{2p} <span class="sc">\\</span> \vdots &amp; \vdots &amp; \ddots &amp; \vdots <span class="sc">\\</span> x_{n1} &amp; x_{n2} &amp; \dots &amp; x_{np} \end{pmatrix}, \quad \beta = \begin{pmatrix} \beta_1 <span class="sc">\\</span> \beta_2 <span class="sc">\\</span> \vdots <span class="sc">\\</span> \beta_p \end{pmatrix}, \quad \varepsilon = \begin{pmatrix} \varepsilon_1 <span class="sc">\\</span> \varepsilon_2 <span class="sc">\\</span> \vdots <span class="sc">\\</span> \varepsilon_n \end{pmatrix}$$</span>
+<span id="cb5-265"><a href="#cb5-265" aria-hidden="true" tabindex="-1"></a>Geralmente, a primeira coluna de $X$ é formada apenas pelo número 1 ($x_{i1} = 1$), correspondendo ao intercepto.</span>
+<span id="cb5-266"><a href="#cb5-266" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-267"><a href="#cb5-267" aria-hidden="true" tabindex="-1"></a><span class="fu">### Suposições do Modelo Linear Clássico</span></span>
+<span id="cb5-268"><a href="#cb5-268" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>$\mathbb{E}(\varepsilon) = 0$, isto é, $\mathbb{E}(\varepsilon_i) = 0$ para todo $i = 1, \dots, n$;</span>
+<span id="cb5-269"><a href="#cb5-269" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>$\mathrm{Var}(\varepsilon) = \mathbb{E}(\varepsilon \varepsilon^\top) = \sigma^2 I_n$, isto é, os erros têm variância comum $\sigma^2$ (homocedasticidade) e covariância nula entre diferentes observações, $\mathrm{Cov}(\varepsilon_i, \varepsilon_j) = 0, \forall i \neq j$;</span>
+<span id="cb5-270"><a href="#cb5-270" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>A matriz $X$ é não estocástica (valores fixos conhecidos) com posto completo $r(X) = p &lt; n$, garantindo que $X^\top X$ seja invertível;</span>
+<span id="cb5-271"><a href="#cb5-271" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Normalidade:** Quando assumimos o modelo normal linear, $\varepsilon \sim \mathcal{N}_n(0, \sigma^2 I_n)$, o que implica:</span>
+<span id="cb5-272"><a href="#cb5-272" aria-hidden="true" tabindex="-1"></a>   $$Y \sim \mathcal{N}_n(X\beta, \sigma^2 I_n)$$</span>
+<span id="cb5-273"><a href="#cb5-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-274"><a href="#cb5-274" aria-hidden="true" tabindex="-1"></a><span class="fu">### Padronização de Variáveis</span></span>
+<span id="cb5-275"><a href="#cb5-275" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Escala de tamanho unitário:**</span>
+<span id="cb5-276"><a href="#cb5-276" aria-hidden="true" tabindex="-1"></a>  Centra-se a variável na média e divide-se pela raiz da soma de quadrados dos desvios:</span>
+<span id="cb5-277"><a href="#cb5-277" aria-hidden="true" tabindex="-1"></a>  $$z_{ij} = \frac{x_{ij} - \bar{x}_j}{\sqrt{\sum_{i=1}^n (x_{ij} - \bar{x}_j)^2}}$$</span>
+<span id="cb5-278"><a href="#cb5-278" aria-hidden="true" tabindex="-1"></a>  Dessa forma, cada variável transformada tem média zero e comprimento euclidiano unitário $\sum_{i=1}^n z_{ij}^2 = 1$.</span>
+<span id="cb5-279"><a href="#cb5-279" aria-hidden="true" tabindex="-1"></a>  A matriz de correlação das preditoras passa a ser simplesmente $Z^\top Z$.</span>
+<span id="cb5-280"><a href="#cb5-280" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-281"><a href="#cb5-281" aria-hidden="true" tabindex="-1"></a><span class="fu">### Covariáveis Qualitativas (Dummies)</span></span>
+<span id="cb5-282"><a href="#cb5-282" aria-hidden="true" tabindex="-1"></a>Para incluir uma variável categórica com $k$ níveis, utilizam-se $k - 1$ variáveis indicadoras binárias (dummies):</span>
+<span id="cb5-283"><a href="#cb5-283" aria-hidden="true" tabindex="-1"></a>$$D_{i\ell} = \begin{cases} 1, &amp; \text{se a observação pertence à categoria } \ell <span class="sc">\\</span> 0, &amp; \text{caso contrário} \end{cases}$$</span>
+<span id="cb5-284"><a href="#cb5-284" aria-hidden="true" tabindex="-1"></a>A categoria omitida atua como **categoria de referência**, sendo absorvida pelo intercepto $\beta_1$.</span>
+<span id="cb5-285"><a href="#cb5-285" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-286"><a href="#cb5-286" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-287"><a href="#cb5-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-288"><a href="#cb5-288" aria-hidden="true" tabindex="-1"></a><span class="fu">### A Armadilha da Variável Dummy (*Dummy Variable Trap*)</span></span>
+<span id="cb5-289"><a href="#cb5-289" aria-hidden="true" tabindex="-1"></a>Se incluíssemos $k$ variáveis dummy para um fator de $k$ níveis mantendo o intercepto (coluna de 1s), a soma de todas as dummies seria idêntica ao vetor de 1s:</span>
+<span id="cb5-290"><a href="#cb5-290" aria-hidden="true" tabindex="-1"></a>$$\sum_{\ell=1}^k D_{i\ell} = 1 = x_{i1}$$</span>
+<span id="cb5-291"><a href="#cb5-291" aria-hidden="true" tabindex="-1"></a>Isso criaria dependência linear estrita entre as colunas de $X$. Consequentemente, o posto de $X$ seria menor que $p$ ($r(X) &lt; p$), o determinante de $X^\top X$ seria nulo ($\det(X^\top X) = 0$), tornando a matriz singular e impossibilitando o cálculo de $(X^\top X)^{-1}$. A exclusão de uma categoria de referência é, portanto, um requisito matemático fundamental.</span>
+<span id="cb5-292"><a href="#cb5-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-293"><a href="#cb5-293" aria-hidden="true" tabindex="-1"></a><span class="fu">### Interpretação dos Contrastes Categóricos</span></span>
+<span id="cb5-294"><a href="#cb5-294" aria-hidden="true" tabindex="-1"></a>Considere um modelo que prevê o salário ($Y$) a partir do nível de escolaridade (Níveis: Médio, Superior, Pós-graduação), com Nível Médio como referência:</span>
+<span id="cb5-295"><a href="#cb5-295" aria-hidden="true" tabindex="-1"></a>$$Y = \beta_1 + \beta_2 D_{\text{Sup}} + \beta_3 D_{\text{Pos}} + \varepsilon$$</span>
+<span id="cb5-296"><a href="#cb5-296" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\mathbb{E}<span class="co">[</span><span class="ot">Y \mid \text{Médio}</span><span class="co">]</span> = \beta_1$: salário esperado do nível de referência.</span>
+<span id="cb5-297"><a href="#cb5-297" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\mathbb{E}<span class="co">[</span><span class="ot">Y \mid \text{Superior}</span><span class="co">]</span> = \beta_1 + \beta_2 \implies \beta_2 = \mathbb{E}<span class="co">[</span><span class="ot">Y \mid \text{Superior}</span><span class="co">]</span> - \mathbb{E}<span class="co">[</span><span class="ot">Y \mid \text{Médio}</span><span class="co">]</span>$.</span>
+<span id="cb5-298"><a href="#cb5-298" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\beta_2$ representa o acréscimo médio no salário em relação a quem possui ensino médio.</span>
+<span id="cb5-299"><a href="#cb5-299" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb5-300"><a href="#cb5-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-301"><a href="#cb5-301" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-302"><a href="#cb5-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-303"><a href="#cb5-303" aria-hidden="true" tabindex="-1"></a><span class="fu">## 1.5 Estimação Matricial por Mínimos Quadrados e Máxima Verossimilhança</span></span>
+<span id="cb5-304"><a href="#cb5-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-305"><a href="#cb5-305" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-306"><a href="#cb5-306" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-307"><a href="#cb5-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-308"><a href="#cb5-308" aria-hidden="true" tabindex="-1"></a><span class="fu">### Método dos Mínimos Quadrados Matricial</span></span>
+<span id="cb5-309"><a href="#cb5-309" aria-hidden="true" tabindex="-1"></a>O vetor de estimadores de mínimos quadrados $\hat{\beta}$ minimiza a soma dos quadrados dos resíduos:</span>
+<span id="cb5-310"><a href="#cb5-310" aria-hidden="true" tabindex="-1"></a>$$S(\beta) = \varepsilon^\top \varepsilon = (Y - X\beta)^\top (Y - X\beta) = Y^\top Y - 2\beta^\top X^\top Y + \beta^\top X^\top X \beta$$</span>
+<span id="cb5-311"><a href="#cb5-311" aria-hidden="true" tabindex="-1"></a>Derivando em relação ao vetor $\beta$ e igualando ao vetor nulo:</span>
+<span id="cb5-312"><a href="#cb5-312" aria-hidden="true" tabindex="-1"></a>$$\frac{\partial S(\beta)}{\partial \beta} = -2 X^\top Y + 2 X^\top X \beta = 0$$</span>
+<span id="cb5-313"><a href="#cb5-313" aria-hidden="true" tabindex="-1"></a>Obtém-se o sistema de **Equações Normais**:</span>
+<span id="cb5-314"><a href="#cb5-314" aria-hidden="true" tabindex="-1"></a>$$X^\top X \hat{\beta} = X^\top Y$$</span>
+<span id="cb5-315"><a href="#cb5-315" aria-hidden="true" tabindex="-1"></a>Como $r(X) = p$, a matriz $X^\top X$ é simétrica e positiva definida, logo invertível. O estimador de Mínimos Quadrados Ordinários (EMQ) é:</span>
+<span id="cb5-316"><a href="#cb5-316" aria-hidden="true" tabindex="-1"></a>$$\hat{\beta} = (X^\top X)^{-1} X^\top Y \tag{3}$$</span>
+<span id="cb5-317"><a href="#cb5-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-318"><a href="#cb5-318" aria-hidden="true" tabindex="-1"></a><span class="fu">### Propriedades do Estimador de Mínimos Quadrados</span></span>
+<span id="cb5-319"><a href="#cb5-319" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Não viciado:** </span>
+<span id="cb5-320"><a href="#cb5-320" aria-hidden="true" tabindex="-1"></a>   $$\mathbb{E}(\hat{\beta}) = \mathbb{E}\left<span class="co">[</span><span class="ot">(X^\top X)^{-1} X^\top Y\right</span><span class="co">]</span> = (X^\top X)^{-1} X^\top (X\beta) = \beta$$</span>
+<span id="cb5-321"><a href="#cb5-321" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Matriz de Variâncias e Covariâncias:**</span>
+<span id="cb5-322"><a href="#cb5-322" aria-hidden="true" tabindex="-1"></a>   $$\mathrm{Var}(\hat{\beta}) = \mathrm{Var}\left<span class="co">[</span><span class="ot">(X^\top X)^{-1} X^\top Y\right</span><span class="co">]</span> = (X^\top X)^{-1} X^\top \left(\sigma^2 I_n\right) X (X^\top X)^{-1} = \sigma^2 (X^\top X)^{-1}$$</span>
+<span id="cb5-323"><a href="#cb5-323" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Teorema de Gauss-Markov:** </span>
+<span id="cb5-324"><a href="#cb5-324" aria-hidden="true" tabindex="-1"></a>   O estimador de mínimos quadrados $\hat{\beta}$ é o melhor estimador linear não viciado (*Best Linear Unbiased Estimator* - BLUE), possuindo variância mínima entre todos os estimadores lineares não viesados.</span>
+<span id="cb5-325"><a href="#cb5-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-326"><a href="#cb5-326" aria-hidden="true" tabindex="-1"></a><span class="fu">### Valores Ajustados e a Matriz Chapéu</span></span>
+<span id="cb5-327"><a href="#cb5-327" aria-hidden="true" tabindex="-1"></a>O vetor de valores preditos pelo modelo é:</span>
+<span id="cb5-328"><a href="#cb5-328" aria-hidden="true" tabindex="-1"></a>$$\hat{Y} = X \hat{\beta} = X (X^\top X)^{-1} X^\top Y = H Y$$</span>
+<span id="cb5-329"><a href="#cb5-329" aria-hidden="true" tabindex="-1"></a>A matriz $H = X(X^\top X)^{-1} X^\top$ é denominada **Matriz Chapéu** (*Hat Matrix*).</span>
+<span id="cb5-330"><a href="#cb5-330" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$H$ é simétrica: $H^\top = H$;</span>
+<span id="cb5-331"><a href="#cb5-331" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$H$ é idempotente: $H^2 = H \cdot H = H$;</span>
+<span id="cb5-332"><a href="#cb5-332" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>O traço de $H$ é o número de parâmetros: $\mathrm{tr}(H) = p$.</span>
+<span id="cb5-333"><a href="#cb5-333" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-334"><a href="#cb5-334" aria-hidden="true" tabindex="-1"></a><span class="fu">### Vetor de Resíduos e Estimador da Variância</span></span>
+<span id="cb5-335"><a href="#cb5-335" aria-hidden="true" tabindex="-1"></a>O vetor de resíduos é:</span>
+<span id="cb5-336"><a href="#cb5-336" aria-hidden="true" tabindex="-1"></a>$$e = Y - \hat{Y} = Y - HY = (I_n - H) Y$$</span>
+<span id="cb5-337"><a href="#cb5-337" aria-hidden="true" tabindex="-1"></a>A matriz $(I_n - H)$ também é simétrica e idempotente, com traço e posto iguais a $n - p$.</span>
+<span id="cb5-338"><a href="#cb5-338" aria-hidden="true" tabindex="-1"></a>A soma de quadrados dos resíduos é:</span>
+<span id="cb5-339"><a href="#cb5-339" aria-hidden="true" tabindex="-1"></a>$$SQRes = e^\top e = Y^\top (I_n - H) Y$$</span>
+<span id="cb5-340"><a href="#cb5-340" aria-hidden="true" tabindex="-1"></a>O estimador não viciado da variância $\sigma^2$ é:</span>
+<span id="cb5-341"><a href="#cb5-341" aria-hidden="true" tabindex="-1"></a>$$\hat{\sigma}^2 = \frac{e^\top e}{n - p} = \frac{SQRes}{n - p} = QMRes$$</span>
+<span id="cb5-342"><a href="#cb5-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-343"><a href="#cb5-343" aria-hidden="true" tabindex="-1"></a><span class="fu">### Método da Máxima Verossimilhança (Normalidade)</span></span>
+<span id="cb5-344"><a href="#cb5-344" aria-hidden="true" tabindex="-1"></a>Sob a suposição de que $\varepsilon \sim \mathcal{N}_n(0, \sigma^2 I_n)$, a função de verossimilhança conjunta é:</span>
+<span id="cb5-345"><a href="#cb5-345" aria-hidden="true" tabindex="-1"></a>$$L(\beta, \sigma^2) = (2\pi \sigma^2)^{-n/2} \exp\left<span class="sc">\{</span> -\frac{1}{2\sigma^2} (Y - X\beta)^\top (Y - X\beta) \right<span class="sc">\}</span>$$</span>
+<span id="cb5-346"><a href="#cb5-346" aria-hidden="true" tabindex="-1"></a>A log-verossimilhança é:</span>
+<span id="cb5-347"><a href="#cb5-347" aria-hidden="true" tabindex="-1"></a>$$\ell(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}(Y - X\beta)^\top (Y - X\beta)$$</span>
+<span id="cb5-348"><a href="#cb5-348" aria-hidden="true" tabindex="-1"></a>Maximizando em relação a $\beta$ e $\sigma^2$:</span>
+<span id="cb5-349"><a href="#cb5-349" aria-hidden="true" tabindex="-1"></a>$$\hat{\beta}_{MV} = (X^\top X)^{-1} X^\top Y \equiv \hat{\beta}_{MQO}$$</span>
+<span id="cb5-350"><a href="#cb5-350" aria-hidden="true" tabindex="-1"></a>$$\tilde{\sigma}^2_{MV} = \frac{SQRes}{n} = \frac{n - p}{n} \hat{\sigma}^2$$</span>
+<span id="cb5-351"><a href="#cb5-351" aria-hidden="true" tabindex="-1"></a>O estimador de MV da variância é viciado para amostras finitas ($\mathbb{E}<span class="co">[</span><span class="ot">\tilde{\sigma}^2_{MV}</span><span class="co">]</span> = \frac{n-p}{n}\sigma^2$), embora assintoticamente não viesado e consistente quando $n \to \infty$.</span>
+<span id="cb5-352"><a href="#cb5-352" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-353"><a href="#cb5-353" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-354"><a href="#cb5-354" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-355"><a href="#cb5-355" aria-hidden="true" tabindex="-1"></a><span class="fu">### Demonstração do Teorema de Gauss-Markov</span></span>
+<span id="cb5-356"><a href="#cb5-356" aria-hidden="true" tabindex="-1"></a>Seja $\tilde{\beta} = C Y$ outro estimador linear qualquer de $\beta$, onde $C$ é uma matriz $p \times n$.</span>
+<span id="cb5-357"><a href="#cb5-357" aria-hidden="true" tabindex="-1"></a>Para que $\tilde{\beta}$ seja não viciado:</span>
+<span id="cb5-358"><a href="#cb5-358" aria-hidden="true" tabindex="-1"></a>$$\mathbb{E}(\tilde{\beta}) = C \mathbb{E}(Y) = C X \beta = \beta \implies C X = I_p$$</span>
+<span id="cb5-359"><a href="#cb5-359" aria-hidden="true" tabindex="-1"></a>Podemos decompor $C$ como $C = (X^\top X)^{-1} X^\top + D$, onde $D = C - (X^\top X)^{-1} X^\top$.</span>
+<span id="cb5-360"><a href="#cb5-360" aria-hidden="true" tabindex="-1"></a>A condição de não viés impõe:</span>
+<span id="cb5-361"><a href="#cb5-361" aria-hidden="true" tabindex="-1"></a>$$C X = \left<span class="co">[</span><span class="ot">(X^\top X)^{-1} X^\top + D\right</span><span class="co">]</span>X = I_p + DX = I_p \implies D X = 0$$</span>
+<span id="cb5-362"><a href="#cb5-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-363"><a href="#cb5-363" aria-hidden="true" tabindex="-1"></a>Agora calculamos a matriz de covariância de $\tilde{\beta}$:</span>
+<span id="cb5-364"><a href="#cb5-364" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(\tilde{\beta}) = C \mathrm{Var}(Y) C^\top = \sigma^2 C C^\top$$</span>
+<span id="cb5-365"><a href="#cb5-365" aria-hidden="true" tabindex="-1"></a>Expandindo $C C^\top$:</span>
+<span id="cb5-366"><a href="#cb5-366" aria-hidden="true" tabindex="-1"></a>$$C C^\top = \left<span class="co">[</span><span class="ot">(X^\top X)^{-1} X^\top + D\right</span><span class="co">]</span> \left<span class="co">[</span><span class="ot">X (X^\top X)^{-1} + D^\top\right</span><span class="co">]</span>$$</span>
+<span id="cb5-367"><a href="#cb5-367" aria-hidden="true" tabindex="-1"></a>$$= (X^\top X)^{-1} X^\top X (X^\top X)^{-1} + (X^\top X)^{-1} X^\top D^\top + D X (X^\top X)^{-1} + D D^\top$$</span>
+<span id="cb5-368"><a href="#cb5-368" aria-hidden="true" tabindex="-1"></a>Como $D X = 0$ e $X^\top D^\top = (DX)^\top = 0$:</span>
+<span id="cb5-369"><a href="#cb5-369" aria-hidden="true" tabindex="-1"></a>$$C C^\top = (X^\top X)^{-1} + D D^\top$$</span>
+<span id="cb5-370"><a href="#cb5-370" aria-hidden="true" tabindex="-1"></a>Multiplicando por $\sigma^2$:</span>
+<span id="cb5-371"><a href="#cb5-371" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(\tilde{\beta}) = \sigma^2 (X^\top X)^{-1} + \sigma^2 D D^\top = \mathrm{Var}(\hat{\beta}) + \sigma^2 D D^\top$$</span>
+<span id="cb5-372"><a href="#cb5-372" aria-hidden="true" tabindex="-1"></a>Como $D D^\top$ é uma matriz semidefinida positiva para qualquer matriz real $D$ ($a^\top D D^\top a = <span class="sc">\|</span>D^\top a<span class="sc">\|</span>^2 \ge 0$), concluímos que:</span>
+<span id="cb5-373"><a href="#cb5-373" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(\tilde{\beta}) - \mathrm{Var}(\hat{\beta}) = \sigma^2 D D^\top \ge 0$$</span>
+<span id="cb5-374"><a href="#cb5-374" aria-hidden="true" tabindex="-1"></a>Portanto, a variância de qualquer combinação linear de $\hat{\beta}$ é sempre menor ou igual à variância de qualquer outro estimador linear não viciado $\tilde{\beta}$, com igualdade ocorrendo se e somente se $D = 0$, isto é, quando $\tilde{\beta} \equiv \hat{\beta}$. Isso conclui a prova da otimalidade BLUE de Gauss-Markov.</span>
+<span id="cb5-375"><a href="#cb5-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-376"><a href="#cb5-376" aria-hidden="true" tabindex="-1"></a><span class="fu">### Demonstração da Matriz Chapéu e Projeção Geométrica</span></span>
+<span id="cb5-377"><a href="#cb5-377" aria-hidden="true" tabindex="-1"></a>Geometricamente, o vetor $Y$ reside no espaço euclidiano $\mathbb{R}^n$. A matriz $X_{n \times p}$ define um subespaço de dimensão $p$, denominado espaço coluna de $X$, $\mathcal{C}(X)$.</span>
+<span id="cb5-378"><a href="#cb5-378" aria-hidden="true" tabindex="-1"></a>O estimador $\hat{Y} = X\hat{\beta}$ é o ponto em $\mathcal{C}(X)$ mais próximo de $Y$.</span>
+<span id="cb5-379"><a href="#cb5-379" aria-hidden="true" tabindex="-1"></a>A matriz $H = X(X^\top X)^{-1}X^\top$ é exatamente o **operador de projeção ortogonal** sobre $\mathcal{C}(X)$, e a matriz $M = I_n - H$ é a projeção ortogonal sobre o complemento ortogonal $\mathcal{C}(X)^\perp$.</span>
+<span id="cb5-380"><a href="#cb5-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-381"><a href="#cb5-381" aria-hidden="true" tabindex="-1"></a>Disso decorrem imediatamente as relações de ortogonalidade:</span>
+<span id="cb5-382"><a href="#cb5-382" aria-hidden="true" tabindex="-1"></a>$$X^\top e = X^\top (I_n - H) Y = (X^\top - X^\top X(X^\top X)^{-1} X^\top) Y = (X^\top - X^\top) Y = 0$$</span>
+<span id="cb5-383"><a href="#cb5-383" aria-hidden="true" tabindex="-1"></a>$$\hat{Y}^\top e = (HY)^\top (I_n - H)Y = Y^\top H (I_n - H) Y = Y^\top (H - H^2) Y = 0$$</span>
+<span id="cb5-384"><a href="#cb5-384" aria-hidden="true" tabindex="-1"></a>Os resíduos de mínimos quadrados são perfeitamente ortogonais às variáveis preditoras e aos valores ajustados.</span>
+<span id="cb5-385"><a href="#cb5-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-386"><a href="#cb5-386" aria-hidden="true" tabindex="-1"></a><span class="fu">### Implementação Matricial do MQO em R e Python</span></span>
+<span id="cb5-387"><a href="#cb5-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-388"><a href="#cb5-388" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb5-389"><a href="#cb5-389" aria-hidden="true" tabindex="-1"></a><span class="co"># Implementação matricial direta do MQO</span></span>
+<span id="cb5-390"><a href="#cb5-390" aria-hidden="true" tabindex="-1"></a>ajustar_mqo <span class="ot">&lt;-</span> <span class="cf">function</span>(X, y) {</span>
+<span id="cb5-391"><a href="#cb5-391" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Adiciona coluna de 1s para o intercepto caso não exista</span></span>
+<span id="cb5-392"><a href="#cb5-392" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">all</span>(X[, <span class="dv">1</span>] <span class="sc">==</span> <span class="dv">1</span>)) {</span>
+<span id="cb5-393"><a href="#cb5-393" aria-hidden="true" tabindex="-1"></a>    X <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="at">Intercepto =</span> <span class="dv">1</span>, X)</span>
+<span id="cb5-394"><a href="#cb5-394" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-395"><a href="#cb5-395" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(X)</span>
+<span id="cb5-396"><a href="#cb5-396" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ncol</span>(X)</span>
+<span id="cb5-397"><a href="#cb5-397" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-398"><a href="#cb5-398" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Equações normais: beta_hat = (X'X)^(-1) X'Y</span></span>
+<span id="cb5-399"><a href="#cb5-399" aria-hidden="true" tabindex="-1"></a>  XtX <span class="ot">&lt;-</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> X</span>
+<span id="cb5-400"><a href="#cb5-400" aria-hidden="true" tabindex="-1"></a>  XtY <span class="ot">&lt;-</span> <span class="fu">t</span>(X) <span class="sc">%*%</span> y</span>
+<span id="cb5-401"><a href="#cb5-401" aria-hidden="true" tabindex="-1"></a>  beta_hat <span class="ot">&lt;-</span> <span class="fu">solve</span>(XtX, XtY)</span>
+<span id="cb5-402"><a href="#cb5-402" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-403"><a href="#cb5-403" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Matriz chapeu e projecoes</span></span>
+<span id="cb5-404"><a href="#cb5-404" aria-hidden="true" tabindex="-1"></a>  H <span class="ot">&lt;-</span> X <span class="sc">%*%</span> <span class="fu">solve</span>(XtX) <span class="sc">%*%</span> <span class="fu">t</span>(X)</span>
+<span id="cb5-405"><a href="#cb5-405" aria-hidden="true" tabindex="-1"></a>  y_hat <span class="ot">&lt;-</span> H <span class="sc">%*%</span> y</span>
+<span id="cb5-406"><a href="#cb5-406" aria-hidden="true" tabindex="-1"></a>  residuos <span class="ot">&lt;-</span> y <span class="sc">-</span> y_hat</span>
+<span id="cb5-407"><a href="#cb5-407" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-408"><a href="#cb5-408" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Variancia dos residuos e matriz de covariancia</span></span>
+<span id="cb5-409"><a href="#cb5-409" aria-hidden="true" tabindex="-1"></a>  sq_res <span class="ot">&lt;-</span> <span class="fu">sum</span>(residuos<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb5-410"><a href="#cb5-410" aria-hidden="true" tabindex="-1"></a>  sigma2_hat <span class="ot">&lt;-</span> sq_res <span class="sc">/</span> (n <span class="sc">-</span> p)</span>
+<span id="cb5-411"><a href="#cb5-411" aria-hidden="true" tabindex="-1"></a>  var_beta <span class="ot">&lt;-</span> sigma2_hat <span class="sc">*</span> <span class="fu">solve</span>(XtX)</span>
+<span id="cb5-412"><a href="#cb5-412" aria-hidden="true" tabindex="-1"></a>  ep_beta <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(var_beta))</span>
+<span id="cb5-413"><a href="#cb5-413" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-414"><a href="#cb5-414" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">list</span>(</span>
+<span id="cb5-415"><a href="#cb5-415" aria-hidden="true" tabindex="-1"></a>    <span class="at">coeficientes =</span> <span class="fu">as.vector</span>(beta_hat),</span>
+<span id="cb5-416"><a href="#cb5-416" aria-hidden="true" tabindex="-1"></a>    <span class="at">erros_padrao =</span> ep_beta,</span>
+<span id="cb5-417"><a href="#cb5-417" aria-hidden="true" tabindex="-1"></a>    <span class="at">sigma2 =</span> sigma2_hat,</span>
+<span id="cb5-418"><a href="#cb5-418" aria-hidden="true" tabindex="-1"></a>    <span class="at">graus_liberdade =</span> n <span class="sc">-</span> p</span>
+<span id="cb5-419"><a href="#cb5-419" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb5-420"><a href="#cb5-420" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-421"><a href="#cb5-421" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-422"><a href="#cb5-422" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-423"><a href="#cb5-423" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb5-424"><a href="#cb5-424" aria-hidden="true" tabindex="-1"></a><span class="co"># Equivalente matricial em Python com numpy</span></span>
+<span id="cb5-425"><a href="#cb5-425" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-426"><a href="#cb5-426" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-427"><a href="#cb5-427" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ajustar_mqo(X, y):</span>
+<span id="cb5-428"><a href="#cb5-428" aria-hidden="true" tabindex="-1"></a>    n, p_vars <span class="op">=</span> X.shape</span>
+<span id="cb5-429"><a href="#cb5-429" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Adiciona vetor unitario para o intercepto</span></span>
+<span id="cb5-430"><a href="#cb5-430" aria-hidden="true" tabindex="-1"></a>    X_design <span class="op">=</span> np.column_stack([np.ones(n), X])</span>
+<span id="cb5-431"><a href="#cb5-431" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> X_design.shape[<span class="dv">1</span>]</span>
+<span id="cb5-432"><a href="#cb5-432" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-433"><a href="#cb5-433" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Inversao via sistema linear (mais estavel que inv())</span></span>
+<span id="cb5-434"><a href="#cb5-434" aria-hidden="true" tabindex="-1"></a>    XtX <span class="op">=</span> X_design.T <span class="op">@</span> X_design</span>
+<span id="cb5-435"><a href="#cb5-435" aria-hidden="true" tabindex="-1"></a>    XtY <span class="op">=</span> X_design.T <span class="op">@</span> y</span>
+<span id="cb5-436"><a href="#cb5-436" aria-hidden="true" tabindex="-1"></a>    beta_hat <span class="op">=</span> np.linalg.solve(XtX, XtY)</span>
+<span id="cb5-437"><a href="#cb5-437" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-438"><a href="#cb5-438" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Residuos e QMRes</span></span>
+<span id="cb5-439"><a href="#cb5-439" aria-hidden="true" tabindex="-1"></a>    y_hat <span class="op">=</span> X_design <span class="op">@</span> beta_hat</span>
+<span id="cb5-440"><a href="#cb5-440" aria-hidden="true" tabindex="-1"></a>    residuos <span class="op">=</span> y <span class="op">-</span> y_hat</span>
+<span id="cb5-441"><a href="#cb5-441" aria-hidden="true" tabindex="-1"></a>    sq_res <span class="op">=</span> np.<span class="bu">sum</span>(residuos<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb5-442"><a href="#cb5-442" aria-hidden="true" tabindex="-1"></a>    qm_res <span class="op">=</span> sq_res <span class="op">/</span> (n <span class="op">-</span> p)</span>
+<span id="cb5-443"><a href="#cb5-443" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-444"><a href="#cb5-444" aria-hidden="true" tabindex="-1"></a>    var_beta <span class="op">=</span> qm_res <span class="op">*</span> np.linalg.inv(XtX)</span>
+<span id="cb5-445"><a href="#cb5-445" aria-hidden="true" tabindex="-1"></a>    erros_padrao <span class="op">=</span> np.sqrt(np.diag(var_beta))</span>
+<span id="cb5-446"><a href="#cb5-446" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-447"><a href="#cb5-447" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb5-448"><a href="#cb5-448" aria-hidden="true" tabindex="-1"></a>        <span class="st">"coeficientes"</span>: beta_hat,</span>
+<span id="cb5-449"><a href="#cb5-449" aria-hidden="true" tabindex="-1"></a>        <span class="st">"erros_padrao"</span>: erros_padrao,</span>
+<span id="cb5-450"><a href="#cb5-450" aria-hidden="true" tabindex="-1"></a>        <span class="st">"qm_res"</span>: qm_res,</span>
+<span id="cb5-451"><a href="#cb5-451" aria-hidden="true" tabindex="-1"></a>        <span class="st">"df"</span>: n <span class="op">-</span> p</span>
+<span id="cb5-452"><a href="#cb5-452" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-453"><a href="#cb5-453" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-454"><a href="#cb5-454" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>EST074 - Análise de Regressão (UFJF)</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Compilado com Quarto para GitHub Pages</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

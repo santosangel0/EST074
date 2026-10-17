@@ -1,0 +1,148 @@
+/* Custom styles for EST074 - Análise de Regressão Quarto Book */
+
+:root {
+  --primary-color: #1a5276;
+  --primary-light: #2980b9;
+  --secondary-color: #27ae60;
+  --accent-color: #d35400;
+  --bg-subtle: #f8f9fa;
+  --text-dark: #2c3e50;
+  --border-subtle: #e2e8f0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text-dark);
+  line-height: 1.7;
+}
+
+/* Tabset enhancements */
+.panel-tabset {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.panel-tabset .nav-tabs {
+  background-color: #f1f5f9;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.5rem 0.75rem 0 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.panel-tabset .nav-tabs .nav-link {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #475569;
+  border: 1px solid transparent;
+  border-radius: 6px 6px 0 0;
+  padding: 0.55rem 1.1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.panel-tabset .nav-tabs .nav-link:hover {
+  color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.6);
+  border-color: #cbd5e1;
+}
+
+.panel-tabset .nav-tabs .nav-link.active {
+  color: var(--primary-color);
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-bottom: 2px solid #ffffff;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.panel-tabset .tab-content {
+  padding: 1.5rem 1.75rem;
+}
+
+/* Special styling for slide transcript vs deep notes */
+.panel-tabset .tab-pane:first-child {
+  border-left: 3px solid #64748b;
+  padding-left: 1.25rem;
+  background-color: #fafbfc;
+  border-radius: 0 0 6px 6px;
+}
+
+.panel-tabset .tab-pane:last-child {
+  border-left: 3px solid var(--secondary-color);
+  padding-left: 1.25rem;
+  background-color: #fcfffd;
+  border-radius: 0 0 6px 6px;
+}
+
+/* Callouts and alert tweaks */
+.callout {
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Math equations spacing */
+.katex-display, .MathJax_Display {
+  margin: 1.2rem 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+/* Code blocks */
+div.sourceCode {
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin: 1rem 0;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  width: 100%;
+}
+
+table thead th {
+  background-color: #f1f5f9;
+  border-bottom: 2px solid #cbd5e1;
+  font-weight: 600;
+  padding: 0.65rem 0.85rem;
+}
+
+table tbody td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Badges and tags */
+.badge-slide {
+  display: inline-block;
+  background-color: #475569;
+  color: #ffffff;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.badge-notes {
+  display: inline-block;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}

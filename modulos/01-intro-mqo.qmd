@@ -1,0 +1,454 @@
+# Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados
+
+Este módulo compreende as notas e transcrições dos tópicos iniciais da disciplina EST074 (slides **p01**, **p02**, **p03** e **p04**), cobrindo a evolução conceitual da análise de regressão, ferramentas matriciais essenciais, definição formal do modelo linear clássico, suposições de Gauss-Markov e a teoria da estimação por Mínimos Quadrados Ordinários (MQO) e Máxima Verossimilhança (MV).
+
+---
+
+## 1.1 Motivação e Origem da Análise de Regressão
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Motivação
+Os primeiros conceitos de regressão foram propostos por Galton (1889), aplicados na Antropometria, em que o objetivo era equacionar as relações de dependência entre a altura dos pais (variável explicativa, variável preditora ou covariável) e a altura dos filhos (variável de interesse, variável resposta ou desfecho).
+
+Porém, esses conceitos puderam ser aplicados em qualquer contexto, como:
+- Na necessidade de uma empresa em analisar os fatores que podem interferir nas vendas;
+- Na predição de mortalidade de uma pessoa ao contrair uma doença, baseada nas suas características, como idade e doenças pré-existentes;
+- Caracterização de um cliente em bom ou mau pagador, baseada no máximo de dias de atraso nos últimos 6 meses, se fez ou não saque no cartão e no tempo que o cliente tem o cartão;
+- Distância de uma galáxia até a Terra, baseada no valor dos tons de cinza de cada pixel de uma foto da galáxia em observação.
+
+A análise de regressão é uma técnica estatística para investigar e modelar a relação entre as variáveis. Na verdade, a análise de regressão pode ser a técnica estatística mais utilizada (Montgomery et al., 2021).
+
+Os modelos de regressão ganharam ainda mais notoriedade com a popularização do Aprendizado de Máquina (*machine learning*), especificamente no Aprendizado Supervisionado (*supervised learning*), em que o foco é preditivo, isto é, a partir de valores de entrada (covariáveis), se deseja prever o resultado esperado (variável resposta).
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Contexto Histórico e o Fenômeno da "Regressão à Média"
+O termo "regressão" tem origem histórica curiosa: Francis Galton [@galton1889], estudando hereditariedade biológica, observou que pais com estatura excepcionalmente alta tendiam a ter filhos que, em média, eram ligeiramente mais baixos que eles (mais próximos da média da população geral), enquanto pais muito baixos geravam filhos ligeiramente mais altos que eles. Galton denominou essa dinâmica de *"regression towards mediocrity"* (regressão em direção à mediocridade/média). 
+
+Hoje, na teoria estatística contemporânea [@montgomery2021; @kutner2005], o termo designa o estudo da **distribuição condicional** da variável resposta $Y$ dado o conhecimento das variáveis explicativas $X$, ou seja, a modelagem da esperança condicional:
+$$\mu(x) = \mathbb{E}[Y \mid X = x]$$
+
+### Diferenciação entre Causalidade e Associação Estatística
+Um modelo de regressão descreve **associação matemática** e covariabilidade condicional, não necessariamente causalidade intrínseca. Para atribuir causalidade a um coeficiente estimado $\hat{\beta}_j$, é obrigatório que o mecanismo gerador de dados derive de um experimento controlado aleatorizado (*Randomized Controlled Trial - RCT*) ou que se adotem hipóteses estritas de identificação causal e controle de variáveis de confusão (DAGs / Equações Estruturais).
+
+### Simulação em R: O Fenômeno de Galton
+O código abaixo reproduz em R a dispersão bivariada com a reta de regressão e a linha diagonal de identidade $Y = X$, ilustrando o fenômeno de regressão em direção à média populacional:
+
+```r
+# Simulação do fenômeno de regressão à média (Galton)
+set.seed(42)
+n <- 300
+altura_pais <- rnorm(n, mean = 175, sd = 8)
+# Filhos herdam parte da estatura mais um componente aleatório ambiental
+altura_filhos <- 175 + 0.55 * (altura_pais - 175) + rnorm(n, mean = 0, sd = 6)
+
+df_galton <- data.frame(pais = altura_pais, filhos = altura_filhos)
+mod <- lm(filhos ~ pais, data = df_galton)
+
+# Visualização gráfica
+plot(df_galton$pais, df_galton$filhos, pch = 19, col = rgb(0.1, 0.4, 0.7, 0.6),
+     xlab = "Altura dos Pais (cm)", ylab = "Altura dos Filhos (cm)",
+     main = "Fenômeno da Regressão à Média (Galton, 1889)")
+abline(mod, col = "firebrick", lwd = 2.5) # Reta de regressão (declive ~ 0.55)
+abline(a = 0, b = 1, col = "darkgray", lty = 2, lwd = 1.8) # Linha Y = X
+abline(v = 175, h = 175, col = "gray80", lty = 3)
+legend("topleft", legend = c("Reta de Regressão", "Identidade (Y = X)"),
+       col = c("firebrick", "darkgray"), lty = c(1, 2), lwd = 2, bty = "n")
+```
+
+```python
+# Equivalente em Python usando statsmodels e matplotlib
+import numpy as np
+import matplotlib.pyplot as plt
+import statsmodels.api as sm
+
+np.random.seed(42)
+n = 300
+x = np.random.normal(175, 8, n)
+y = 175 + 0.55 * (x - 175) + np.random.normal(0, 6, n)
+
+X_const = sm.add_constant(x)
+model = sm.OLS(y, X_const).fit()
+
+plt.figure(figsize=(8, 5))
+plt.scatter(x, y, alpha=0.6, color="#1f77b4", edgecolors="none")
+plt.plot(x, model.predict(X_const), color="crimson", lw=2, label=f"Regressão: $\\hat{{Y}} = {model.params[0]:.1f} + {model.params[1]:.2f}X$")
+plt.plot([150, 200], [150, 200], "k--", lw=1.5, alpha=0.7, label="Diagonal Y = X")
+plt.xlabel("Altura dos Pais (cm)")
+plt.ylabel("Altura dos Filhos (cm)")
+plt.title("Regressão em Direção à Média")
+plt.legend()
+plt.grid(True, linestyle=":", alpha=0.6)
+plt.show()
+```
+:::
+
+---
+
+## 1.2 O Modelo de Regressão Linear Simples e Aplicação Inicial
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Modelo de Regressão Linear Simples
+Como nós vimos, existem fenômenos (variável resposta, $Y$) que podem ser descritos por uma variável preditora ($x$), isto é feito da seguinte forma:
+$$Y \sim \mathcal{D}(\mu, \sigma^2)$$
+em que $\mu = \beta_1 + \beta_2 x$ e $\sigma^2$ são, respectivamente, a média e variância da distribuição de $Y$, $x$ é um valor conhecido, $\beta_1$, $\beta_2$ e $\sigma^2$ são parâmetros desconhecidos. Além disso, $\beta_1$ e $\beta_2$ são chamados de coeficientes de regressão.
+
+É conveniente escrever a relação entre as variáveis resposta e preditora da seguinte forma:
+$$Y = \beta_1 + \beta_2 x + \varepsilon$$
+em que $\varepsilon \sim \mathcal{D}(0, \sigma^2)$, sendo $\varepsilon$ denominado de erro. 
+*Observação:* essa formatação é sempre possível nas famílias de locação-escala.
+
+### Interpretação dos Parâmetros do Modelo
+- **Parâmetro $\beta_1$:** Ele é o intercepto da reta de regressão. Ele é o valor esperado da variável resposta quando a variável preditora vale zero.
+- **Parâmetro $\beta_2$:** Ele é o declive da reta de regressão, o coeficiente angular. Ele indica o acréscimo esperado na variável resposta quando aumenta-se uma unidade na variável preditora.
+
+### Amostra e Estimação Escalar
+A fim de estimar $\beta_1$, $\beta_2$ e $\sigma^2$, e explicitar a relação entre as variáveis, é necessário retirar uma amostra independente de tamanho $n$ do par $(Y, x)$, i.e., $(Y_1, x_1), (Y_2, x_2), \dots, (Y_n, x_n)$, com
+$$Y_\ell \sim \mathcal{D}(\mu_\ell, \sigma^2), \quad \text{em que } \mu_\ell = \beta_1 + \beta_2 x_\ell, \quad \ell = 1, 2, \dots, n$$
+De forma alternativa:
+$$Y_\ell = \beta_1 + \beta_2 x_\ell + \varepsilon_\ell, \quad \text{com } \varepsilon_\ell \sim \mathcal{D}(0, \sigma^2), \quad \ell = 1, 2, \dots, n$$
+Em outras palavras, $\varepsilon_1, \varepsilon_2, \dots, \varepsilon_n$ são variáveis aleatórias independentes e com a mesma variância $\sigma^2$.
+
+### Suposições
+Resumindo, as suposições de um modelo de regressão linear simples são de que:
+1. A relação entre as variáveis resposta e as preditoras é linear;
+2. Os erros têm média zero;
+3. Variância constante ($\sigma^2$);
+4. E são não correlacionados.
+
+### Estimadores de Mínimos Quadrados
+Pelo Método de Mínimos Quadrados, os estimadores de $\beta_1$ e $\beta_2$ são dados, respectivamente, por:
+$$\hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X} \quad \text{e} \quad \hat{\beta}_2 = \frac{\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^n (X_i - \bar{X})^2} \tag{1}$$
+Os estimadores de mínimos quadrados são não viesados.
+
+O estimador da variância $\sigma^2$ é dado por:
+$$\hat{\sigma}^2 = \frac{\sum_{\ell=1}^n (Y_\ell - \hat{\beta}_1 - \hat{\beta}_2 X_\ell)^2}{n - 2} \tag{2}$$
+O estimador $\hat{\sigma}^2$, dado em (2), também é denominado de **quadrado médio do resíduo** ($QMRes$) e ele é um estimador não viciado para $\sigma^2$.
+
+### Aplicação: Brasileirão (Pontos Corridos)
+O campeonato brasileiro de futebol masculino, o Brasileirão, tem sido disputado no sistema de pontos corridos desde 2003. Avalia-se se existe uma relação linear entre o aproveitamento de pontos (%) e o saldo de gols dos times campeões.
+
+Após o ajuste (estimação dos parâmetros), utilizando (1) e (2), obtém-se o modelo estimado:
+$$\hat{Y}_\ell = 57{,}2 + 0{,}3 x_{\ell 2}$$
+em que $\hat{Y}_\ell$: aproveitamento de pontos (%) esperado do $\ell$-ésimo time campeão, $x_{\ell 2}$: saldo de gols do $\ell$-ésimo time campeão, $\ell = 1, 2, \dots, 23$ e $QMRes = 11{,}9$.
+
+- $\hat{\beta}_1 = 57{,}2$: se o saldo de gols fosse zero, o aproveitamento médio de pontos do time campeão seria de $57{,}2\%$.
+- $\hat{\beta}_2 = 0{,}3$: a cada um gol a mais no saldo, ocorreria um aumento médio de $0{,}3$ ponto percentual no aproveitamento do time campeão.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Dedução Analítica dos Estimadores Escalares de MQO
+O objetivo do Método dos Mínimos Quadrados Ordinários é encontrar a reta que minimiza a soma dos quadrados das distâncias verticais (erros) entre os pontos observados e a reta candidata:
+$$S(\beta_1, \beta_2) = \sum_{i=1}^n \varepsilon_i^2 = \sum_{i=1}^n (Y_i - \beta_1 - \beta_2 X_i)^2$$
+
+Para minimizar uma função convexa sem restrições, calculamos as derivadas parciais e igualamos a zero:
+
+1. Derivada em relação a $\beta_1$:
+   $$\frac{\partial S}{\partial \beta_1} = -2 \sum_{i=1}^n (Y_i - \beta_1 - \beta_2 X_i) = 0 \implies \sum_{i=1}^n Y_i - n\beta_1 - \beta_2 \sum_{i=1}^n X_i = 0$$
+   Dividindo toda a expressão por $n$:
+   $$\bar{Y} - \beta_1 - \beta_2 \bar{X} = 0 \implies \hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X}$$
+   *Conclusão geométrica fundamental:* A reta de regressão por MQO **sempre passa pelo centro de gravidade dos dados** $(\bar{X}, \bar{Y})$.
+
+2. Derivada em relação a $\beta_2$:
+   $$\frac{\partial S}{\partial \beta_2} = -2 \sum_{i=1}^n X_i (Y_i - \beta_1 - \beta_2 X_i) = 0 \implies \sum_{i=1}^n X_i Y_i - \beta_1 \sum_{i=1}^n X_i - \beta_2 \sum_{i=1}^n X_i^2 = 0$$
+   Substituindo $\hat{\beta}_1 = \bar{Y} - \hat{\beta}_2 \bar{X}$:
+   $$\sum_{i=1}^n X_i Y_i - (\bar{Y} - \hat{\beta}_2 \bar{X})(n\bar{X}) - \hat{\beta}_2 \sum_{i=1}^n X_i^2 = 0$$
+   $$\sum_{i=1}^n X_i Y_i - n\bar{X}\bar{Y} = \hat{\beta}_2 \left( \sum_{i=1}^n X_i^2 - n\bar{X}^2 \right)$$
+   Lembrando das identidades de somas de produtos cruzados ($S_{XY}$) e somas de quadrados ($S_{XX}$):
+   $$\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y}) = \sum_{i=1}^n X_i Y_i - n\bar{X}\bar{Y} = S_{XY}$$
+   $$\sum_{i=1}^n (X_i - \bar{X})^2 = \sum_{i=1}^n X_i^2 - n\bar{X}^2 = S_{XX}$$
+   Portanto:
+   $$\hat{\beta}_2 = \frac{S_{XY}}{S_{XX}} = \frac{\sum_{i=1}^n (X_i - \bar{X})(Y_i - \bar{Y})}{\sum_{i=1}^n (X_i - \bar{X})^2}$$
+
+### Graus de Liberdade do Estimador $\hat{\sigma}^2$
+Por que o denominador em $\hat{\sigma}^2$ é $n - 2$?
+Ao estimar a variância dos resíduos, temos $n$ observações iniciais. No entanto, o cálculo dos resíduos $e_i = Y_i - \hat{\beta}_1 - \hat{\beta}_2 X_i$ impõe duas restrições lineares estritas advindas das equações normais:
+1. $\sum_{i=1}^n e_i = 0$
+2. $\sum_{i=1}^n X_i e_i = 0$
+
+Isso consome exatamente $2$ graus de liberdade. Logo, a soma dos quadrados dos resíduos tem distribuição proporcional a uma $\chi^2$ com $n - 2$ graus de liberdade, fazendo com que dividir por $n - 2$ torne o estimador estritamente **não viciado**: $\mathbb{E}[QMRes] = \sigma^2$.
+:::
+
+---
+
+## 1.3 Álgebra Linear Aplicada e Propriedades dos Estimadores
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Resultados Matriciais
+- A soma das raízes características (autovalores) de $A$ é o traço de $A$, $\mathrm{tr}(A) = \sum \lambda_i$.
+- Se o posto de $A$ é igual a $r$, $r(A) = r$, o autovalor zero é raiz da equação característica com multiplicidade $n - r$.
+
+### Formas Quadráticas
+A função $f(x_1, \dots, x_n)$ de $n$ variáveis reais é uma forma quadrática se:
+$$f(x_1, \dots, x_n) = \sum_{i=1}^n \sum_{j=1}^n a_{ij} x_i x_j = x^\top A x$$
+em que $x = (x_1, \dots, x_n)^\top$ e $A = (a_{ij})$ é uma matriz simétrica $n \times n$, denominada matriz da forma quadrática.
+
+**Classificação:**
+1. $x^\top A x$ é **positiva definida** se $x^\top A x > 0$, para todo $x \neq 0$;
+2. $x^\top A x$ é **positiva semidefinida** se $x^\top A x \ge 0$, para pelo menos um $x \neq 0$;
+3. $A$ é dita **não negativa** se for positiva definida ou positiva semidefinida;
+4. $x^\top A x$ é **negativa definida** se $-x^\top A x$ é positiva definida.
+
+**Exemplo (Matriz de Covariâncias):** Seja $X$ um vetor aleatório $n$-dimensional com matriz de covariâncias $\Sigma$. Se $a$ é um vetor não aleatório:
+$$\mathrm{Var}(a^\top X) = a^\top \Sigma a \ge 0, \quad \forall a \neq 0$$
+Logo, $\Sigma$ é não negativa definida. A matriz $\Sigma$ será estritamente positiva definida se e somente se não existirem relações lineares exatas entre as variáveis aleatórias.
+
+### Teoremas Fundamentais (Graybill, 1983)
+- **Teorema 1:** Se $A_{n \times n}$ é positiva semidefinida, então $r(A) < n$, $a_{ii} \ge 0$, e se $a_{jj} = 0$, todos os elementos da $j$-ésima linha e coluna são zero. Para qualquer $P$, $P^\top A P$ é positiva semidefinida.
+- **Teorema 2:** Se $A_{n \times n}$ é positiva definida, então $r(A) = n$, $a_{ii} > 0$, e $P^\top A P$ é positiva definida para qualquer $P$ não singular.
+- **Critério de Sylvester:** $A$ é positiva definida se e somente se todos os menores principais líderes forem positivos:
+  $$a_{11} > 0, \quad \det \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix} > 0, \quad \dots, \quad \det(A) > 0$$
+
+### Derivadas Matriciais
+Seja $x = (x_1, \dots, x_n)^\top$ e $f(x)$ uma função real. A derivada de $f(x)$ em relação ao vetor $x$ é o vetor gradiente:
+$$\frac{\partial f(x)}{\partial x} = \begin{pmatrix} \frac{\partial f(x)}{\partial x_1} & \dots & \frac{\partial f(x)}{\partial x_n} \end{pmatrix}^\top$$
+
+- **Teorema 1:** Se $a$ é um vetor de constantes e $f(x) = a^\top x = x^\top a$, então:
+  $$\frac{\partial (a^\top x)}{\partial x} = a$$
+- **Teorema 2:** Se $f(x) = x^\top A x$, com $A$ simétrica de constantes, então:
+  $$\frac{\partial (x^\top A x)}{\partial x} = 2Ax$$
+
+### Decomposições Matriciais
+- **Fatoração $LDL^\top$:** Matriz simétrica $A = LDL^\top$ ($L$ triangular inferior com 1s na diagonal, $D$ diagonal).
+- **Decomposição de Cholesky:** Matriz $A$ simétrica e positiva definida fatora de forma única em $A = T^\top T$ (onde $T$ é triangular superior com $t_{ii} > 0$), ou equivalentemente $A = W W^\top$.
+- **Decomposição Espectral:** Qualquer matriz simétrica $A_{p \times p}$ decompõe-se como:
+  $$A = \Gamma D \Gamma^\top = \sum_{i=1}^p \lambda_i x_i x_i^\top$$
+  em que $D = \mathrm{diag}(\lambda_1, \dots, \lambda_p)$ e $\Gamma = (x_1, \dots, x_p)$ é matriz ortogonal formada pelos autovetores normalizados ($x_i^\top x_i = 1$ e $x_i^\top x_j = 0$ para $i \neq j$).
+
+### Propriedades Teóricas dos Estimadores
+- **Não viciado:** $\mathbb{E}(\hat{\theta}) = \theta$.
+- **Consistente:** $\lim_{n \to \infty} P(|\hat{\theta} - \theta| \ge \varepsilon) = 0, \forall \varepsilon > 0$.
+- **Suficiente:** A distribuição condicional dos dados dado $\hat{\theta}$ independe de $\theta$.
+- **Mínima Variância:** Para qualquer outro estimador $\theta^*$, $\mathrm{Var}(\hat{\theta}) \le \mathrm{Var}(\theta^*)$.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Demonstração das Derivadas Vetoriais
+A álgebra matricial simplifica drasticamente a inferência em regressão múltipla. Vamos demonstrar os dois teoremas de derivação elemento por elemento:
+
+1. **Derivada da forma linear:**
+   $$a^\top x = \sum_{j=1}^n a_j x_j \implies \frac{\partial}{\partial x_k}\left(\sum_{j=1}^n a_j x_j\right) = a_k$$
+   Reunindo todos os $k = 1, \dots, n$ no vetor coluna, obtemos diretamente:
+   $$\frac{\partial (a^\top x)}{\partial x} = a$$
+
+2. **Derivada da forma quadrática:**
+   $$x^\top A x = \sum_{i=1}^n \sum_{j=1}^n a_{ij} x_i x_j = a_{kk} x_k^2 + x_k \sum_{j \neq k} a_{kj} x_j + x_k \sum_{i \neq k} a_{ik} x_i + \sum_{i \neq k}\sum_{j \neq k} a_{ij} x_i x_j$$
+   Derivando em relação a $x_k$:
+   $$\frac{\partial (x^\top A x)}{\partial x_k} = 2 a_{kk} x_k + \sum_{j \neq k} a_{kj} x_j + \sum_{i \neq k} a_{ik} x_i = \sum_{j=1}^n a_{kj} x_j + \sum_{i=1}^n a_{ik} x_i$$
+   Como $A$ é simétrica ($a_{ik} = a_{ki}$), ambas as somas são o produto da $k$-ésima linha de $A$ pelo vetor $x$:
+   $$\frac{\partial (x^\top A x)}{\partial x_k} = 2 \sum_{j=1}^n a_{kj} x_j = 2 (Ax)_k \implies \frac{\partial (x^\top A x)}{\partial x} = 2Ax$$
+
+### Cholesky e Decomposição Espectral na Prática Computacional
+A decomposição de Cholesky é o algoritmo padrão utilizado por pacotes como R (`chol()`) e NumPy/SciPy (`np.linalg.cholesky`) para inverter matrizes de covariâncias e calcular estimadores com máxima estabilidade numérica e custo computacional reduzido ($\mathcal{O}(p^3 / 3)$ contra $\mathcal{O}(p^3)$ do algoritmo clássico de Gauss-Jordan).
+:::
+
+---
+
+## 1.4 Formulação Matricial do Modelo Linear e Suposições Clássicas
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Modelo de Regressão Linear em Forma Matricial
+Suponham que $Y_1, Y_2, \dots, Y_n$ sejam variáveis aleatórias tais que:
+$$Y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + \dots + \beta_p x_{ip} + \varepsilon_i, \quad i = 1, \dots, n$$
+Em forma matricial compacta:
+$$Y = X\beta + \varepsilon$$
+em que:
+$$Y = \begin{pmatrix} Y_1 \\ Y_2 \\ \vdots \\ Y_n \end{pmatrix}, \quad X = \begin{pmatrix} x_{11} & x_{12} & \dots & x_{1p} \\ x_{21} & x_{22} & \dots & x_{2p} \\ \vdots & \vdots & \ddots & \vdots \\ x_{n1} & x_{n2} & \dots & x_{np} \end{pmatrix}, \quad \beta = \begin{pmatrix} \beta_1 \\ \beta_2 \\ \vdots \\ \beta_p \end{pmatrix}, \quad \varepsilon = \begin{pmatrix} \varepsilon_1 \\ \varepsilon_2 \\ \vdots \\ \varepsilon_n \end{pmatrix}$$
+Geralmente, a primeira coluna de $X$ é formada apenas pelo número 1 ($x_{i1} = 1$), correspondendo ao intercepto.
+
+### Suposições do Modelo Linear Clássico
+1. $\mathbb{E}(\varepsilon) = 0$, isto é, $\mathbb{E}(\varepsilon_i) = 0$ para todo $i = 1, \dots, n$;
+2. $\mathrm{Var}(\varepsilon) = \mathbb{E}(\varepsilon \varepsilon^\top) = \sigma^2 I_n$, isto é, os erros têm variância comum $\sigma^2$ (homocedasticidade) e covariância nula entre diferentes observações, $\mathrm{Cov}(\varepsilon_i, \varepsilon_j) = 0, \forall i \neq j$;
+3. A matriz $X$ é não estocástica (valores fixos conhecidos) com posto completo $r(X) = p < n$, garantindo que $X^\top X$ seja invertível;
+4. **Normalidade:** Quando assumimos o modelo normal linear, $\varepsilon \sim \mathcal{N}_n(0, \sigma^2 I_n)$, o que implica:
+   $$Y \sim \mathcal{N}_n(X\beta, \sigma^2 I_n)$$
+
+### Padronização de Variáveis
+- **Escala de tamanho unitário:**
+  Centra-se a variável na média e divide-se pela raiz da soma de quadrados dos desvios:
+  $$z_{ij} = \frac{x_{ij} - \bar{x}_j}{\sqrt{\sum_{i=1}^n (x_{ij} - \bar{x}_j)^2}}$$
+  Dessa forma, cada variável transformada tem média zero e comprimento euclidiano unitário $\sum_{i=1}^n z_{ij}^2 = 1$.
+  A matriz de correlação das preditoras passa a ser simplesmente $Z^\top Z$.
+
+### Covariáveis Qualitativas (Dummies)
+Para incluir uma variável categórica com $k$ níveis, utilizam-se $k - 1$ variáveis indicadoras binárias (dummies):
+$$D_{i\ell} = \begin{cases} 1, & \text{se a observação pertence à categoria } \ell \\ 0, & \text{caso contrário} \end{cases}$$
+A categoria omitida atua como **categoria de referência**, sendo absorvida pelo intercepto $\beta_1$.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### A Armadilha da Variável Dummy (*Dummy Variable Trap*)
+Se incluíssemos $k$ variáveis dummy para um fator de $k$ níveis mantendo o intercepto (coluna de 1s), a soma de todas as dummies seria idêntica ao vetor de 1s:
+$$\sum_{\ell=1}^k D_{i\ell} = 1 = x_{i1}$$
+Isso criaria dependência linear estrita entre as colunas de $X$. Consequentemente, o posto de $X$ seria menor que $p$ ($r(X) < p$), o determinante de $X^\top X$ seria nulo ($\det(X^\top X) = 0$), tornando a matriz singular e impossibilitando o cálculo de $(X^\top X)^{-1}$. A exclusão de uma categoria de referência é, portanto, um requisito matemático fundamental.
+
+### Interpretação dos Contrastes Categóricos
+Considere um modelo que prevê o salário ($Y$) a partir do nível de escolaridade (Níveis: Médio, Superior, Pós-graduação), com Nível Médio como referência:
+$$Y = \beta_1 + \beta_2 D_{\text{Sup}} + \beta_3 D_{\text{Pos}} + \varepsilon$$
+- $\mathbb{E}[Y \mid \text{Médio}] = \beta_1$: salário esperado do nível de referência.
+- $\mathbb{E}[Y \mid \text{Superior}] = \beta_1 + \beta_2 \implies \beta_2 = \mathbb{E}[Y \mid \text{Superior}] - \mathbb{E}[Y \mid \text{Médio}]$.
+- $\beta_2$ representa o acréscimo médio no salário em relação a quem possui ensino médio.
+:::
+
+---
+
+## 1.5 Estimação Matricial por Mínimos Quadrados e Máxima Verossimilhança
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Método dos Mínimos Quadrados Matricial
+O vetor de estimadores de mínimos quadrados $\hat{\beta}$ minimiza a soma dos quadrados dos resíduos:
+$$S(\beta) = \varepsilon^\top \varepsilon = (Y - X\beta)^\top (Y - X\beta) = Y^\top Y - 2\beta^\top X^\top Y + \beta^\top X^\top X \beta$$
+Derivando em relação ao vetor $\beta$ e igualando ao vetor nulo:
+$$\frac{\partial S(\beta)}{\partial \beta} = -2 X^\top Y + 2 X^\top X \beta = 0$$
+Obtém-se o sistema de **Equações Normais**:
+$$X^\top X \hat{\beta} = X^\top Y$$
+Como $r(X) = p$, a matriz $X^\top X$ é simétrica e positiva definida, logo invertível. O estimador de Mínimos Quadrados Ordinários (EMQ) é:
+$$\hat{\beta} = (X^\top X)^{-1} X^\top Y \tag{3}$$
+
+### Propriedades do Estimador de Mínimos Quadrados
+1. **Não viciado:** 
+   $$\mathbb{E}(\hat{\beta}) = \mathbb{E}\left[(X^\top X)^{-1} X^\top Y\right] = (X^\top X)^{-1} X^\top (X\beta) = \beta$$
+2. **Matriz de Variâncias e Covariâncias:**
+   $$\mathrm{Var}(\hat{\beta}) = \mathrm{Var}\left[(X^\top X)^{-1} X^\top Y\right] = (X^\top X)^{-1} X^\top \left(\sigma^2 I_n\right) X (X^\top X)^{-1} = \sigma^2 (X^\top X)^{-1}$$
+3. **Teorema de Gauss-Markov:** 
+   O estimador de mínimos quadrados $\hat{\beta}$ é o melhor estimador linear não viciado (*Best Linear Unbiased Estimator* - BLUE), possuindo variância mínima entre todos os estimadores lineares não viesados.
+
+### Valores Ajustados e a Matriz Chapéu
+O vetor de valores preditos pelo modelo é:
+$$\hat{Y} = X \hat{\beta} = X (X^\top X)^{-1} X^\top Y = H Y$$
+A matriz $H = X(X^\top X)^{-1} X^\top$ é denominada **Matriz Chapéu** (*Hat Matrix*).
+- $H$ é simétrica: $H^\top = H$;
+- $H$ é idempotente: $H^2 = H \cdot H = H$;
+- O traço de $H$ é o número de parâmetros: $\mathrm{tr}(H) = p$.
+
+### Vetor de Resíduos e Estimador da Variância
+O vetor de resíduos é:
+$$e = Y - \hat{Y} = Y - HY = (I_n - H) Y$$
+A matriz $(I_n - H)$ também é simétrica e idempotente, com traço e posto iguais a $n - p$.
+A soma de quadrados dos resíduos é:
+$$SQRes = e^\top e = Y^\top (I_n - H) Y$$
+O estimador não viciado da variância $\sigma^2$ é:
+$$\hat{\sigma}^2 = \frac{e^\top e}{n - p} = \frac{SQRes}{n - p} = QMRes$$
+
+### Método da Máxima Verossimilhança (Normalidade)
+Sob a suposição de que $\varepsilon \sim \mathcal{N}_n(0, \sigma^2 I_n)$, a função de verossimilhança conjunta é:
+$$L(\beta, \sigma^2) = (2\pi \sigma^2)^{-n/2} \exp\left\{ -\frac{1}{2\sigma^2} (Y - X\beta)^\top (Y - X\beta) \right\}$$
+A log-verossimilhança é:
+$$\ell(\beta, \sigma^2) = -\frac{n}{2}\ln(2\pi) - \frac{n}{2}\ln(\sigma^2) - \frac{1}{2\sigma^2}(Y - X\beta)^\top (Y - X\beta)$$
+Maximizando em relação a $\beta$ e $\sigma^2$:
+$$\hat{\beta}_{MV} = (X^\top X)^{-1} X^\top Y \equiv \hat{\beta}_{MQO}$$
+$$\tilde{\sigma}^2_{MV} = \frac{SQRes}{n} = \frac{n - p}{n} \hat{\sigma}^2$$
+O estimador de MV da variância é viciado para amostras finitas ($\mathbb{E}[\tilde{\sigma}^2_{MV}] = \frac{n-p}{n}\sigma^2$), embora assintoticamente não viesado e consistente quando $n \to \infty$.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Demonstração do Teorema de Gauss-Markov
+Seja $\tilde{\beta} = C Y$ outro estimador linear qualquer de $\beta$, onde $C$ é uma matriz $p \times n$.
+Para que $\tilde{\beta}$ seja não viciado:
+$$\mathbb{E}(\tilde{\beta}) = C \mathbb{E}(Y) = C X \beta = \beta \implies C X = I_p$$
+Podemos decompor $C$ como $C = (X^\top X)^{-1} X^\top + D$, onde $D = C - (X^\top X)^{-1} X^\top$.
+A condição de não viés impõe:
+$$C X = \left[(X^\top X)^{-1} X^\top + D\right]X = I_p + DX = I_p \implies D X = 0$$
+
+Agora calculamos a matriz de covariância de $\tilde{\beta}$:
+$$\mathrm{Var}(\tilde{\beta}) = C \mathrm{Var}(Y) C^\top = \sigma^2 C C^\top$$
+Expandindo $C C^\top$:
+$$C C^\top = \left[(X^\top X)^{-1} X^\top + D\right] \left[X (X^\top X)^{-1} + D^\top\right]$$
+$$= (X^\top X)^{-1} X^\top X (X^\top X)^{-1} + (X^\top X)^{-1} X^\top D^\top + D X (X^\top X)^{-1} + D D^\top$$
+Como $D X = 0$ e $X^\top D^\top = (DX)^\top = 0$:
+$$C C^\top = (X^\top X)^{-1} + D D^\top$$
+Multiplicando por $\sigma^2$:
+$$\mathrm{Var}(\tilde{\beta}) = \sigma^2 (X^\top X)^{-1} + \sigma^2 D D^\top = \mathrm{Var}(\hat{\beta}) + \sigma^2 D D^\top$$
+Como $D D^\top$ é uma matriz semidefinida positiva para qualquer matriz real $D$ ($a^\top D D^\top a = \|D^\top a\|^2 \ge 0$), concluímos que:
+$$\mathrm{Var}(\tilde{\beta}) - \mathrm{Var}(\hat{\beta}) = \sigma^2 D D^\top \ge 0$$
+Portanto, a variância de qualquer combinação linear de $\hat{\beta}$ é sempre menor ou igual à variância de qualquer outro estimador linear não viciado $\tilde{\beta}$, com igualdade ocorrendo se e somente se $D = 0$, isto é, quando $\tilde{\beta} \equiv \hat{\beta}$. Isso conclui a prova da otimalidade BLUE de Gauss-Markov.
+
+### Demonstração da Matriz Chapéu e Projeção Geométrica
+Geometricamente, o vetor $Y$ reside no espaço euclidiano $\mathbb{R}^n$. A matriz $X_{n \times p}$ define um subespaço de dimensão $p$, denominado espaço coluna de $X$, $\mathcal{C}(X)$.
+O estimador $\hat{Y} = X\hat{\beta}$ é o ponto em $\mathcal{C}(X)$ mais próximo de $Y$.
+A matriz $H = X(X^\top X)^{-1}X^\top$ é exatamente o **operador de projeção ortogonal** sobre $\mathcal{C}(X)$, e a matriz $M = I_n - H$ é a projeção ortogonal sobre o complemento ortogonal $\mathcal{C}(X)^\perp$.
+
+Disso decorrem imediatamente as relações de ortogonalidade:
+$$X^\top e = X^\top (I_n - H) Y = (X^\top - X^\top X(X^\top X)^{-1} X^\top) Y = (X^\top - X^\top) Y = 0$$
+$$\hat{Y}^\top e = (HY)^\top (I_n - H)Y = Y^\top H (I_n - H) Y = Y^\top (H - H^2) Y = 0$$
+Os resíduos de mínimos quadrados são perfeitamente ortogonais às variáveis preditoras e aos valores ajustados.
+
+### Implementação Matricial do MQO em R e Python
+
+```r
+# Implementação matricial direta do MQO
+ajustar_mqo <- function(X, y) {
+  # Adiciona coluna de 1s para o intercepto caso não exista
+  if (!all(X[, 1] == 1)) {
+    X <- cbind(Intercepto = 1, X)
+  }
+  n <- nrow(X)
+  p <- ncol(X)
+  
+  # Equações normais: beta_hat = (X'X)^(-1) X'Y
+  XtX <- t(X) %*% X
+  XtY <- t(X) %*% y
+  beta_hat <- solve(XtX, XtY)
+  
+  # Matriz chapeu e projecoes
+  H <- X %*% solve(XtX) %*% t(X)
+  y_hat <- H %*% y
+  residuos <- y - y_hat
+  
+  # Variancia dos residuos e matriz de covariancia
+  sq_res <- sum(residuos^2)
+  sigma2_hat <- sq_res / (n - p)
+  var_beta <- sigma2_hat * solve(XtX)
+  ep_beta <- sqrt(diag(var_beta))
+  
+  return(list(
+    coeficientes = as.vector(beta_hat),
+    erros_padrao = ep_beta,
+    sigma2 = sigma2_hat,
+    graus_liberdade = n - p
+  ))
+}
+```
+
+```python
+# Equivalente matricial em Python com numpy
+import numpy as np
+
+def ajustar_mqo(X, y):
+    n, p_vars = X.shape
+    # Adiciona vetor unitario para o intercepto
+    X_design = np.column_stack([np.ones(n), X])
+    p = X_design.shape[1]
+    
+    # Inversao via sistema linear (mais estavel que inv())
+    XtX = X_design.T @ X_design
+    XtY = X_design.T @ y
+    beta_hat = np.linalg.solve(XtX, XtY)
+    
+    # Residuos e QMRes
+    y_hat = X_design @ beta_hat
+    residuos = y - y_hat
+    sq_res = np.sum(residuos**2)
+    qm_res = sq_res / (n - p)
+    
+    var_beta = qm_res * np.linalg.inv(XtX)
+    erros_padrao = np.sqrt(np.diag(var_beta))
+    
+    return {
+        "coeficientes": beta_hat,
+        "erros_padrao": erros_padrao,
+        "qm_res": qm_res,
+        "df": n - p
+    }
+```
+:::

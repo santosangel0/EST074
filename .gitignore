@@ -1,4 +1,21 @@
+# Quarto cache & internal build files
+/.quarto/
+
+# R environment
 .Rproj.user
 .Rhistory
 .RData
+.Rdata
 .Ruserdata
+*.Rproj.user/
+
+# Python & Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+env/
+
+# OS specific
+Thumbs.db
+.DS_Store

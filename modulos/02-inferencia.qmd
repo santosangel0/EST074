@@ -1,0 +1,303 @@
+# Módulo 2: Análise de Variância, Inferência e Predição
+
+Este módulo abrange o núcleo inferencial da disciplina EST074 (slides **p05**, **p06**, **p07** e **p08**), integrando a partição de variabilidade pela ANOVA, testes de hipóteses exatos e assintóticos, intervalos de confiança individuais e conjuntos, e os procedimentos preditivos de novas observações.
+
+---
+
+## 2.1 Análise de Variância (ANOVA) e Partição da Soma de Quadrados
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Partição das Somas de Quadrados
+A variação total observada na variável resposta $Y$ pode ser particionada em duas componentes ortogonais: a variação explicada pelo modelo de regressão e a variação não explicada (residual).
+$$SQTot = SQReg + SQRes$$
+em que:
+- **$SQTot$ (Soma de Quadrados Total):** $\sum_{i=1}^n (Y_i - \bar{Y})^2 = Y^\top \left(I_n - \frac{1}{n}J_n\right) Y$
+- **$SQReg$ (Soma de Quadrados da Regressão):** $\sum_{i=1}^n (\hat{Y}_i - \bar{Y})^2 = Y^\top \left(H - \frac{1}{n}J_n\right) Y$
+- **$SQRes$ (Soma de Quadrados dos Resíduos):** $\sum_{i=1}^n (Y_i - \hat{Y}_i)^2 = Y^\top (I_n - H) Y$
+sendo $J_n$ a matriz de dimensão $n \times n$ com todos os elementos iguais a 1.
+
+### Graus de Liberdade
+A partição dos graus de liberdade correspondente é:
+$$\underbrace{n - 1}_{gl(SQTot)} = \underbrace{p - 1}_{gl(SQReg)} + \underbrace{n - p}_{gl(SQRes)}$$
+
+### Tabela da Análise de Variância (ANOVA)
+
+| Fonte de Variação | Graus de Liberdade ($gl$) | Soma de Quadrados ($SQ$) | Quadrado Médio ($QM$) | Estatística $F_c$ |
+| :--- | :---: | :---: | :---: | :---: |
+| **Regressão** | $p - 1$ | $SQReg$ | $QMReg = \frac{SQReg}{p - 1}$ | $\frac{QMReg}{QMRes}$ |
+| **Resíduo** | $n - p$ | $SQRes$ | $QMRes = \frac{SQRes}{n - p}$ | — |
+| **Total** | $n - 1$ | $SQTot$ | $QMTot = \frac{SQTot}{n - 1}$ | — |
+
+Sob a hipótese nula de que nenhum dos regressores exerce efeito sobre a resposta ($H_0: \beta_2 = \dots = \beta_p = 0$), a estatística calculada segue distribuição $F$ de Snedecor com $p - 1$ e $n - p$ graus de liberdade:
+$$F_c \sim \mathcal{F}(p - 1, \, n - p)$$
+
+### Coeficiente de Determinação ($R^2$ e $R^2_{adj}$)
+O **Coeficiente de Determinação** mede a proporção da variabilidade total explicada pela regressão:
+$$R^2 = \frac{SQReg}{SQTot} = 1 - \frac{SQRes}{SQTot}, \quad 0 \le R^2 \le 1$$
+**Propriedade crítica:** $R^2$ é uma função monotonamente não decrescente com o acréscimo de novas variáveis ao modelo, independentemente de sua utilidade preditiva real.
+
+Para penalizar a inclusão indiscriminada de variáveis preditoras, define-se o **$R^2$ Ajustado**:
+$$R^2_{adj} = 1 - \frac{QMRes}{QMTot} = 1 - \left(\frac{n - 1}{n - p}\right)(1 - R^2)$$
+$R^2_{adj}$ pode diminuir quando uma variável irrelevante é adicionada ao modelo e pode inclusive assumir valores negativos se $F_c < 1$.
+
+### Princípio da Soma de Quadrados Extra
+Representa o aumento na soma de quadrados da regressão (ou a redução na soma de quadrados dos resíduos) ao se adicionar um subconjunto de variáveis $X_2$ a um modelo que já continha $X_1$:
+$$SQ(X_2 \mid X_1) = SQRes(X_1) - SQRes(X_1, X_2) = SQReg(X_1, X_2) - SQReg(X_1)$$
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Decomposição Algébrica Fundamental
+A demonstração de que os produtos cruzados se anulam decorre diretamente das propriedades de ortogonalidade de MQO:
+$$Y_i - \bar{Y} = (\hat{Y}_i - \bar{Y}) + (Y_i - \hat{Y}_i)$$
+Elevando ao quadrado e somando:
+$$\sum (Y_i - \bar{Y})^2 = \sum (\hat{Y}_i - \bar{Y})^2 + \sum (Y_i - \hat{Y}_i)^2 + 2 \sum (\hat{Y}_i - \bar{Y})(Y_i - \hat{Y}_i)$$
+O termo cruzado é:
+$$\sum (\hat{Y}_i - \bar{Y}) e_i = \sum \hat{Y}_i e_i - \bar{Y} \sum e_i = \hat{Y}^\top e - \bar{Y} (0) = 0 - 0 = 0$$
+Pois $\sum e_i = 0$ (o modelo possui intercepto) e $\hat{Y}^\top e = 0$ (ortogonalidade da projeção).
+Logo, a igualdade $SQTot = SQReg + SQRes$ é exata.
+
+### O Teorema de Cochran
+Na teoria estatística avançada [@graybill1983; @scheffe1959], a ANOVA baseia-se no **Teorema de Cochran**: se $Y \sim \mathcal{N}_n(\mu, \sigma^2 I_n)$ e a forma quadrática $Y^\top Y$ é expressa pela soma de $k$ formas quadráticas $Y^\top A_j Y$ tais que $\sum A_j = I_n$, então as formas quadráticas $Y^\top A_j Y / \sigma^2$ têm distribuições qui-quadrado independentes se e somente se $\sum r(A_j) = n$.
+No modelo linear:
+- $\frac{SQRes}{\sigma^2} \sim \chi^2_{n - p}$
+- Sob $H_0$, $\frac{SQReg}{\sigma^2} \sim \chi^2_{p - 1}$
+- E como $H$ e $(I - H)$ satisfazem $H(I - H) = 0$, $SQReg$ e $SQRes$ são variáveis aleatórias **estocasticamente independentes**.
+Isso justifica formalmente que o quociente dos quadrados médios segue distribuição $F$ central:
+$$\frac{QMReg / \sigma^2}{QMRes / \sigma^2} = \frac{SQReg / (p - 1)}{SQRes / (n - p)} \sim \mathcal{F}(p - 1, \, n - p)$$
+
+### Exemplo Computacional da ANOVA em R
+
+```r
+# ANOVA e somas de quadrados extra
+data(mtcars)
+mod_completo <- lm(mpg ~ wt + hp + qsec, data = mtcars)
+mod_reduzido <- lm(mpg ~ wt, data = mtcars)
+
+# Tabela ANOVA da regressao
+anova(mod_completo)
+
+# Teste F de soma de quadrados extra para a adicao de (hp, qsec) dado wt
+anova(mod_reduzido, mod_completo)
+```
+:::
+
+---
+
+## 2.2 Testes de Hipóteses Exatos e Assintóticos
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Teste de Hipóteses para um Coeficiente Individual ($\beta_m$)
+Sob a suposição de normalidade dos erros:
+$$\hat{\beta} \sim \mathcal{N}_p(\beta, \, \sigma^2 (X^\top X)^{-1})$$
+Seja $c_{mm} = [(X^\top X)^{-1}]_{mm}$ o $m$-ésimo elemento diagonal da matriz inversa. A variância do estimador $\hat{\beta}_m$ é $\mathrm{Var}(\hat{\beta}_m) = \sigma^2 c_{mm}$.
+Estimando $\sigma^2$ por $QMRes$, o erro padrão amostral é:
+$$\widehat{EP}(\hat{\beta}_m) = \sqrt{QMRes \cdot c_{mm}}$$
+
+Para testar as hipóteses:
+$$H_0: \beta_m = \beta_{m0} \quad \text{vs} \quad H_1: \beta_m \neq \beta_{m0}$$
+A estatística de teste exata é:
+$$t_c = \frac{\hat{\beta}_m - \beta_{m0}}{\sqrt{QMRes \cdot c_{mm}}} \sim t(n - p)$$
+Rejeita-se $H_0$ ao nível de significância $\alpha$ se $|t_c| > t_{1 - \alpha/2, \, n - p}$ ou se o valor-$p < \alpha$.
+
+### Teste F Parcial (Subconjunto de Coeficientes)
+Suponha que o vetor de parâmetros é particionado em $\beta = (\beta_1^\top, \beta_2^\top)^\top$, onde $\beta_1$ tem dimensão $(p - q) \times 1$ e $\beta_2$ tem dimensão $q \times 1$.
+Deseja-se testar se o conjunto de variáveis associadas a $\beta_2$ é estatisticamente redundante:
+$$H_0: \beta_2 = 0 \quad \text{vs} \quad H_1: \beta_2 \neq 0$$
+A estatística $F$ parcial compara a soma de quadrados dos resíduos do modelo reduzido ($R$, sem $\beta_2$) com a do modelo completo ($C$, com todos os regressores):
+$$F_c = \frac{\left[ SQRes(R) - SQRes(C) \right] / q}{QMRes(C)} \sim \mathcal{F}(q, \, n - p)$$
+
+### Teste Linear Geral ($H_0: L\beta = c$)
+Para qualquer conjunto de $s$ restrições lineares linearmente independentes, descritas por uma matriz de coeficientes $L_{s \times p}$ de posto $s$ e vetor $c_{s \times 1}$:
+$$H_0: L\beta = c \quad \text{vs} \quad H_1: L\beta \neq c$$
+A estatística de teste exata é:
+$$F_c = \frac{(L\hat{\beta} - c)^\top \left[ L(X^\top X)^{-1} L^\top \right]^{-1} (L\hat{\beta} - c)}{s \cdot QMRes} \sim \mathcal{F}(s, \, n - p)$$
+
+### Estatísticas Qui-Quadrado Assintóticas (Grandes Amostras)
+Para amostras grandes, podem-se empregar quatro estatísticas clássicas fundamentadas na verossimilhança (Buse, 1982; Rao, 1948; Wald, 1943; Wilks, 1938):
+1. **Razão de Verossimilhanças (RV / Likelihood Ratio):**
+   $$LR = 2 \left[ \ell(\hat{\beta}) - \ell(\tilde{\beta}_{H_0}) \right] = n \ln\left( \frac{\tilde{\sigma}^2_{H_0}}{\tilde{\sigma}^2} \right)$$
+2. **Estatística de Wald ($W$):**
+   $$W = (L\hat{\beta} - c)^\top \left[ L \mathcal{I}^{-1}(\hat{\beta}) L^\top \right]^{-1} (L\hat{\beta} - c)$$
+3. **Escore de Rao / Multiplicador de Lagrange ($LM$):**
+   Avalia a inclinação da função de verossimilhança calculada na estimativa restrita sob $H_0$.
+4. **Estatística Gradiente (Terrell, 2002):**
+   Combina aspectos do gradiente e da distância entre estimadores.
+
+Sob $H_0$, as quatro estatísticas convergem em distribuição para uma qui-quadrado com $s$ graus de liberdade:
+$$LR, W, LM, G \xrightarrow{d} \chi^2(s)$$
+No modelo linear clássico, verifica-se a ordenação numérica estrita:
+$$W \ge LR \ge LM$$
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Intuição Geométrica da Tríade de Verossimilhança (Buse, 1982)
+Adolf Buse [@buse1982] oferece uma elucidação geométrica definitiva para a relação entre Wald, Razão de Verossimilhanças e Escore de Rao na curva de log-verossimilhança:
+- O teste de **Wald** mede a distância horizontal ao quadrado entre a estimativa irrestrita $\hat{\beta}$ e o valor hipotetizado $\beta_0$, ponderada pela curvatura no ponto irrestrito.
+- A **Razão de Verossimilhanças (LR)** mede a diferença vertical de altitude: $2[\ell(\hat{\beta}) - \ell(\beta_0)]$.
+- O **Escore de Rao (LM)** avalia a inclinação (gradiente) da função no ponto sob a hipótese nula $\beta_0$: se $\beta_0$ estivesse próximo do verdadeiro máximo, a derivada da verossimilhança calculada nele deveria ser quase nula.
+
+```python
+# Ilustração conceitual das estatísticas em Python
+import numpy as np
+import scipy.stats as stats
+
+# Exemplo numérico de teste linear geral L * beta = c
+# Supondo regressão com p = 3 (intercepto + 2 preditores)
+n = 50
+p = 3
+np.random.seed(123)
+X = np.column_stack([np.ones(n), np.random.normal(10, 2, n), np.random.normal(5, 1, n)])
+beta_real = np.array([2.0, 1.5, -0.8])
+y = X @ beta_real + np.random.normal(0, 1.2, n)
+
+XtX_inv = np.linalg.inv(X.T @ X)
+beta_hat = XtX_inv @ (X.T @ y)
+residuos = y - X @ beta_hat
+qm_res = np.sum(residuos**2) / (n - p)
+
+# Testando se beta_1 = beta_2 (isto e, beta_1 - beta_2 = 0)
+# L = [0, 1, -1], c = 0
+L = np.array([[0, 1, -1]])
+c = np.array([0])
+
+diff = L @ beta_hat - c
+variancia_L = L @ XtX_inv @ L.T
+F_stat = (diff.T @ np.linalg.inv(variancia_L) @ diff) / (1 * qm_res)
+p_valor = 1 - stats.f.cdf(F_stat[0, 0], 1, n - p)
+
+print(f"Estatística F: {F_stat[0, 0]:.4f}")
+print(f"Valor-p: {p_valor:.4e}")
+```
+:::
+
+---
+
+## 2.3 Intervalos de Confiança Individuais e Conjuntos
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Intervalo de Confiança para $\beta_m$
+A partir da distribuição $t$ da estatística de teste, o intervalo com coeficiente de confiança $1 - \alpha$ para o parâmetro $\beta_m$ é dado por:
+$$IC(\beta_m, \, 1 - \alpha) = \left[ \hat{\beta}_m - t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot c_{mm}}, \;\; \hat{\beta}_m + t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot c_{mm}} \right]$$
+
+### Inferência sobre a Resposta Média ($\mu_h$)
+Considere um ponto fixo no espaço de covariáveis $x_h = (1, x_{h2}, \dots, x_{hp})^\top$. O valor esperado da resposta condicional nesse ponto é:
+$$\mu_h = \mathbb{E}(Y \mid x_h) = x_h^\top \beta$$
+O estimador pontual é:
+$$\hat{\mu}_h = x_h^\top \hat{\beta}$$
+Como $\hat{\mu}_h$ é combinação linear de $\hat{\beta}$:
+$$\mathbb{E}(\hat{\mu}_h) = x_h^\top \beta = \mu_h$$
+$$\mathrm{Var}(\hat{\mu}_h) = x_h^\top \mathrm{Var}(\hat{\beta}) x_h = \sigma^2 x_h^\top (X^\top X)^{-1} x_h$$
+O intervalo de confiança para a resposta média $\mu_h$ ao nível $1 - \alpha$ é:
+$$IC(\mu_h, \, 1 - \alpha) = \hat{\mu}_h \pm t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \cdot x_h^\top (X^\top X)^{-1} x_h}$$
+
+### Intervalo de Confiança para a Variância ($\sigma^2$)
+Como a estatística $\frac{(n - p)QMRes}{\sigma^2}$ segue distribuição Qui-quadrado com $n - p$ graus de liberdade:
+$$\frac{(n - p)QMRes}{\sigma^2} \sim \chi^2(n - p)$$
+O intervalo de confiança exato com nível $1 - \alpha$ para $\sigma^2$ é:
+$$IC(\sigma^2, \, 1 - \alpha) = \left[ \frac{(n - p)QMRes}{\chi^2_{1 - \alpha/2, \, n - p}}, \;\; \frac{(n - p)QMRes}{\chi^2_{\alpha/2, \, n - p}} \right]$$
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Inferência Simultânea: Por que não usar múltiplos ICs isolados?
+Se construirmos $g$ intervalos de confiança individuais, cada um ao nível de $95\%$, a taxa global de erro (*Family-Wise Error Rate - FWER*) não é $5\%$, mas pode atingir até:
+$$\alpha_{\text{global}} = 1 - (1 - \alpha)^g \xrightarrow{g = 5} 1 - (0{,}95)^5 \approx 22{,}6\%$$
+
+Para controlar a taxa de erro simultânea, utilizam-se duas correções:
+1. **Procedimento de Bonferroni:** Substitui-se $\alpha$ por $\alpha / g$:
+   $$\hat{\beta}_m \pm t_{1 - \frac{\alpha}{2g}, \, n - p} \cdot \widehat{EP}(\hat{\beta}_m)$$
+2. **Procedimento de Scheffé / Elipsoide de Confiança:**
+   Gera intervalos válidos para todas as combinações lineares possíveis dos parâmetros simultaneamente, baseando-se no multiplicador $\sqrt{p \cdot \mathcal{F}_{1 - \alpha, \, p, \, n - p}}$.
+
+### O Método Delta para Funções Não-Lineares de Parâmetros
+Quando há interesse em estimar uma função não-linear $\theta = g(\beta)$ (por exemplo, a razão de dois parâmetros $\beta_2 / \beta_1$ ou um ponto de máximo $-\beta_2 / (2\beta_3)$ em regressão polinomial), utiliza-se o **Método Delta** [@dorfman1938]:
+$$\widehat{\mathrm{Var}}(g(\hat{\beta})) \approx \nabla g(\hat{\beta})^\top \left[ QMRes \cdot (X^\top X)^{-1} \right] \nabla g(\hat{\beta})$$
+onde $\nabla g(\hat{\beta})$ é o vetor das derivadas parciais avaliadas nas estimativas de MQO.
+:::
+
+---
+
+## 2.4 Predição de Novas Observações e Bandas de Confiança
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Predição de Novas Observações
+Uma importante aplicação dos modelos de regressão é predizer uma nova observação da variável resposta $Y$ para um dado vetor de covariáveis $x_0 = (1, x_{02}, \dots, x_{0p})^\top$.
+
+Considere a nova observação real a ser observada no futuro:
+$$Y_0 = x_0^\top \beta + \varepsilon_0$$
+em que $\varepsilon_0 \sim \mathcal{D}(0, \sigma^2)$ é independente de todos os erros amostrais anteriores $\varepsilon_1, \dots, \varepsilon_n$.
+
+O estimador pontual para $Y_0$ coincide formalmente com a estimativa da média:
+$$\hat{Y}_0 = x_0^\top \hat{\beta}$$
+
+### Erro de Predição e sua Variância
+Defina a variável aleatória erro de predição:
+$$e_{pred} = Y_0 - \hat{Y}_0$$
+A esperança matemática do erro de predição é nula:
+$$\mathbb{E}(e_{pred}) = \mathbb{E}(Y_0) - \mathbb{E}(\hat{Y}_0) = x_0^\top \beta - x_0^\top \beta = 0$$
+
+Como a nova observação $Y_0$ é independente dos dados amostrais que geraram $\hat{\beta}$:
+$$\mathrm{Cov}(Y_0, \hat{Y}_0) = 0$$
+Logo:
+$$\mathrm{Var}(e_{pred}) = \mathrm{Var}(Y_0 - \hat{Y}_0) = \mathrm{Var}(Y_0) + \mathrm{Var}(\hat{Y}_0)$$
+$$\mathrm{Var}(e_{pred}) = \sigma^2 + \sigma^2 x_0^\top (X^\top X)^{-1} x_0 = \sigma^2 \left[ 1 + x_0^\top (X^\top X)^{-1} x_0 \right]$$
+
+### Intervalo de Predição (IP)
+Substituindo $\sigma^2$ por $QMRes$, o **Intervalo de Predição (IP)** com coeficiente de confiança $1 - \alpha$ para a nova observação $Y_0$ é:
+$$IP(Y_0, \, 1 - \alpha) = x_0^\top \hat{\beta} \pm t_{1 - \alpha/2, \, n - p} \sqrt{QMRes \left[ 1 + x_0^\top (X^\top X)^{-1} x_0 \right]}$$
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Distinção Crítica: Banda de Confiança da Média vs Banda de Predição
+É fundamental para a prática estatística distinguir:
+1. **Intervalo de Confiança para a Média $\mathbb{E}(Y \mid x_0)$:**
+   Responde: *"Qual é o valor médio esperado de $Y$ para toda a população de indivíduos com características $x_0$?"*
+   $$\mathrm{Var}(\hat{\mu}_0) = \sigma^2 \left[ x_0^\top (X^\top X)^{-1} x_0 \right]$$
+   Quando o tamanho da amostra $n \to \infty$, essa variância **tende a zero**, pois estimamos a reta com precisão infinita.
+
+2. **Intervalo de Predição para um Indivíduo $Y_0$:**
+   Responde: *"Em que intervalo cairá o valor de $Y$ de um indivíduo específico no futuro?"*
+   $$\mathrm{Var}(Y_0 - \hat{Y}_0) = \sigma^2 + \sigma^2 \left[ x_0^\top (X^\top X)^{-1} x_0 \right]$$
+   Mesmo se $n \to \infty$, a variância **nunca cai abaixo de $\sigma^2$**, devido ao erro estocástico inerente $\varepsilon_0$ da natureza (erro irredutível).
+   Por consequência matemática invariável, o Intervalo de Predição é **sempre mais largo** que o Intervalo de Confiança para a média no mesmo ponto $x_0$.
+
+### Ilustração Visual em R: Bandas Hiperbólicas de Confiança e Predição
+
+```r
+# Comparacao grafica entre IC da Media e IP de Nova Observacao
+set.seed(123)
+x <- runif(40, 10, 30)
+y <- 5 + 1.8 * x + rnorm(40, 0, 4)
+dados <- data.frame(x = x, y = y)
+
+mod <- lm(y ~ x, data = dados)
+grid_x <- data.frame(x = seq(8, 32, length.out = 200))
+
+# Previsoes com intervalos
+pred_ic <- predict(mod, newdata = grid_x, interval = "confidence")
+pred_ip <- predict(mod, newdata = grid_x, interval = "prediction")
+
+# Grafico das bandas
+plot(dados$x, dados$y, pch = 19, col = "gray40", xlim = c(8, 32), ylim = range(pred_ip),
+     xlab = "Covariável X", ylab = "Resposta Y", main = "Banda de Confiança vs Banda de Predição")
+abline(mod, col = "blue", lwd = 2)
+
+# Banda de Confianca da Media (Mais estreita)
+lines(grid_x$x, pred_ic[, "lwr"], col = "blue", lty = 2, lwd = 1.8)
+lines(grid_x$x, pred_ic[, "upr"], col = "blue", lty = 2, lwd = 1.8)
+
+# Banda de Predicao Individual (Mais larga)
+lines(grid_x$x, pred_ip[, "lwr"], col = "firebrick", lty = 3, lwd = 2)
+lines(grid_x$x, pred_ip[, "upr"], col = "firebrick", lty = 3, lwd = 2)
+
+legend("topleft", legend = c("Reta de Regressão", "IC da Média (95%)", "IP de Nova Observação (95%)"),
+       col = c("blue", "blue", "firebrick"), lty = c(1, 2, 3), lwd = 2, bty = "n")
+```
+:::

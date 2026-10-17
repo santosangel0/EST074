@@ -1,0 +1,271 @@
+# Módulo 3: Análise de Resíduos, Transformações e Diagnóstico
+
+Este módulo reúne os tópicos dedicados à validação de pressupostos e detecção de anomalias no modelo linear clássico (slides **p09**, **p10** e **p11**), abordando os diferentes tipos de resíduos, gráficos diagnósticos, transformações estabilizadoras da variância (incluindo Box-Cox), mínimos quadrados generalizados e as medidas formais de alavancagem e influência (Distância de Cook, DFFITS, DFBETAS e COVRATIO).
+
+---
+
+## 3.1 Análise de Resíduos e Diagnóstico Gráfico
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Resíduos Ordinários
+O resíduo ordinário é a diferença entre a resposta observada e o valor predito pelo modelo:
+$$e_i = Y_i - \hat{Y}_i, \quad i = 1, \dots, n$$
+Em forma matricial:
+$$e = Y - \hat{Y} = (I_n - H) Y$$
+em que $H = X(X^\top X)^{-1} X^\top$ é a matriz chapéu.
+
+**Propriedades estatísticas dos resíduos:**
+- $\mathbb{E}(e) = \mathbb{E}[(I_n - H)Y] = (I_n - H)X\beta = 0$;
+- $\mathrm{Var}(e) = \mathrm{Var}[(I_n - H)Y] = (I_n - H)(\sigma^2 I_n)(I_n - H)^\top = \sigma^2 (I_n - H)$.
+
+Disso resulta que a variância de cada resíduo individual é:
+$$\mathrm{Var}(e_i) = \sigma^2 (1 - h_{ii})$$
+e a covariância entre dois resíduos distintos é:
+$$\mathrm{Cov}(e_i, e_j) = -\sigma^2 h_{ij}$$
+*Conclusão crucial:* Mesmo que os erros populacionais $\varepsilon_i$ tenham variância constante $\sigma^2$ e sejam não correlacionados, os resíduos amostrais $e_i$ **possuem variâncias heterogêneas** (pois $h_{ii}$ varia com a posição no espaço de preditoras) e **são mutuamente correlacionados**.
+
+### Resíduos Padronizados e Studentizados
+Para viabilizar comparações justas entre observações com diferentes posições na matriz de delineamento:
+
+1. **Resíduo Padronizado:**
+   $$d_i = \frac{e_i}{\sqrt{QMRes}}$$
+   Não leva em consideração a alavancagem individual $h_{ii}$.
+
+2. **Resíduo Studentizado Internamente:**
+   $$r_i = \frac{e_i}{\sqrt{QMRes (1 - h_{ii})}}$$
+   Possui média 0 e variância aproximadamente unitária.
+
+3. **Resíduo Studentizado com Deleção / Externamente (R-Student):**
+   Substitui-se a estimativa de variância por $QMRes_{(i)}$, calculado ajustando o modelo na amostra com a $i$-ésima observação removida:
+   $$t_i = \frac{e_i}{\sqrt{QMRes_{(i)} (1 - h_{ii})}} = r_i \left( \frac{n - p - 1}{n - p - r_i^2} \right)^{1/2}$$
+   Sob a hipótese de normalidade e ausência de anomalia na observação $i$, a estatística $t_i$ segue **rigorosamente a distribuição $t$ de Student**:
+   $$t_i \sim t(n - p - 1)$$
+   Valores absolutos $|t_i| > 2$ ou $3$ são considerados fortes indícios de *outliers*.
+
+### Gráficos Diagnósticos
+1. **Resíduos vs Valores Ajustados ($\hat{Y}_i$):**
+   - Dispersão aleatória em torno de 0 indica adequação linear e homocedasticidade;
+   - Padrão em funil ou leque (*cone*) indica **heterocedasticidade** ($\sigma^2$ varia com a magnitude de $Y$);
+   - Tendência curvilínea (parábola, senóide) indica **não linearidade** (termos polinomiais omitidos).
+2. **Resíduos vs Covariáveis ($X_j$):**
+   Identifica se uma variável específica necessita de termo quadrático ou se a dispersão é função daquela variável.
+3. **Gráfico de Probabilidade Normal (Q-Q Plot):**
+   Plota os quantis ordenados dos resíduos studentizados contra os quantis teóricos da distribuição normal padrão. Desvios acentuados nas extremidades revelam caudas pesadas ou assimetria nos erros.
+
+### Estatística PRESS
+O resíduo com deleção pode ser calculado diretamente sem necessidade de reajustar o modelo $n$ vezes:
+$$e_{(i)} = Y_i - \hat{Y}_{(i)} = \frac{e_i}{1 - h_{ii}}$$
+A soma dos quadrados desses resíduos define a estatística PRESS (*Predicted Residual Error Sum of Squares*):
+$$PRESS = \sum_{i=1}^n e_{(i)}^2 = \sum_{i=1}^n \left( \frac{e_i}{1 - h_{ii}} \right)^2$$
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Dedução da Fórmula Computacional de Deleção de Sherman-Morrison
+Como é possível calcular a previsão com a $i$-ésima observação deletada ($\hat{Y}_{(i)}$) usando apenas o ajuste do modelo completo?
+Utiliza-se o **Lema de Inversão de Matrizes de Woodbury / Sherman-Morrison**:
+$$(X_{(i)}^\top X_{(i)})^{-1} = (X^\top X - x_i x_i^\top)^{-1} = (X^\top X)^{-1} + \frac{(X^\top X)^{-1} x_i x_i^\top (X^\top X)^{-1}}{1 - x_i^\top (X^\top X)^{-1} x_i}$$
+Como $h_{ii} = x_i^\top (X^\top X)^{-1} x_i$, deduz-se analiticamente que:
+$$\hat{\beta}_{(i)} = \hat{\beta} - \frac{(X^\top X)^{-1} x_i e_i}{1 - h_{ii}}$$
+Multiplicando por $x_i^\top$:
+$$\hat{Y}_{i(i)} = x_i^\top \hat{\beta}_{(i)} = \hat{Y}_i - \frac{h_{ii} e_i}{1 - h_{ii}}$$
+Subtraindo de $Y_i$:
+$$e_{(i)} = Y_i - \hat{Y}_{i(i)} = (Y_i - \hat{Y}_i) + \frac{h_{ii} e_i}{1 - h_{ii}} = e_i \left( 1 + \frac{h_{ii}}{1 - h_{ii}} \right) = \frac{e_i}{1 - h_{ii}}$$
+Essa identidade economiza $n$ reajustes de regressão, viabilizando validação cruzada instantânea.
+
+### Testes Estatísticos Formais de Heterocedasticidade
+Além dos gráficos, utilizam-se testes formais:
+1. **Teste de Breusch-Pagan:**
+   Ajusta uma regressão dos quadrados dos resíduos studentizados $e_i^2 / \hat{\sigma}^2$ contra as covariáveis $X$. A estatística segue distribuição $\chi^2(p - 1)$ sob a hipótese nula de homocedasticidade.
+2. **Teste de Durbin-Watson para Autocorrelação:**
+   $$DW = \frac{\sum_{i=2}^n (e_i - e_{i-1})^2}{\sum_{i=1}^n e_i^2} \approx 2(1 - r_1)$$
+   Valores próximos a $2$ indicam ausência de correlação serial de primeira ordem; valores $< 1{,}5$ indicam autocorrelação positiva comum em séries temporais.
+
+```r
+# Bateria completa de diagnostico de residuos em R
+library(lmtest)
+
+mod <- lm(mpg ~ wt + hp + qsec, data = mtcars)
+
+# 1. Teste de Homocedasticidade de Breusch-Pagan
+bptest(mod)
+
+# 2. Teste de Normalidade dos Residuos de Shapiro-Wilk
+shapiro.test(rstudent(mod))
+
+# 3. Teste de Autocorrelacao de Durbin-Watson
+dwtest(mod)
+
+# 4. Painel grafico de 4 diagnosticos
+par(mfrow = c(2, 2))
+plot(mod)
+par(mfrow = c(1, 1))
+```
+:::
+
+---
+
+## 3.2 Transformações e Mínimos Quadrados Generalizados
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Transformações Estabilizadoras da Variância
+Quando a suposição de homocedasticidade é violada e a variância dos erros é uma função conhecida da média condicional ($\sigma_i^2 = g(\mu_i)$), transformações não lineares sobre a variável resposta $Y$ podem restaurar a variância constante:
+
+| Distribuição Típica | Relação $\mathrm{Var}(Y) \propto f(\mu)$ | Transformação Estabilizadora |
+| :--- | :---: | :---: |
+| **Poisson (Contagens)** | $\sigma^2 \propto \mu$ | $Y^* = \sqrt{Y}$ ou $\sqrt{Y} + \sqrt{Y + 1}$ |
+| **Binomial (Proporções)** | $\sigma^2 \propto \mu(1 - \mu)$ | $Y^* = \arcsin(\sqrt{Y})$ |
+| **Exponencial / Gama** | $\sigma^2 \propto \mu^2$ | $Y^* = \ln(Y)$ |
+| **Recíproca** | $\sigma^2 \propto \mu^4$ | $Y^* = 1 / Y$ |
+
+### A Família de Transformações Box-Cox
+Proposta por Box e Cox (1964), é uma família paramétrica contínua indexada pelo parâmetro de potência $\lambda$:
+$$Y^{(\lambda)} = \begin{cases} \frac{Y^\lambda - 1}{\lambda}, & \text{se } \lambda \neq 0 \\ \ln(Y), & \text{se } \lambda = 0 \end{cases}$$
+(com a exigência estrita de que todos os valores $Y_i > 0$).
+
+Para manter a escala da verossimilhança comparável entre diferentes valores de $\lambda$, utiliza-se a transformação normalizada com a média geométrica $\dot{Y} = \exp\left( \frac{1}{n}\sum \ln Y_i \right)$:
+$$W^{(\lambda)} = \begin{cases} \frac{Y^\lambda - 1}{\lambda \dot{Y}^{\lambda - 1}}, & \lambda \neq 0 \\ \dot{Y} \ln(Y), & \lambda = 0 \end{cases}$$
+O valor ótimo $\hat{\lambda}$ é aquele que minimiza a soma dos quadrados dos resíduos $SQRes(\lambda)$ ou, equivalentemente, maximiza a função de perfil de log-verossimilhança:
+$$\ell(\lambda) = -\frac{n}{2}\ln\left(\frac{SQRes(\lambda)}{n}\right)$$
+O intervalo de confiança aproximado com nível $1 - \alpha$ para $\lambda$ é dado pelo conjunto de valores que satisfazem:
+$$\ell(\lambda) \ge \ell(\hat{\lambda}) - \frac{1}{2}\chi^2_{1 - \alpha, \, 1}$$
+
+### Mínimos Quadrados Generalizados (MQG)
+Quando a matriz de covariância dos erros não é escalar, isto é:
+$$\mathrm{Var}(\varepsilon) = \sigma^2 V$$
+onde $V_{n \times n}$ é uma matriz simétrica e positiva definida conhecida.
+Por Cholesky, existe uma matriz não singular $K$ tal que $V = K K^\top$. Multiplicando o modelo original $Y = X\beta + \varepsilon$ por $K^{-1}$:
+$$K^{-1}Y = K^{-1}X\beta + K^{-1}\varepsilon \implies Y^* = X^*\beta + \varepsilon^*$$
+A variância dos novos erros transformados é:
+$$\mathrm{Var}(\varepsilon^*) = K^{-1}(\sigma^2 V)(K^{-1})^\top = \sigma^2 K^{-1}(K K^\top)(K^\top)^{-1} = \sigma^2 I_n$$
+Aplicando MQO ao modelo transformado, obtém-se o **Estimador de Aitken de MQG**:
+$$\hat{\beta}_{MQG} = (X^\top V^{-1} X)^{-1} X^\top V^{-1} Y$$
+$$\mathrm{Var}(\hat{\beta}_{MQG}) = \sigma^2 (X^\top V^{-1} X)^{-1}$$
+
+Quando a matriz $V$ é diagonal com elementos $w_i^{-1}$ (heterocedasticidade pura sem autocorrelação), o método reduz-se aos **Mínimos Quadrados Ponderados (MQP / WLS)**, minimizando:
+$$\sum_{i=1}^n w_i (Y_i - x_i^\top \beta)^2$$
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Procedimento Prático para Box-Cox
+Na prática de análise de regressão, dificilmente se utiliza o valor decimal contínuo exato de $\hat{\lambda}$ (por exemplo $\hat{\lambda} = 0{,}237$), pois isso compromete a interpretabilidade científica do modelo. Em vez disso, verifica-se se algum expoente clássico e conceitualmente significativo está contido no intervalo de confiança de $95\%$ de $\lambda$:
+- Se $1 \in IC(\lambda) \implies$ nenhuma transformação é necessária.
+- Se $0{,}5 \in IC(\lambda) \implies$ adotar a raiz quadrada $\sqrt{Y}$.
+- Se $0 \in IC(\lambda) \implies$ adotar a transformação logarítmica $\ln(Y)$.
+- Se $-1 \in IC(\lambda) \implies$ adotar a transformação recíproca $1/Y$.
+
+```r
+# Aplicacao de Box-Cox com pacote MASS em R
+library(MASS)
+mod <- lm(mpg ~ wt + hp, data = mtcars)
+
+# Grafico de perfil de Box-Cox com IC de 95%
+boxcox(mod, lambda = seq(-1, 2, by = 0.1))
+# Permite inspecionar visualmente se lambda = 0 (log) ou lambda = -0.5 esta no IC
+```
+:::
+
+---
+
+## 3.3 Diagnóstico de Alavancagem e Medidas de Influência
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+
+### Pontos de Alavanca (*Leverage*)
+A matriz chapéu $H = X(X^\top X)^{-1}X^\top$ projeta o vetor observado $Y$ sobre os valores ajustados:
+$$\hat{Y}_i = \sum_{j=1}^n h_{ij} Y_j = h_{ii} Y_i + \sum_{j \neq i} h_{ij} Y_j$$
+O elemento diagonal $h_{ii}$ mede o peso/influência que a própria observação $Y_i$ exerce na determinação do seu valor predito $\hat{Y}_i$.
+
+**Propriedades de $h_{ii}$:**
+- $0 \le h_{ii} \le 1$;
+- $\sum_{i=1}^n h_{ii} = \mathrm{tr}(H) = p$;
+- O valor médio de alavancagem na amostra é $\bar{h} = \frac{p}{n}$.
+
+**Critério de Alerta:**
+Uma observação é considerada um **ponto de alta alavancagem** se:
+$$h_{ii} > \frac{2p}{n}$$
+(ou $h_{ii} > \frac{3p}{n}$ para amostras pequenas).
+
+### Distinção entre Outliers, Alavancas e Pontos Influentes
+- **Outlier:** Observação com valor discrepante na resposta $Y$ (resíduo studentizado elevado, $|t_i| > 2$).
+- **Ponto de Alavanca:** Observação com valores extremos nas variáveis explicativas $X$ ($h_{ii} > 2p/n$), independente de ter resíduo grande ou pequeno.
+- **Ponto Influente:** Observação que afeta substancialmente os coeficientes da regressão quando removida. Resulta da combinação de alta alavancagem com resíduo não nulo.
+
+### Medidas Formais de Influência de Caso
+
+1. **Distância de Cook ($D_i$):**
+   Mede a distância euclidiana quadrada entre o vetor de coeficientes do modelo completo $\hat{\beta}$ e o vetor estimado sem a $i$-ésima observação $\hat{\beta}_{(i)}$:
+   $$D_i = \frac{(\hat{\beta} - \hat{\beta}_{(i)})^\top (X^\top X) (\hat{\beta} - \hat{\beta}_{(i)})}{p \cdot QMRes} = \frac{r_i^2}{p} \left( \frac{h_{ii}}{1 - h_{ii}} \right)$$
+   *Critério de Alerta:* $D_i > \mathcal{F}_{0{,}50, \, p, \, n - p} \approx 1$. Valores $D_i > 0{,}5$ ou $1$ requerem investigação criteriosa.
+
+2. **DFFITS ($DFFITS_i$):**
+   Mede o número de erros-padrão pelo qual a predição $\hat{Y}_i$ se altera ao remover a observação $i$:
+   $$DFFITS_i = \frac{\hat{Y}_i - \hat{Y}_{i(i)}}{\sqrt{QMRes_{(i)} h_{ii}}} = t_i \sqrt{\frac{h_{ii}}{1 - h_{ii}}}$$
+   *Critério de Alerta:* $|DFFITS_i| > 2 \sqrt{\frac{p}{n}}$ para amostras grandes (ou $> 1$ para pequenas).
+
+3. **DFBETAS ($DFBETAS_{j(i)}$):**
+   Mede o impacto da exclusão da observação $i$ sobre a estimativa específica do $j$-ésimo coeficiente $\hat{\beta}_j$:
+   $$DFBETAS_{j(i)} = \frac{\hat{\beta}_j - \hat{\beta}_{j(i)}}{\sqrt{QMRes_{(i)} c_{jj}}}$$
+   *Critério de Alerta:* $|DFBETAS_{j(i)}| > \frac{2}{\sqrt{n}}$.
+
+4. **COVRATIO:**
+   Mede a razão entre o determinante da matriz de covariância calculada sem o ponto $i$ e o determinante da matriz de covariância completa:
+   $$COVRATIO_i = \frac{\det[\mathrm{Var}(\hat{\beta}_{(i)})]}{\det[\mathrm{Var}(\hat{\beta})]} = \frac{(QMRes_{(i)})^p}{(QMRes)^p (1 - h_{ii})}$$
+   *Critério de Alerta:* $|COVRATIO_i - 1| > \frac{3p}{n}$. Valores $> 1 + \frac{3p}{n}$ indicam que a observação $i$ melhora a precisão; valores $< 1 - \frac{3p}{n}$ indicam que a observação degrada a precisão.
+
+## Versão Aprofundada (Notas Pessoais)
+
+### Decomposição Elegante da Distância de Cook
+Observe a fórmula:
+$$D_i = \underbrace{\frac{r_i^2}{p}}_{\text{Componente de Outlier (Y)}} \times \underbrace{\frac{h_{ii}}{1 - h_{ii}}}_{\text{Componente de Alavanca (X)}}$$
+Esta fatoração matemática é pedagógica:
+1. Se a observação tem grande alavancagem ($h_{ii} \to 1$), mas está exatamente sobre a reta de regressão ($r_i \approx 0$), $D_i \approx 0$ e ela não é influente sobre os coeficientes.
+2. Se a observação tem resíduo expressivo ($r_i$ grande), mas seu $h_{ii}$ está próximo da média $p/n$, $D_i$ permanece moderado.
+3. A observação só se torna perigosamente influente quando conjuga simultaneamente **afastamento no espaço $X$ ($h_{ii}$ grande)** e **discordância com o modelo ($r_i$ grande)**.
+
+### Implementação Prática das Medidas de Diagnóstico em R e Python
+
+```r
+# Medidas formais de influencia em R
+mod <- lm(mpg ~ wt + hp + qsec, data = mtcars)
+n <- nrow(mtcars)
+p <- length(coef(mod))
+
+# Calculo de todas as metricas
+influencia <- influence.measures(mod)
+summary(influencia)
+
+# Grafico de Distancia de Cook
+plot(mod, which = 4, cook.levels = c(0.5, 1.0))
+
+# Identificacao de pontos criticos
+cooks_d <- cooks.distance(mod)
+pontos_criticos <- which(cooks_d > 4 / (n - p))
+cat("Observações influentes pelo critério 4/(n-p):", names(pontos_criticos), "\n")
+```
+
+```python
+# Analise de influencia em Python com statsmodels
+import statsmodels.api as sm
+from statsmodels.stats.outliers_influence import OLSInfluence
+import matplotlib.pyplot as plt
+
+# Ajuste do modelo
+X_mat = sm.add_constant(mtcars[['wt', 'hp', 'qsec']])
+mod = sm.OLS(mtcars['mpg'], X_mat).fit()
+
+# Objeto de influencia
+infl = OLSInfluence(mod)
+
+# Grafico de Leverage vs Residuos Studentizados
+fig, ax = plt.subplots(figsize=(8, 5))
+sm.graphics.influence_plot(mod, ax=ax, criterion="cooks")
+plt.title("Gráfico de Influência: Resíduos Studentizados vs Alavancagem")
+plt.grid(True, linestyle=":", alpha=0.6)
+plt.show()
+```
+:::

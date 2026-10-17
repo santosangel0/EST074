@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Prof.&nbsp;Dr.&nbsp;Tiago M. Magalhães | Notas &amp; Estudos">
+
+<title>EST074 - Análise de Regressão</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./modulos/01-intro-mqo.html" rel="next">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-4b352893ee45d6aea91c5d81184de3a4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Apresentação do Curso</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">EST074 - Análise de Regressão</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Apresentação do Curso</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./modulos/01-intro-mqo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./modulos/02-inferencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./modulos/03-diagnostico.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./modulos/04-multivariada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#apresentação-do-curso" id="toc-apresentação-do-curso" class="nav-link active" data-scroll-target="#apresentação-do-curso">Apresentação do Curso</a>
+  <ul class="collapse">
+  <li><a href="#estrutura-do-material-dupla-camada-de-aprendizado" id="toc-estrutura-do-material-dupla-camada-de-aprendizado" class="nav-link" data-scroll-target="#estrutura-do-material-dupla-camada-de-aprendizado">Estrutura do Material: Dupla Camada de Aprendizado</a></li>
+  <li><a href="#ementa-do-curso" id="toc-ementa-do-curso" class="nav-link" data-scroll-target="#ementa-do-curso">Ementa do Curso</a></li>
+  <li><a href="#informações-do-docente-e-contato" id="toc-informações-do-docente-e-contato" class="nav-link" data-scroll-target="#informações-do-docente-e-contato">Informações do Docente e Contato</a></li>
+  <li><a href="#bibliografia-principal-recomendada" id="toc-bibliografia-principal-recomendada" class="nav-link" data-scroll-target="#bibliografia-principal-recomendada">Bibliografia Principal Recomendada</a></li>
+  <li><a href="#como-compilar-e-publicar-no-github-pages" id="toc-como-compilar-e-publicar-no-github-pages" class="nav-link" data-scroll-target="#como-compilar-e-publicar-no-github-pages">Como Compilar e Publicar no GitHub Pages</a>
+  <ul class="collapse">
+  <li><a href="#renderizar-localmente-com-quarto" id="toc-renderizar-localmente-com-quarto" class="nav-link" data-scroll-target="#renderizar-localmente-com-quarto">1. Renderizar localmente com Quarto</a></li>
+  <li><a href="#ativação-no-github" id="toc-ativação-no-github" class="nav-link" data-scroll-target="#ativação-no-github">2. Ativação no GitHub</a></li>
+  </ul></li>
+  <li><a href="#aviso-legal-disclaimer-acadêmico" id="toc-aviso-legal-disclaimer-acadêmico" class="nav-link" data-scroll-target="#aviso-legal-disclaimer-acadêmico">Aviso Legal (Disclaimer Acadêmico)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">EST074 - Análise de Regressão</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<p class="subtitle lead">Notas de Aula, Transcrições Oficiais e Estudos Aprofundados</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Prof.&nbsp;Dr.&nbsp;Tiago M. Magalhães | Notas &amp; Estudos </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="apresentação-do-curso" class="level1 unnumbered">
+<h1 class="unnumbered">Apresentação do Curso</h1>
+<p>Bem-vindo ao portal interativo de estudos da disciplina <strong>EST074 – Análise de Regressão</strong>, oferecida pelo Departamento de Estatística do Instituto de Ciências Exatas (ICE) da <strong>Universidade Federal de Juiz de Fora (UFJF)</strong>, ministrada pelo <strong>Prof.&nbsp;Dr.&nbsp;Tiago M. Magalhães</strong>.</p>
+<p>Este material foi concebido para transformar os slides das aulas em uma experiência de estudo contínua, rica e acessível na web, estruturada especificamente para publicação no <strong>GitHub Pages</strong>.</p>
+<hr>
+<section id="estrutura-do-material-dupla-camada-de-aprendizado" class="level2">
+<h2 class="anchored" data-anchor-id="estrutura-do-material-dupla-camada-de-aprendizado">Estrutura do Material: Dupla Camada de Aprendizado</h2>
+<p>Para manter a fidelidade ao conteúdo ministrado em sala e simultaneamente permitir o enriquecimento contínuo com a bibliografia clássica e moderna, cada seção conceitual deste livro adota uma estrutura em abas (<em>tabset</em>):</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Nesta aba encontra-se a <strong>transcrição <em>ipsis litteris</em></strong> das notas de aula e apresentações oficiais do professor, preservando rigorosamente as definições, equações, numerações, notações, tabelas e exemplos originais.</p>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>Nesta aba encontram-se <strong>anotações de estudo aprofundadas</strong>, deduções matemáticas detalhadas passo a passo (álgebra matricial, cálculos de esperança e variância, lemas e teoremas), intuições geométricas, conexões com os livros-texto (<span class="citation" data-cites="montgomery2021">Montgomery, Peck, and Vining (<a href="#ref-montgomery2021" role="doc-biblioref">2021</a>)</span>; <span class="citation" data-cites="kutner2005">Kutner et al. (<a href="#ref-kutner2005" role="doc-biblioref">2005</a>)</span>; <span class="citation" data-cites="graybill1983">Graybill (<a href="#ref-graybill1983" role="doc-biblioref">1983</a>)</span>) e implementações práticas reproduzíveis com códigos em <strong>R</strong> e <strong>Python</strong>.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="ementa-do-curso" class="level2">
+<h2 class="anchored" data-anchor-id="ementa-do-curso">Ementa do Curso</h2>
+<p>A disciplina aborda formal e computacionalmente a modelagem da relação entre uma variável resposta e um conjunto de variáveis explicativas (covariáveis), dividindo-se em quatro grandes blocos temáticos:</p>
+<ol type="1">
+<li><strong>Módulo 1: Fundamentos e Estimação por Mínimos Quadrados</strong>
+<ul>
+<li>Contextualização histórica e motivação (Galton, Antropometria e aplicações modernas).</li>
+<li>Conceitos iniciais, covariância, correlação de Pearson e diagramas de dispersão.</li>
+<li>Ferramentas de Álgebra Linear Aplicada: formas quadráticas, decomposição espectral, fatoração de Cholesky e derivadas matriciais.</li>
+<li>O Modelo de Regressão Linear Simples e Múltiplo (<span class="math inline">\(Y = X\beta + \varepsilon\)</span>).</li>
+<li>Suposições clássicas de Gauss-Markov e propriedades dos erros.</li>
+<li>Método dos Mínimos Quadrados Ordinários (MQO) matricial e Teorema de Gauss-Markov (BLUE).</li>
+<li>Método da Máxima Verossimilhança (MV) sob normalidade e estimador de variância (<span class="math inline">\(QMRes\)</span>).</li>
+<li>Variáveis qualitativas (<em>dummy encoding</em>) e padronização de variáveis.</li>
+</ul></li>
+<li><strong>Módulo 2: Análise de Variância, Inferência e Predição</strong>
+<ul>
+<li>Partição da variabilidade: Decomposição da Soma de Quadrados (<span class="math inline">\(SQTot = SQReg + SQRes\)</span>).</li>
+<li>Tabela ANOVA e o Teorema de Cochran.</li>
+<li>Coeficiente de Determinação (<span class="math inline">\(R^2\)</span>) e Coeficiente de Determinação Ajustado (<span class="math inline">\(R^2_{adj}\)</span>).</li>
+<li>Teste de hipóteses para parâmetros individuais (Teste <span class="math inline">\(t\)</span> de Student).</li>
+<li>Teste <span class="math inline">\(F\)</span> global de significância da regressão e Teste <span class="math inline">\(F\)</span> parcial (Soma de Quadrados Extra).</li>
+<li>Testes de hipóteses lineares gerais (<span class="math inline">\(H_0: L\beta = c\)</span>) e testes assintóticos (Razão de Verossimilhanças, Wald e Escore de Rao).</li>
+<li>Intervalos de confiança individuais, elipsoides de confiança conjunta e correções de Bonferroni e Scheffé.</li>
+<li>Inferência sobre a resposta média <span class="math inline">\(E(Y|x_0)\)</span> versus predição de nova observação <span class="math inline">\(Y_0\)</span> (bandas de predição).</li>
+</ul></li>
+<li><strong>Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</strong>
+<ul>
+<li>Resíduos ordinários, resíduos padronizados e resíduos studentizados (internos e externamente com deleção / R-Student).</li>
+<li>Análise gráfica para verificação de linearidade, homocedasticidade e normalidade.</li>
+<li>Transformações estabilizadoras da variância e família de transformações Box-Cox.</li>
+<li>Introdução aos Mínimos Quadrados Ponderados (MQP) e Generalizados (MQG).</li>
+<li>Identificação de observações discrepantes: outliers, pontos de alta alavancagem (<em>leverage</em> via matriz chapéu <span class="math inline">\(H\)</span>).</li>
+<li>Medidas formais de influência: Distância de Cook (<span class="math inline">\(D_i\)</span>), DFFITS, DFBETAS e COVRATIO.</li>
+</ul></li>
+<li><strong>Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões</strong>
+<ul>
+<li>Multicolinearidade: diagnóstico via matriz de correlação, Fator de Inflação da Variância (<span class="math inline">\(VIF\)</span>) e número de condição (<span class="math inline">\(CI\)</span>).</li>
+<li>Remediação de multicolinearidade e Regressão Ridge (<span class="math inline">\(L_2\)</span>).</li>
+<li>Métodos de seleção de variáveis: Best Subsets, Forward, Backward e Stepwise baseados em <span class="math inline">\(AIC\)</span>, <span class="math inline">\(BIC\)</span> e <span class="math inline">\(C_p\)</span> de Mallows.</li>
+<li>Introdução à regressão Lasso (<span class="math inline">\(L_1\)</span>) e penalizações esparsas.</li>
+<li>Validação de modelos: partição treino/teste, validação cruzada <span class="math inline">\(k\)</span>-fold, Leave-One-Out (LOOCV), resíduos PRESS e <span class="math inline">\(R^2_{pred}\)</span>.</li>
+<li>Tópicos avançados e extensões: Regressão Linear Bayesiana, Modelos Lineares Generalizados (MLG / GLM - Logística e Poisson), e a perspectiva do Aprendizado de Máquina (<em>machine learning</em>) e equilíbrio viés-variância.</li>
+</ul></li>
+</ol>
+<hr>
+</section>
+<section id="informações-do-docente-e-contato" class="level2">
+<h2 class="anchored" data-anchor-id="informações-do-docente-e-contato">Informações do Docente e Contato</h2>
+<ul>
+<li><strong>Docente:</strong> Prof.&nbsp;Dr.&nbsp;Tiago M. Magalhães</li>
+<li><strong>Instituição:</strong> Departamento de Estatística — ICE / UFJF</li>
+<li><strong>Gabinete:</strong> Sala 319, ICE/UFJF, Juiz de Fora - MG</li>
+<li><strong>E-mail:</strong> <code>tiago.magalhaes@ufjf.br</code></li>
+<li><strong>Página Institucional:</strong> <a href="https://ufjf.br/tiago_magalhaes">ufjf.br/tiago_magalhaes</a></li>
+</ul>
+<hr>
+</section>
+<section id="bibliografia-principal-recomendada" class="level2">
+<h2 class="anchored" data-anchor-id="bibliografia-principal-recomendada">Bibliografia Principal Recomendada</h2>
+<ul>
+<li><strong>Montgomery, D. C., Peck, E. A., &amp; Vining, G. G. (2021).</strong> <em>Introduction to Linear Regression Analysis</em> (6th ed.). John Wiley &amp; Sons.</li>
+<li><strong>Kutner, M. H., Nachtsheim, C. J., Neter, J., &amp; Li, W. (2005).</strong> <em>Applied Linear Statistical Models</em> (5th ed.). McGraw-Hill Irwin.</li>
+<li><strong>Neter, J., Wasserman, W., &amp; Kutner, M. H. (1983).</strong> <em>Applied Linear Regression Models</em>. Richard D. Irwin.</li>
+<li><strong>Graybill, F. A. (1983).</strong> <em>Matrices with Applications in Statistics</em> (2nd ed.). Wadsworth.</li>
+<li><strong>James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2023).</strong> <em>An Introduction to Statistical Learning: with Applications in R</em> (2nd ed.). Springer.</li>
+</ul>
+<hr>
+</section>
+<section id="como-compilar-e-publicar-no-github-pages" class="level2">
+<h2 class="anchored" data-anchor-id="como-compilar-e-publicar-no-github-pages">Como Compilar e Publicar no GitHub Pages</h2>
+<p>Este repositório está configurado para gerar os arquivos estáticos na pasta <code>docs/</code>, facilitando o deploy automático pelo GitHub Pages.</p>
+<section id="renderizar-localmente-com-quarto" class="level3">
+<h3 class="anchored" data-anchor-id="renderizar-localmente-com-quarto">1. Renderizar localmente com Quarto</h3>
+<p>No terminal, execute:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>ou para pré-visualização contínua durante a edição:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> preview</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="ativação-no-github" class="level3">
+<h3 class="anchored" data-anchor-id="ativação-no-github">2. Ativação no GitHub</h3>
+<ol type="1">
+<li><p>Faça o commit e envie as alterações para o seu repositório:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Compilando book EST074 para o GitHub Pages"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin main</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>No GitHub, acesse as configurações do seu repositório (<strong>Settings</strong> &gt; <strong>Pages</strong>).</p></li>
+<li><p>Na seção <strong>Build and deployment</strong>, selecione:</p>
+<ul>
+<li><strong>Source:</strong> <em>Deploy from a branch</em></li>
+<li><strong>Branch:</strong> <code>main</code> e diretório <code>/docs</code></li>
+</ul></li>
+<li><p>Clique em <strong>Save</strong>. Em instantes seu site estará disponível no ar!</p></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="aviso-legal-disclaimer-acadêmico" class="level2">
+<h2 class="anchored" data-anchor-id="aviso-legal-disclaimer-acadêmico">Aviso Legal (Disclaimer Acadêmico)</h2>
+<blockquote class="blockquote">
+<p>[!NOTE] Os textos, roteiros e exemplos contidos na aba <strong>“Texto do Slide (Oficial)”</strong> pertencem ao material pedagógico elaborado pelo Prof.&nbsp;Dr.&nbsp;Tiago M. Magalhães para o curso EST074 do ICE-UFJF.</p>
+<p>As deduções suplementares, notas expandidas, códigos em R/Python e ilustrações da aba <strong>“Versão Aprofundada (Notas Pessoais)”</strong> representam anotações de estudo e pesquisa discente, integradas para enriquecer o processo de aprendizagem e consulta acadêmica contínua.</p>
+</blockquote>
+
+
+<!-- -->
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-graybill1983" class="csl-entry" role="listitem">
+Graybill, Franklin A. 1983. <em>Matrices with Applications in Statistics</em>. 2nd ed. Belmont, CA: Wadsworth International Group.
+</div>
+<div id="ref-kutner2005" class="csl-entry" role="listitem">
+Kutner, Michael H., Christopher J. Nachtsheim, John Neter, and William Li. 2005. <em>Applied Linear Statistical Models</em>. 5th ed. Chicago: McGraw-Hill Irwin.
+</div>
+<div id="ref-montgomery2021" class="csl-entry" role="listitem">
+Montgomery, Douglas C., Elizabeth A. Peck, and G. Geoffrey Vining. 2021. <em>Introduction to Linear Regression Analysis</em>. 6th ed. New York: John Wiley &amp; Sons.
+</div>
+</div>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./modulos/01-intro-mqo.html" class="pagination-link" aria-label="Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Apresentação do Curso {.unnumbered}</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>Bem-vindo ao portal interativo de estudos da disciplina **EST074 – Análise de Regressão**, oferecida pelo Departamento de Estatística do Instituto de Ciências Exatas (ICE) da **Universidade Federal de Juiz de Fora (UFJF)**, ministrada pelo **Prof. Dr. Tiago M. Magalhães**.</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Este material foi concebido para transformar os slides das aulas em uma experiência de estudo contínua, rica e acessível na web, estruturada especificamente para publicação no **GitHub Pages**.</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Estrutura do Material: Dupla Camada de Aprendizado</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>Para manter a fidelidade ao conteúdo ministrado em sala e simultaneamente permitir o enriquecimento contínuo com a bibliografia clássica e moderna, cada seção conceitual deste livro adota uma estrutura em abas (*tabset*):</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>Nesta aba encontra-se a **transcrição *ipsis litteris*** das notas de aula e apresentações oficiais do professor, preservando rigorosamente as definições, equações, numerações, notações, tabelas e exemplos originais.</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>Nesta aba encontram-se **anotações de estudo aprofundadas**, deduções matemáticas detalhadas passo a passo (álgebra matricial, cálculos de esperança e variância, lemas e teoremas), intuições geométricas, conexões com os livros-texto (@montgomery2021; @kutner2005; @graybill1983) e implementações práticas reproduzíveis com códigos em **R** e **Python**.</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="fu">## Ementa do Curso</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>A disciplina aborda formal e computacionalmente a modelagem da relação entre uma variável resposta e um conjunto de variáveis explicativas (covariáveis), dividindo-se em quatro grandes blocos temáticos:</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Módulo 1: Fundamentos e Estimação por Mínimos Quadrados**</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Contextualização histórica e motivação (Galton, Antropometria e aplicações modernas).</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Conceitos iniciais, covariância, correlação de Pearson e diagramas de dispersão.</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Ferramentas de Álgebra Linear Aplicada: formas quadráticas, decomposição espectral, fatoração de Cholesky e derivadas matriciais.</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>O Modelo de Regressão Linear Simples e Múltiplo ($Y = X\beta + \varepsilon$).</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Suposições clássicas de Gauss-Markov e propriedades dos erros.</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Método dos Mínimos Quadrados Ordinários (MQO) matricial e Teorema de Gauss-Markov (BLUE).</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Método da Máxima Verossimilhança (MV) sob normalidade e estimador de variância ($QMRes$).</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Variáveis qualitativas (*dummy encoding*) e padronização de variáveis.</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Módulo 2: Análise de Variância, Inferência e Predição**</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Partição da variabilidade: Decomposição da Soma de Quadrados ($SQTot = SQReg + SQRes$).</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Tabela ANOVA e o Teorema de Cochran.</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Coeficiente de Determinação ($R^2$) e Coeficiente de Determinação Ajustado ($R^2_{adj}$).</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Teste de hipóteses para parâmetros individuais (Teste $t$ de Student).</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Teste $F$ global de significância da regressão e Teste $F$ parcial (Soma de Quadrados Extra).</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Testes de hipóteses lineares gerais ($H_0: L\beta = c$) e testes assintóticos (Razão de Verossimilhanças, Wald e Escore de Rao).</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Intervalos de confiança individuais, elipsoides de confiança conjunta e correções de Bonferroni e Scheffé.</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Inferência sobre a resposta média $E(Y|x_0)$ versus predição de nova observação $Y_0$ (bandas de predição).</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Módulo 3: Análise de Resíduos, Transformações e Diagnóstico**</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Resíduos ordinários, resíduos padronizados e resíduos studentizados (internos e externamente com deleção / R-Student).</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Análise gráfica para verificação de linearidade, homocedasticidade e normalidade.</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Transformações estabilizadoras da variância e família de transformações Box-Cox.</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Introdução aos Mínimos Quadrados Ponderados (MQP) e Generalizados (MQG).</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Identificação de observações discrepantes: outliers, pontos de alta alavancagem (*leverage* via matriz chapéu $H$).</span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Medidas formais de influência: Distância de Cook ($D_i$), DFFITS, DFBETAS e COVRATIO.</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões**</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Multicolinearidade: diagnóstico via matriz de correlação, Fator de Inflação da Variância ($VIF$) e número de condição ($CI$).</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Remediação de multicolinearidade e Regressão Ridge ($L_2$).</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Métodos de seleção de variáveis: Best Subsets, Forward, Backward e Stepwise baseados em $AIC$, $BIC$ e $C_p$ de Mallows.</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Introdução à regressão Lasso ($L_1$) e penalizações esparsas.</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Validação de modelos: partição treino/teste, validação cruzada $k$-fold, Leave-One-Out (LOOCV), resíduos PRESS e $R^2_{pred}$.</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Tópicos avançados e extensões: Regressão Linear Bayesiana, Modelos Lineares Generalizados (MLG / GLM - Logística e Poisson), e a perspectiva do Aprendizado de Máquina (*machine learning*) e equilíbrio viés-variância.</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a><span class="fu">## Informações do Docente e Contato</span></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Docente:** Prof. Dr. Tiago M. Magalhães</span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Instituição:** Departamento de Estatística — ICE / UFJF</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Gabinete:** Sala 319, ICE/UFJF, Juiz de Fora - MG</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**E-mail:** <span class="in">`tiago.magalhaes@ufjf.br`</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Página Institucional:** <span class="co">[</span><span class="ot">ufjf.br/tiago_magalhaes</span><span class="co">](https://ufjf.br/tiago_magalhaes)</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bibliografia Principal Recomendada</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Montgomery, D. C., Peck, E. A., &amp; Vining, G. G. (2021).** *Introduction to Linear Regression Analysis* (6th ed.). John Wiley &amp; Sons.</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kutner, M. H., Nachtsheim, C. J., Neter, J., &amp; Li, W. (2005).** *Applied Linear Statistical Models* (5th ed.). McGraw-Hill Irwin.</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Neter, J., Wasserman, W., &amp; Kutner, M. H. (1983).** *Applied Linear Regression Models*. Richard D. Irwin.</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Graybill, F. A. (1983).** *Matrices with Applications in Statistics* (2nd ed.). Wadsworth.</span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**James, G., Witten, D., Hastie, T., &amp; Tibshirani, R. (2023).** *An Introduction to Statistical Learning: with Applications in R* (2nd ed.). Springer.</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a><span class="fu">## Como Compilar e Publicar no GitHub Pages</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>Este repositório está configurado para gerar os arquivos estáticos na pasta <span class="in">`docs/`</span>, facilitando o deploy automático pelo GitHub Pages.</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. Renderizar localmente com Quarto</span></span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>No terminal, execute:</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>ou para pré-visualização contínua durante a edição:</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> preview</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. Ativação no GitHub</span></span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Faça o commit e envie as alterações para o seu repositório:</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>   <span class="in">```bash</span></span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>   <span class="fu">git</span> add .</span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>   <span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"Compilando book EST074 para o GitHub Pages"</span></span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>   <span class="fu">git</span> push origin main</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>   <span class="in">```</span></span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>No GitHub, acesse as configurações do seu repositório (**Settings** &gt; **Pages**).</span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Na seção **Build and deployment**, selecione:</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**Source:** *Deploy from a branch*</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**Branch:** <span class="in">`main`</span> e diretório <span class="in">`/docs`</span></span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Clique em **Save**. Em instantes seu site estará disponível no ar!</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a><span class="fu">## Aviso Legal (Disclaimer Acadêmico)</span></span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span><span class="co">[</span><span class="ot">!NOTE</span><span class="co">]</span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Os textos, roteiros e exemplos contidos na aba **"Texto do Slide (Oficial)"** pertencem ao material pedagógico elaborado pelo Prof. Dr. Tiago M. Magalhães para o curso EST074 do ICE-UFJF. </span></span>
+<span id="cb4-118"><a href="#cb4-118" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; </span></span>
+<span id="cb4-119"><a href="#cb4-119" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; As deduções suplementares, notas expandidas, códigos em R/Python e ilustrações da aba **"Versão Aprofundada (Notas Pessoais)"** representam anotações de estudo e pesquisa discente, integradas para enriquecer o processo de aprendizagem e consulta acadêmica contínua.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>EST074 - Análise de Regressão (UFJF)</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Compilado com Quarto para GitHub Pages</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

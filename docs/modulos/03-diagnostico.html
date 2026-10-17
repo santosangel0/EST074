@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Módulo 3: Análise de Resíduos, Transformações e Diagnóstico – EST074 - Análise de Regressão</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../modulos/04-multivariada.html" rel="next">
+<link href="../modulos/02-inferencia.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-4b352893ee45d6aea91c5d81184de3a4.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-3084cf9446c6e0c3ebdd1d18f0321678.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../modulos/03-diagnostico.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">EST074 - Análise de Regressão</a> 
+        <div class="sidebar-tools-main">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Apresentação do Curso</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/01-intro-mqo.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Módulo 1: Introdução, Fundamentos e Método dos Mínimos Quadrados</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/02-inferencia.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/03-diagnostico.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../modulos/04-multivariada.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#análise-de-resíduos-e-diagnóstico-gráfico" id="toc-análise-de-resíduos-e-diagnóstico-gráfico" class="nav-link active" data-scroll-target="#análise-de-resíduos-e-diagnóstico-gráfico"><span class="header-section-number">3.1</span> 3.1 Análise de Resíduos e Diagnóstico Gráfico</a></li>
+  <li><a href="#transformações-e-mínimos-quadrados-generalizados" id="toc-transformações-e-mínimos-quadrados-generalizados" class="nav-link" data-scroll-target="#transformações-e-mínimos-quadrados-generalizados"><span class="header-section-number">3.2</span> 3.2 Transformações e Mínimos Quadrados Generalizados</a></li>
+  <li><a href="#diagnóstico-de-alavancagem-e-medidas-de-influência" id="toc-diagnóstico-de-alavancagem-e-medidas-de-influência" class="nav-link" data-scroll-target="#diagnóstico-de-alavancagem-e-medidas-de-influência"><span class="header-section-number">3.3</span> 3.3 Diagnóstico de Alavancagem e Medidas de Influência</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Este módulo reúne os tópicos dedicados à validação de pressupostos e detecção de anomalias no modelo linear clássico (slides <strong>p09</strong>, <strong>p10</strong> e <strong>p11</strong>), abordando os diferentes tipos de resíduos, gráficos diagnósticos, transformações estabilizadoras da variância (incluindo Box-Cox), mínimos quadrados generalizados e as medidas formais de alavancagem e influência (Distância de Cook, DFFITS, DFBETAS e COVRATIO).</p>
+<hr>
+<section id="análise-de-resíduos-e-diagnóstico-gráfico" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="análise-de-resíduos-e-diagnóstico-gráfico"><span class="header-section-number">3.1</span> 3.1 Análise de Resíduos e Diagnóstico Gráfico</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="" aria-current="page">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<section id="resíduos-ordinários" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="resíduos-ordinários"><span class="header-section-number">3.1.1</span> Resíduos Ordinários</h3>
+<p>O resíduo ordinário é a diferença entre a resposta observada e o valor predito pelo modelo: <span class="math display">\[e_i = Y_i - \hat{Y}_i, \quad i = 1, \dots, n\]</span> Em forma matricial: <span class="math display">\[e = Y - \hat{Y} = (I_n - H) Y\]</span> em que <span class="math inline">\(H = X(X^\top X)^{-1} X^\top\)</span> é a matriz chapéu.</p>
+<p><strong>Propriedades estatísticas dos resíduos:</strong> - <span class="math inline">\(\mathbb{E}(e) = \mathbb{E}[(I_n - H)Y] = (I_n - H)X\beta = 0\)</span>; - <span class="math inline">\(\mathrm{Var}(e) = \mathrm{Var}[(I_n - H)Y] = (I_n - H)(\sigma^2 I_n)(I_n - H)^\top = \sigma^2 (I_n - H)\)</span>.</p>
+<p>Disso resulta que a variância de cada resíduo individual é: <span class="math display">\[\mathrm{Var}(e_i) = \sigma^2 (1 - h_{ii})\]</span> e a covariância entre dois resíduos distintos é: <span class="math display">\[\mathrm{Cov}(e_i, e_j) = -\sigma^2 h_{ij}\]</span> <em>Conclusão crucial:</em> Mesmo que os erros populacionais <span class="math inline">\(\varepsilon_i\)</span> tenham variância constante <span class="math inline">\(\sigma^2\)</span> e sejam não correlacionados, os resíduos amostrais <span class="math inline">\(e_i\)</span> <strong>possuem variâncias heterogêneas</strong> (pois <span class="math inline">\(h_{ii}\)</span> varia com a posição no espaço de preditoras) e <strong>são mutuamente correlacionados</strong>.</p>
+</section>
+<section id="resíduos-padronizados-e-studentizados" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="resíduos-padronizados-e-studentizados"><span class="header-section-number">3.1.2</span> Resíduos Padronizados e Studentizados</h3>
+<p>Para viabilizar comparações justas entre observações com diferentes posições na matriz de delineamento:</p>
+<ol type="1">
+<li><p><strong>Resíduo Padronizado:</strong> <span class="math display">\[d_i = \frac{e_i}{\sqrt{QMRes}}\]</span> Não leva em consideração a alavancagem individual <span class="math inline">\(h_{ii}\)</span>.</p></li>
+<li><p><strong>Resíduo Studentizado Internamente:</strong> <span class="math display">\[r_i = \frac{e_i}{\sqrt{QMRes (1 - h_{ii})}}\]</span> Possui média 0 e variância aproximadamente unitária.</p></li>
+<li><p><strong>Resíduo Studentizado com Deleção / Externamente (R-Student):</strong> Substitui-se a estimativa de variância por <span class="math inline">\(QMRes_{(i)}\)</span>, calculado ajustando o modelo na amostra com a <span class="math inline">\(i\)</span>-ésima observação removida: <span class="math display">\[t_i = \frac{e_i}{\sqrt{QMRes_{(i)} (1 - h_{ii})}} = r_i \left( \frac{n - p - 1}{n - p - r_i^2} \right)^{1/2}\]</span> Sob a hipótese de normalidade e ausência de anomalia na observação <span class="math inline">\(i\)</span>, a estatística <span class="math inline">\(t_i\)</span> segue <strong>rigorosamente a distribuição <span class="math inline">\(t\)</span> de Student</strong>: <span class="math display">\[t_i \sim t(n - p - 1)\]</span> Valores absolutos <span class="math inline">\(|t_i| &gt; 2\)</span> ou <span class="math inline">\(3\)</span> são considerados fortes indícios de <em>outliers</em>.</p></li>
+</ol>
+</section>
+<section id="gráficos-diagnósticos" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="gráficos-diagnósticos"><span class="header-section-number">3.1.3</span> Gráficos Diagnósticos</h3>
+<ol type="1">
+<li><strong>Resíduos vs Valores Ajustados (<span class="math inline">\(\hat{Y}_i\)</span>):</strong>
+<ul>
+<li>Dispersão aleatória em torno de 0 indica adequação linear e homocedasticidade;</li>
+<li>Padrão em funil ou leque (<em>cone</em>) indica <strong>heterocedasticidade</strong> (<span class="math inline">\(\sigma^2\)</span> varia com a magnitude de <span class="math inline">\(Y\)</span>);</li>
+<li>Tendência curvilínea (parábola, senóide) indica <strong>não linearidade</strong> (termos polinomiais omitidos).</li>
+</ul></li>
+<li><strong>Resíduos vs Covariáveis (<span class="math inline">\(X_j\)</span>):</strong> Identifica se uma variável específica necessita de termo quadrático ou se a dispersão é função daquela variável.</li>
+<li><strong>Gráfico de Probabilidade Normal (Q-Q Plot):</strong> Plota os quantis ordenados dos resíduos studentizados contra os quantis teóricos da distribuição normal padrão. Desvios acentuados nas extremidades revelam caudas pesadas ou assimetria nos erros.</li>
+</ol>
+</section>
+<section id="estatística-press" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="estatística-press"><span class="header-section-number">3.1.4</span> Estatística PRESS</h3>
+<p>O resíduo com deleção pode ser calculado diretamente sem necessidade de reajustar o modelo <span class="math inline">\(n\)</span> vezes: <span class="math display">\[e_{(i)} = Y_i - \hat{Y}_{(i)} = \frac{e_i}{1 - h_{ii}}\]</span> A soma dos quadrados desses resíduos define a estatística PRESS (<em>Predicted Residual Error Sum of Squares</em>): <span class="math display">\[PRESS = \sum_{i=1}^n e_{(i)}^2 = \sum_{i=1}^n \left( \frac{e_i}{1 - h_{ii}} \right)^2\]</span></p>
+</section>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<section id="dedução-da-fórmula-computacional-de-deleção-de-sherman-morrison" class="level3" data-number="3.1.5">
+<h3 data-number="3.1.5" class="anchored" data-anchor-id="dedução-da-fórmula-computacional-de-deleção-de-sherman-morrison"><span class="header-section-number">3.1.5</span> Dedução da Fórmula Computacional de Deleção de Sherman-Morrison</h3>
+<p>Como é possível calcular a previsão com a <span class="math inline">\(i\)</span>-ésima observação deletada (<span class="math inline">\(\hat{Y}_{(i)}\)</span>) usando apenas o ajuste do modelo completo? Utiliza-se o <strong>Lema de Inversão de Matrizes de Woodbury / Sherman-Morrison</strong>: <span class="math display">\[(X_{(i)}^\top X_{(i)})^{-1} = (X^\top X - x_i x_i^\top)^{-1} = (X^\top X)^{-1} + \frac{(X^\top X)^{-1} x_i x_i^\top (X^\top X)^{-1}}{1 - x_i^\top (X^\top X)^{-1} x_i}\]</span> Como <span class="math inline">\(h_{ii} = x_i^\top (X^\top X)^{-1} x_i\)</span>, deduz-se analiticamente que: <span class="math display">\[\hat{\beta}_{(i)} = \hat{\beta} - \frac{(X^\top X)^{-1} x_i e_i}{1 - h_{ii}}\]</span> Multiplicando por <span class="math inline">\(x_i^\top\)</span>: <span class="math display">\[\hat{Y}_{i(i)} = x_i^\top \hat{\beta}_{(i)} = \hat{Y}_i - \frac{h_{ii} e_i}{1 - h_{ii}}\]</span> Subtraindo de <span class="math inline">\(Y_i\)</span>: <span class="math display">\[e_{(i)} = Y_i - \hat{Y}_{i(i)} = (Y_i - \hat{Y}_i) + \frac{h_{ii} e_i}{1 - h_{ii}} = e_i \left( 1 + \frac{h_{ii}}{1 - h_{ii}} \right) = \frac{e_i}{1 - h_{ii}}\]</span> Essa identidade economiza <span class="math inline">\(n\)</span> reajustes de regressão, viabilizando validação cruzada instantânea.</p>
+</section>
+<section id="testes-estatísticos-formais-de-heterocedasticidade" class="level3" data-number="3.1.6">
+<h3 data-number="3.1.6" class="anchored" data-anchor-id="testes-estatísticos-formais-de-heterocedasticidade"><span class="header-section-number">3.1.6</span> Testes Estatísticos Formais de Heterocedasticidade</h3>
+<p>Além dos gráficos, utilizam-se testes formais: 1. <strong>Teste de Breusch-Pagan:</strong> Ajusta uma regressão dos quadrados dos resíduos studentizados <span class="math inline">\(e_i^2 / \hat{\sigma}^2\)</span> contra as covariáveis <span class="math inline">\(X\)</span>. A estatística segue distribuição <span class="math inline">\(\chi^2(p - 1)\)</span> sob a hipótese nula de homocedasticidade. 2. <strong>Teste de Durbin-Watson para Autocorrelação:</strong> <span class="math display">\[DW = \frac{\sum_{i=2}^n (e_i - e_{i-1})^2}{\sum_{i=1}^n e_i^2} \approx 2(1 - r_1)\]</span> Valores próximos a <span class="math inline">\(2\)</span> indicam ausência de correlação serial de primeira ordem; valores <span class="math inline">\(&lt; 1{,}5\)</span> indicam autocorrelação positiva comum em séries temporais.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bateria completa de diagnostico de residuos em R</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp <span class="sc">+</span> qsec, <span class="at">data =</span> mtcars)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Teste de Homocedasticidade de Breusch-Pagan</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(mod)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Teste de Normalidade dos Residuos de Shapiro-Wilk</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">rstudent</span>(mod))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Teste de Autocorrelacao de Durbin-Watson</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">dwtest</span>(mod)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Painel grafico de 4 diagnosticos</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mod)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="transformações-e-mínimos-quadrados-generalizados" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="transformações-e-mínimos-quadrados-generalizados"><span class="header-section-number">3.2</span> 3.2 Transformações e Mínimos Quadrados Generalizados</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<section id="transformações-estabilizadoras-da-variância" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="transformações-estabilizadoras-da-variância"><span class="header-section-number">3.2.1</span> Transformações Estabilizadoras da Variância</h3>
+<p>Quando a suposição de homocedasticidade é violada e a variância dos erros é uma função conhecida da média condicional (<span class="math inline">\(\sigma_i^2 = g(\mu_i)\)</span>), transformações não lineares sobre a variável resposta <span class="math inline">\(Y\)</span> podem restaurar a variância constante:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 35%">
+<col style="width: 35%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Distribuição Típica</th>
+<th style="text-align: center;">Relação <span class="math inline">\(\mathrm{Var}(Y) \propto f(\mu)\)</span></th>
+<th style="text-align: center;">Transformação Estabilizadora</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Poisson (Contagens)</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\sigma^2 \propto \mu\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(Y^* = \sqrt{Y}\)</span> ou <span class="math inline">\(\sqrt{Y} + \sqrt{Y + 1}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Binomial (Proporções)</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\sigma^2 \propto \mu(1 - \mu)\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(Y^* = \arcsin(\sqrt{Y})\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Exponencial / Gama</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\sigma^2 \propto \mu^2\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(Y^* = \ln(Y)\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Recíproca</strong></td>
+<td style="text-align: center;"><span class="math inline">\(\sigma^2 \propto \mu^4\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(Y^* = 1 / Y\)</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="a-família-de-transformações-box-cox" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="a-família-de-transformações-box-cox"><span class="header-section-number">3.2.2</span> A Família de Transformações Box-Cox</h3>
+<p>Proposta por Box e Cox (1964), é uma família paramétrica contínua indexada pelo parâmetro de potência <span class="math inline">\(\lambda\)</span>: <span class="math display">\[Y^{(\lambda)} = \begin{cases} \frac{Y^\lambda - 1}{\lambda}, &amp; \text{se } \lambda \neq 0 \\ \ln(Y), &amp; \text{se } \lambda = 0 \end{cases}\]</span> (com a exigência estrita de que todos os valores <span class="math inline">\(Y_i &gt; 0\)</span>).</p>
+<p>Para manter a escala da verossimilhança comparável entre diferentes valores de <span class="math inline">\(\lambda\)</span>, utiliza-se a transformação normalizada com a média geométrica <span class="math inline">\(\dot{Y} = \exp\left( \frac{1}{n}\sum \ln Y_i \right)\)</span>: <span class="math display">\[W^{(\lambda)} = \begin{cases} \frac{Y^\lambda - 1}{\lambda \dot{Y}^{\lambda - 1}}, &amp; \lambda \neq 0 \\ \dot{Y} \ln(Y), &amp; \lambda = 0 \end{cases}\]</span> O valor ótimo <span class="math inline">\(\hat{\lambda}\)</span> é aquele que minimiza a soma dos quadrados dos resíduos <span class="math inline">\(SQRes(\lambda)\)</span> ou, equivalentemente, maximiza a função de perfil de log-verossimilhança: <span class="math display">\[\ell(\lambda) = -\frac{n}{2}\ln\left(\frac{SQRes(\lambda)}{n}\right)\]</span> O intervalo de confiança aproximado com nível <span class="math inline">\(1 - \alpha\)</span> para <span class="math inline">\(\lambda\)</span> é dado pelo conjunto de valores que satisfazem: <span class="math display">\[\ell(\lambda) \ge \ell(\hat{\lambda}) - \frac{1}{2}\chi^2_{1 - \alpha, \, 1}\]</span></p>
+</section>
+<section id="mínimos-quadrados-generalizados-mqg" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="mínimos-quadrados-generalizados-mqg"><span class="header-section-number">3.2.3</span> Mínimos Quadrados Generalizados (MQG)</h3>
+<p>Quando a matriz de covariância dos erros não é escalar, isto é: <span class="math display">\[\mathrm{Var}(\varepsilon) = \sigma^2 V\]</span> onde <span class="math inline">\(V_{n \times n}\)</span> é uma matriz simétrica e positiva definida conhecida. Por Cholesky, existe uma matriz não singular <span class="math inline">\(K\)</span> tal que <span class="math inline">\(V = K K^\top\)</span>. Multiplicando o modelo original <span class="math inline">\(Y = X\beta + \varepsilon\)</span> por <span class="math inline">\(K^{-1}\)</span>: <span class="math display">\[K^{-1}Y = K^{-1}X\beta + K^{-1}\varepsilon \implies Y^* = X^*\beta + \varepsilon^*\]</span> A variância dos novos erros transformados é: <span class="math display">\[\mathrm{Var}(\varepsilon^*) = K^{-1}(\sigma^2 V)(K^{-1})^\top = \sigma^2 K^{-1}(K K^\top)(K^\top)^{-1} = \sigma^2 I_n\]</span> Aplicando MQO ao modelo transformado, obtém-se o <strong>Estimador de Aitken de MQG</strong>: <span class="math display">\[\hat{\beta}_{MQG} = (X^\top V^{-1} X)^{-1} X^\top V^{-1} Y\]</span> <span class="math display">\[\mathrm{Var}(\hat{\beta}_{MQG}) = \sigma^2 (X^\top V^{-1} X)^{-1}\]</span></p>
+<p>Quando a matriz <span class="math inline">\(V\)</span> é diagonal com elementos <span class="math inline">\(w_i^{-1}\)</span> (heterocedasticidade pura sem autocorrelação), o método reduz-se aos <strong>Mínimos Quadrados Ponderados (MQP / WLS)</strong>, minimizando: <span class="math display">\[\sum_{i=1}^n w_i (Y_i - x_i^\top \beta)^2\]</span></p>
+</section>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<section id="procedimento-prático-para-box-cox" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="procedimento-prático-para-box-cox"><span class="header-section-number">3.2.4</span> Procedimento Prático para Box-Cox</h3>
+<p>Na prática de análise de regressão, dificilmente se utiliza o valor decimal contínuo exato de <span class="math inline">\(\hat{\lambda}\)</span> (por exemplo <span class="math inline">\(\hat{\lambda} = 0{,}237\)</span>), pois isso compromete a interpretabilidade científica do modelo. Em vez disso, verifica-se se algum expoente clássico e conceitualmente significativo está contido no intervalo de confiança de <span class="math inline">\(95\%\)</span> de <span class="math inline">\(\lambda\)</span>: - Se <span class="math inline">\(1 \in IC(\lambda) \implies\)</span> nenhuma transformação é necessária. - Se <span class="math inline">\(0{,}5 \in IC(\lambda) \implies\)</span> adotar a raiz quadrada <span class="math inline">\(\sqrt{Y}\)</span>. - Se <span class="math inline">\(0 \in IC(\lambda) \implies\)</span> adotar a transformação logarítmica <span class="math inline">\(\ln(Y)\)</span>. - Se <span class="math inline">\(-1 \in IC(\lambda) \implies\)</span> adotar a transformação recíproca <span class="math inline">\(1/Y\)</span>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aplicacao de Box-Cox com pacote MASS em R</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp, <span class="at">data =</span> mtcars)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico de perfil de Box-Cox com IC de 95%</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">boxcox</span>(mod, <span class="at">lambda =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">2</span>, <span class="at">by =</span> <span class="fl">0.1</span>))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Permite inspecionar visualmente se lambda = 0 (log) ou lambda = -0.5 esta no IC</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="diagnóstico-de-alavancagem-e-medidas-de-influência" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="diagnóstico-de-alavancagem-e-medidas-de-influência"><span class="header-section-number">3.3</span> 3.3 Diagnóstico de Alavancagem e Medidas de Influência</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Texto do Slide (Oficial)</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Versão Aprofundada (Notas Pessoais)</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<section id="pontos-de-alavanca-leverage" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="pontos-de-alavanca-leverage"><span class="header-section-number">3.3.1</span> Pontos de Alavanca (<em>Leverage</em>)</h3>
+<p>A matriz chapéu <span class="math inline">\(H = X(X^\top X)^{-1}X^\top\)</span> projeta o vetor observado <span class="math inline">\(Y\)</span> sobre os valores ajustados: <span class="math display">\[\hat{Y}_i = \sum_{j=1}^n h_{ij} Y_j = h_{ii} Y_i + \sum_{j \neq i} h_{ij} Y_j\]</span> O elemento diagonal <span class="math inline">\(h_{ii}\)</span> mede o peso/influência que a própria observação <span class="math inline">\(Y_i\)</span> exerce na determinação do seu valor predito <span class="math inline">\(\hat{Y}_i\)</span>.</p>
+<p><strong>Propriedades de <span class="math inline">\(h_{ii}\)</span>:</strong> - <span class="math inline">\(0 \le h_{ii} \le 1\)</span>; - <span class="math inline">\(\sum_{i=1}^n h_{ii} = \mathrm{tr}(H) = p\)</span>; - O valor médio de alavancagem na amostra é <span class="math inline">\(\bar{h} = \frac{p}{n}\)</span>.</p>
+<p><strong>Critério de Alerta:</strong> Uma observação é considerada um <strong>ponto de alta alavancagem</strong> se: <span class="math display">\[h_{ii} &gt; \frac{2p}{n}\]</span> (ou <span class="math inline">\(h_{ii} &gt; \frac{3p}{n}\)</span> para amostras pequenas).</p>
+</section>
+<section id="distinção-entre-outliers-alavancas-e-pontos-influentes" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="distinção-entre-outliers-alavancas-e-pontos-influentes"><span class="header-section-number">3.3.2</span> Distinção entre Outliers, Alavancas e Pontos Influentes</h3>
+<ul>
+<li><strong>Outlier:</strong> Observação com valor discrepante na resposta <span class="math inline">\(Y\)</span> (resíduo studentizado elevado, <span class="math inline">\(|t_i| &gt; 2\)</span>).</li>
+<li><strong>Ponto de Alavanca:</strong> Observação com valores extremos nas variáveis explicativas <span class="math inline">\(X\)</span> (<span class="math inline">\(h_{ii} &gt; 2p/n\)</span>), independente de ter resíduo grande ou pequeno.</li>
+<li><strong>Ponto Influente:</strong> Observação que afeta substancialmente os coeficientes da regressão quando removida. Resulta da combinação de alta alavancagem com resíduo não nulo.</li>
+</ul>
+</section>
+<section id="medidas-formais-de-influência-de-caso" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="medidas-formais-de-influência-de-caso"><span class="header-section-number">3.3.3</span> Medidas Formais de Influência de Caso</h3>
+<ol type="1">
+<li><p><strong>Distância de Cook (<span class="math inline">\(D_i\)</span>):</strong> Mede a distância euclidiana quadrada entre o vetor de coeficientes do modelo completo <span class="math inline">\(\hat{\beta}\)</span> e o vetor estimado sem a <span class="math inline">\(i\)</span>-ésima observação <span class="math inline">\(\hat{\beta}_{(i)}\)</span>: <span class="math display">\[D_i = \frac{(\hat{\beta} - \hat{\beta}_{(i)})^\top (X^\top X) (\hat{\beta} - \hat{\beta}_{(i)})}{p \cdot QMRes} = \frac{r_i^2}{p} \left( \frac{h_{ii}}{1 - h_{ii}} \right)\]</span> <em>Critério de Alerta:</em> <span class="math inline">\(D_i &gt; \mathcal{F}_{0{,}50, \, p, \, n - p} \approx 1\)</span>. Valores <span class="math inline">\(D_i &gt; 0{,}5\)</span> ou <span class="math inline">\(1\)</span> requerem investigação criteriosa.</p></li>
+<li><p><strong>DFFITS (<span class="math inline">\(DFFITS_i\)</span>):</strong> Mede o número de erros-padrão pelo qual a predição <span class="math inline">\(\hat{Y}_i\)</span> se altera ao remover a observação <span class="math inline">\(i\)</span>: <span class="math display">\[DFFITS_i = \frac{\hat{Y}_i - \hat{Y}_{i(i)}}{\sqrt{QMRes_{(i)} h_{ii}}} = t_i \sqrt{\frac{h_{ii}}{1 - h_{ii}}}\]</span> <em>Critério de Alerta:</em> <span class="math inline">\(|DFFITS_i| &gt; 2 \sqrt{\frac{p}{n}}\)</span> para amostras grandes (ou <span class="math inline">\(&gt; 1\)</span> para pequenas).</p></li>
+<li><p><strong>DFBETAS (<span class="math inline">\(DFBETAS_{j(i)}\)</span>):</strong> Mede o impacto da exclusão da observação <span class="math inline">\(i\)</span> sobre a estimativa específica do <span class="math inline">\(j\)</span>-ésimo coeficiente <span class="math inline">\(\hat{\beta}_j\)</span>: <span class="math display">\[DFBETAS_{j(i)} = \frac{\hat{\beta}_j - \hat{\beta}_{j(i)}}{\sqrt{QMRes_{(i)} c_{jj}}}\]</span> <em>Critério de Alerta:</em> <span class="math inline">\(|DFBETAS_{j(i)}| &gt; \frac{2}{\sqrt{n}}\)</span>.</p></li>
+<li><p><strong>COVRATIO:</strong> Mede a razão entre o determinante da matriz de covariância calculada sem o ponto <span class="math inline">\(i\)</span> e o determinante da matriz de covariância completa: <span class="math display">\[COVRATIO_i = \frac{\det[\mathrm{Var}(\hat{\beta}_{(i)})]}{\det[\mathrm{Var}(\hat{\beta})]} = \frac{(QMRes_{(i)})^p}{(QMRes)^p (1 - h_{ii})}\]</span> <em>Critério de Alerta:</em> <span class="math inline">\(|COVRATIO_i - 1| &gt; \frac{3p}{n}\)</span>. Valores <span class="math inline">\(&gt; 1 + \frac{3p}{n}\)</span> indicam que a observação <span class="math inline">\(i\)</span> melhora a precisão; valores <span class="math inline">\(&lt; 1 - \frac{3p}{n}\)</span> indicam que a observação degrada a precisão.</p></li>
+</ol>
+</section>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<section id="decomposição-elegante-da-distância-de-cook" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="decomposição-elegante-da-distância-de-cook"><span class="header-section-number">3.3.4</span> Decomposição Elegante da Distância de Cook</h3>
+<p>Observe a fórmula: <span class="math display">\[D_i = \underbrace{\frac{r_i^2}{p}}_{\text{Componente de Outlier (Y)}} \times \underbrace{\frac{h_{ii}}{1 - h_{ii}}}_{\text{Componente de Alavanca (X)}}\]</span> Esta fatoração matemática é pedagógica: 1. Se a observação tem grande alavancagem (<span class="math inline">\(h_{ii} \to 1\)</span>), mas está exatamente sobre a reta de regressão (<span class="math inline">\(r_i \approx 0\)</span>), <span class="math inline">\(D_i \approx 0\)</span> e ela não é influente sobre os coeficientes. 2. Se a observação tem resíduo expressivo (<span class="math inline">\(r_i\)</span> grande), mas seu <span class="math inline">\(h_{ii}\)</span> está próximo da média <span class="math inline">\(p/n\)</span>, <span class="math inline">\(D_i\)</span> permanece moderado. 3. A observação só se torna perigosamente influente quando conjuga simultaneamente <strong>afastamento no espaço <span class="math inline">\(X\)</span> (<span class="math inline">\(h_{ii}\)</span> grande)</strong> e <strong>discordância com o modelo (<span class="math inline">\(r_i\)</span> grande)</strong>.</p>
+</section>
+<section id="implementação-prática-das-medidas-de-diagnóstico-em-r-e-python" class="level3" data-number="3.3.5">
+<h3 data-number="3.3.5" class="anchored" data-anchor-id="implementação-prática-das-medidas-de-diagnóstico-em-r-e-python"><span class="header-section-number">3.3.5</span> Implementação Prática das Medidas de Diagnóstico em R e Python</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Medidas formais de influencia em R</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp <span class="sc">+</span> qsec, <span class="at">data =</span> mtcars)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(mtcars)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">coef</span>(mod))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculo de todas as metricas</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>influencia <span class="ot">&lt;-</span> <span class="fu">influence.measures</span>(mod)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(influencia)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico de Distancia de Cook</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mod, <span class="at">which =</span> <span class="dv">4</span>, <span class="at">cook.levels =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.0</span>))</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Identificacao de pontos criticos</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>cooks_d <span class="ot">&lt;-</span> <span class="fu">cooks.distance</span>(mod)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>pontos_criticos <span class="ot">&lt;-</span> <span class="fu">which</span>(cooks_d <span class="sc">&gt;</span> <span class="dv">4</span> <span class="sc">/</span> (n <span class="sc">-</span> p))</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Observações influentes pelo critério 4/(n-p):"</span>, <span class="fu">names</span>(pontos_criticos), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Analise de influencia em Python com statsmodels</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.outliers_influence <span class="im">import</span> OLSInfluence</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajuste do modelo</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>X_mat <span class="op">=</span> sm.add_constant(mtcars[[<span class="st">'wt'</span>, <span class="st">'hp'</span>, <span class="st">'qsec'</span>]])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> sm.OLS(mtcars[<span class="st">'mpg'</span>], X_mat).fit()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Objeto de influencia</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>infl <span class="op">=</span> OLSInfluence(mod)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico de Leverage vs Residuos Studentizados</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>sm.graphics.influence_plot(mod, ax<span class="op">=</span>ax, criterion<span class="op">=</span><span class="st">"cooks"</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Gráfico de Influência: Resíduos Studentizados vs Alavancagem"</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">":"</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+</div>
+</div>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            // default icon
+            link.classList.add("external");
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../modulos/02-inferencia.html" class="pagination-link" aria-label="Módulo 2: Análise de Variância, Inferência e Predição">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Módulo 2: Análise de Variância, Inferência e Predição</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../modulos/04-multivariada.html" class="pagination-link" aria-label="Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Módulo 3: Análise de Resíduos, Transformações e Diagnóstico</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Este módulo reúne os tópicos dedicados à validação de pressupostos e detecção de anomalias no modelo linear clássico (slides **p09**, **p10** e **p11**), abordando os diferentes tipos de resíduos, gráficos diagnósticos, transformações estabilizadoras da variância (incluindo Box-Cox), mínimos quadrados generalizados e as medidas formais de alavancagem e influência (Distância de Cook, DFFITS, DFBETAS e COVRATIO).</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3.1 Análise de Resíduos e Diagnóstico Gráfico</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">### Resíduos Ordinários</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>O resíduo ordinário é a diferença entre a resposta observada e o valor predito pelo modelo:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>$$e_i = Y_i - \hat{Y}_i, \quad i = 1, \dots, n$$</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>Em forma matricial:</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>$$e = Y - \hat{Y} = (I_n - H) Y$$</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>em que $H = X(X^\top X)^{-1} X^\top$ é a matriz chapéu.</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>**Propriedades estatísticas dos resíduos:**</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\mathbb{E}(e) = \mathbb{E}<span class="co">[</span><span class="ot">(I_n - H)Y</span><span class="co">]</span> = (I_n - H)X\beta = 0$;</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\mathrm{Var}(e) = \mathrm{Var}<span class="co">[</span><span class="ot">(I_n - H)Y</span><span class="co">]</span> = (I_n - H)(\sigma^2 I_n)(I_n - H)^\top = \sigma^2 (I_n - H)$.</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>Disso resulta que a variância de cada resíduo individual é:</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(e_i) = \sigma^2 (1 - h_{ii})$$</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>e a covariância entre dois resíduos distintos é:</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Cov}(e_i, e_j) = -\sigma^2 h_{ij}$$</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>*Conclusão crucial:* Mesmo que os erros populacionais $\varepsilon_i$ tenham variância constante $\sigma^2$ e sejam não correlacionados, os resíduos amostrais $e_i$ **possuem variâncias heterogêneas** (pois $h_{ii}$ varia com a posição no espaço de preditoras) e **são mutuamente correlacionados**.</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="fu">### Resíduos Padronizados e Studentizados</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>Para viabilizar comparações justas entre observações com diferentes posições na matriz de delineamento:</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Resíduo Padronizado:**</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>   $$d_i = \frac{e_i}{\sqrt{QMRes}}$$</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>   Não leva em consideração a alavancagem individual $h_{ii}$.</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Resíduo Studentizado Internamente:**</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>   $$r_i = \frac{e_i}{\sqrt{QMRes (1 - h_{ii})}}$$</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>   Possui média 0 e variância aproximadamente unitária.</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Resíduo Studentizado com Deleção / Externamente (R-Student):**</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>   Substitui-se a estimativa de variância por $QMRes_{(i)}$, calculado ajustando o modelo na amostra com a $i$-ésima observação removida:</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>   $$t_i = \frac{e_i}{\sqrt{QMRes_{(i)} (1 - h_{ii})}} = r_i \left( \frac{n - p - 1}{n - p - r_i^2} \right)^{1/2}$$</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>   Sob a hipótese de normalidade e ausência de anomalia na observação $i$, a estatística $t_i$ segue **rigorosamente a distribuição $t$ de Student**:</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>   $$t_i \sim t(n - p - 1)$$</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>   Valores absolutos $|t_i| &gt; 2$ ou $3$ são considerados fortes indícios de *outliers*.</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="fu">### Gráficos Diagnósticos</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Resíduos vs Valores Ajustados ($\hat{Y}_i$):**</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Dispersão aleatória em torno de 0 indica adequação linear e homocedasticidade;</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Padrão em funil ou leque (*cone*) indica **heterocedasticidade** ($\sigma^2$ varia com a magnitude de $Y$);</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>Tendência curvilínea (parábola, senóide) indica **não linearidade** (termos polinomiais omitidos).</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Resíduos vs Covariáveis ($X_j$):**</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>   Identifica se uma variável específica necessita de termo quadrático ou se a dispersão é função daquela variável.</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Gráfico de Probabilidade Normal (Q-Q Plot):**</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>   Plota os quantis ordenados dos resíduos studentizados contra os quantis teóricos da distribuição normal padrão. Desvios acentuados nas extremidades revelam caudas pesadas ou assimetria nos erros.</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a><span class="fu">### Estatística PRESS</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>O resíduo com deleção pode ser calculado diretamente sem necessidade de reajustar o modelo $n$ vezes:</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>$$e_{(i)} = Y_i - \hat{Y}_{(i)} = \frac{e_i}{1 - h_{ii}}$$</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>A soma dos quadrados desses resíduos define a estatística PRESS (*Predicted Residual Error Sum of Squares*):</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>$$PRESS = \sum_{i=1}^n e_{(i)}^2 = \sum_{i=1}^n \left( \frac{e_i}{1 - h_{ii}} \right)^2$$</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a><span class="fu">### Dedução da Fórmula Computacional de Deleção de Sherman-Morrison</span></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>Como é possível calcular a previsão com a $i$-ésima observação deletada ($\hat{Y}_{(i)}$) usando apenas o ajuste do modelo completo?</span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>Utiliza-se o **Lema de Inversão de Matrizes de Woodbury / Sherman-Morrison**:</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>$$(X_{(i)}^\top X_{(i)})^{-1} = (X^\top X - x_i x_i^\top)^{-1} = (X^\top X)^{-1} + \frac{(X^\top X)^{-1} x_i x_i^\top (X^\top X)^{-1}}{1 - x_i^\top (X^\top X)^{-1} x_i}$$</span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>Como $h_{ii} = x_i^\top (X^\top X)^{-1} x_i$, deduz-se analiticamente que:</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>$$\hat{\beta}_{(i)} = \hat{\beta} - \frac{(X^\top X)^{-1} x_i e_i}{1 - h_{ii}}$$</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>Multiplicando por $x_i^\top$:</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>$$\hat{Y}_{i(i)} = x_i^\top \hat{\beta}_{(i)} = \hat{Y}_i - \frac{h_{ii} e_i}{1 - h_{ii}}$$</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>Subtraindo de $Y_i$:</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>$$e_{(i)} = Y_i - \hat{Y}_{i(i)} = (Y_i - \hat{Y}_i) + \frac{h_{ii} e_i}{1 - h_{ii}} = e_i \left( 1 + \frac{h_{ii}}{1 - h_{ii}} \right) = \frac{e_i}{1 - h_{ii}}$$</span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>Essa identidade economiza $n$ reajustes de regressão, viabilizando validação cruzada instantânea.</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a><span class="fu">### Testes Estatísticos Formais de Heterocedasticidade</span></span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>Além dos gráficos, utilizam-se testes formais:</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Teste de Breusch-Pagan:**</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>   Ajusta uma regressão dos quadrados dos resíduos studentizados $e_i^2 / \hat{\sigma}^2$ contra as covariáveis $X$. A estatística segue distribuição $\chi^2(p - 1)$ sob a hipótese nula de homocedasticidade.</span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Teste de Durbin-Watson para Autocorrelação:**</span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>   $$DW = \frac{\sum_{i=2}^n (e_i - e_{i-1})^2}{\sum_{i=1}^n e_i^2} \approx 2(1 - r_1)$$</span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>   Valores próximos a $2$ indicam ausência de correlação serial de primeira ordem; valores $&lt; 1{,}5$ indicam autocorrelação positiva comum em séries temporais.</span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a><span class="co"># Bateria completa de diagnostico de residuos em R</span></span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp <span class="sc">+</span> qsec, <span class="at">data =</span> mtcars)</span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Teste de Homocedasticidade de Breusch-Pagan</span></span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(mod)</span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Teste de Normalidade dos Residuos de Shapiro-Wilk</span></span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">rstudent</span>(mod))</span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Teste de Autocorrelacao de Durbin-Watson</span></span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a><span class="fu">dwtest</span>(mod)</span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Painel grafico de 4 diagnosticos</span></span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mod)</span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3.2 Transformações e Mínimos Quadrados Generalizados</span></span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a><span class="fu">### Transformações Estabilizadoras da Variância</span></span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a>Quando a suposição de homocedasticidade é violada e a variância dos erros é uma função conhecida da média condicional ($\sigma_i^2 = g(\mu_i)$), transformações não lineares sobre a variável resposta $Y$ podem restaurar a variância constante:</span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Distribuição Típica <span class="pp">|</span> Relação $\mathrm{Var}(Y) \propto f(\mu)$ <span class="pp">|</span> Transformação Estabilizadora <span class="pp">|</span></span>
+<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---:</span> <span class="pp">| :---:</span> <span class="pp">|</span></span>
+<span id="cb5-119"><a href="#cb5-119" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Poisson (Contagens)** <span class="pp">|</span> $\sigma^2 \propto \mu$ <span class="pp">|</span> $Y^* = \sqrt{Y}$ ou $\sqrt{Y} + \sqrt{Y + 1}$ <span class="pp">|</span></span>
+<span id="cb5-120"><a href="#cb5-120" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Binomial (Proporções)** <span class="pp">|</span> $\sigma^2 \propto \mu(1 - \mu)$ <span class="pp">|</span> $Y^* = \arcsin(\sqrt{Y})$ <span class="pp">|</span></span>
+<span id="cb5-121"><a href="#cb5-121" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Exponencial / Gama** <span class="pp">|</span> $\sigma^2 \propto \mu^2$ <span class="pp">|</span> $Y^* = \ln(Y)$ <span class="pp">|</span></span>
+<span id="cb5-122"><a href="#cb5-122" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **Recíproca** <span class="pp">|</span> $\sigma^2 \propto \mu^4$ <span class="pp">|</span> $Y^* = 1 / Y$ <span class="pp">|</span></span>
+<span id="cb5-123"><a href="#cb5-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-124"><a href="#cb5-124" aria-hidden="true" tabindex="-1"></a><span class="fu">### A Família de Transformações Box-Cox</span></span>
+<span id="cb5-125"><a href="#cb5-125" aria-hidden="true" tabindex="-1"></a>Proposta por Box e Cox (1964), é uma família paramétrica contínua indexada pelo parâmetro de potência $\lambda$:</span>
+<span id="cb5-126"><a href="#cb5-126" aria-hidden="true" tabindex="-1"></a>$$Y^{(\lambda)} = \begin{cases} \frac{Y^\lambda - 1}{\lambda}, &amp; \text{se } \lambda \neq 0 <span class="sc">\\</span> \ln(Y), &amp; \text{se } \lambda = 0 \end{cases}$$</span>
+<span id="cb5-127"><a href="#cb5-127" aria-hidden="true" tabindex="-1"></a>(com a exigência estrita de que todos os valores $Y_i &gt; 0$).</span>
+<span id="cb5-128"><a href="#cb5-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-129"><a href="#cb5-129" aria-hidden="true" tabindex="-1"></a>Para manter a escala da verossimilhança comparável entre diferentes valores de $\lambda$, utiliza-se a transformação normalizada com a média geométrica $\dot{Y} = \exp\left( \frac{1}{n}\sum \ln Y_i \right)$:</span>
+<span id="cb5-130"><a href="#cb5-130" aria-hidden="true" tabindex="-1"></a>$$W^{(\lambda)} = \begin{cases} \frac{Y^\lambda - 1}{\lambda \dot{Y}^{\lambda - 1}}, &amp; \lambda \neq 0 <span class="sc">\\</span> \dot{Y} \ln(Y), &amp; \lambda = 0 \end{cases}$$</span>
+<span id="cb5-131"><a href="#cb5-131" aria-hidden="true" tabindex="-1"></a>O valor ótimo $\hat{\lambda}$ é aquele que minimiza a soma dos quadrados dos resíduos $SQRes(\lambda)$ ou, equivalentemente, maximiza a função de perfil de log-verossimilhança:</span>
+<span id="cb5-132"><a href="#cb5-132" aria-hidden="true" tabindex="-1"></a>$$\ell(\lambda) = -\frac{n}{2}\ln\left(\frac{SQRes(\lambda)}{n}\right)$$</span>
+<span id="cb5-133"><a href="#cb5-133" aria-hidden="true" tabindex="-1"></a>O intervalo de confiança aproximado com nível $1 - \alpha$ para $\lambda$ é dado pelo conjunto de valores que satisfazem:</span>
+<span id="cb5-134"><a href="#cb5-134" aria-hidden="true" tabindex="-1"></a>$$\ell(\lambda) \ge \ell(\hat{\lambda}) - \frac{1}{2}\chi^2_{1 - \alpha, \, 1}$$</span>
+<span id="cb5-135"><a href="#cb5-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-136"><a href="#cb5-136" aria-hidden="true" tabindex="-1"></a><span class="fu">### Mínimos Quadrados Generalizados (MQG)</span></span>
+<span id="cb5-137"><a href="#cb5-137" aria-hidden="true" tabindex="-1"></a>Quando a matriz de covariância dos erros não é escalar, isto é:</span>
+<span id="cb5-138"><a href="#cb5-138" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(\varepsilon) = \sigma^2 V$$</span>
+<span id="cb5-139"><a href="#cb5-139" aria-hidden="true" tabindex="-1"></a>onde $V_{n \times n}$ é uma matriz simétrica e positiva definida conhecida.</span>
+<span id="cb5-140"><a href="#cb5-140" aria-hidden="true" tabindex="-1"></a>Por Cholesky, existe uma matriz não singular $K$ tal que $V = K K^\top$. Multiplicando o modelo original $Y = X\beta + \varepsilon$ por $K^{-1}$:</span>
+<span id="cb5-141"><a href="#cb5-141" aria-hidden="true" tabindex="-1"></a>$$K^{-1}Y = K^{-1}X\beta + K^{-1}\varepsilon \implies Y^* = X^*\beta + \varepsilon^*$$</span>
+<span id="cb5-142"><a href="#cb5-142" aria-hidden="true" tabindex="-1"></a>A variância dos novos erros transformados é:</span>
+<span id="cb5-143"><a href="#cb5-143" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(\varepsilon^*) = K^{-1}(\sigma^2 V)(K^{-1})^\top = \sigma^2 K^{-1}(K K^\top)(K^\top)^{-1} = \sigma^2 I_n$$</span>
+<span id="cb5-144"><a href="#cb5-144" aria-hidden="true" tabindex="-1"></a>Aplicando MQO ao modelo transformado, obtém-se o **Estimador de Aitken de MQG**:</span>
+<span id="cb5-145"><a href="#cb5-145" aria-hidden="true" tabindex="-1"></a>$$\hat{\beta}_{MQG} = (X^\top V^{-1} X)^{-1} X^\top V^{-1} Y$$</span>
+<span id="cb5-146"><a href="#cb5-146" aria-hidden="true" tabindex="-1"></a>$$\mathrm{Var}(\hat{\beta}_{MQG}) = \sigma^2 (X^\top V^{-1} X)^{-1}$$</span>
+<span id="cb5-147"><a href="#cb5-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-148"><a href="#cb5-148" aria-hidden="true" tabindex="-1"></a>Quando a matriz $V$ é diagonal com elementos $w_i^{-1}$ (heterocedasticidade pura sem autocorrelação), o método reduz-se aos **Mínimos Quadrados Ponderados (MQP / WLS)**, minimizando:</span>
+<span id="cb5-149"><a href="#cb5-149" aria-hidden="true" tabindex="-1"></a>$$\sum_{i=1}^n w_i (Y_i - x_i^\top \beta)^2$$</span>
+<span id="cb5-150"><a href="#cb5-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-151"><a href="#cb5-151" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-152"><a href="#cb5-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-153"><a href="#cb5-153" aria-hidden="true" tabindex="-1"></a><span class="fu">### Procedimento Prático para Box-Cox</span></span>
+<span id="cb5-154"><a href="#cb5-154" aria-hidden="true" tabindex="-1"></a>Na prática de análise de regressão, dificilmente se utiliza o valor decimal contínuo exato de $\hat{\lambda}$ (por exemplo $\hat{\lambda} = 0{,}237$), pois isso compromete a interpretabilidade científica do modelo. Em vez disso, verifica-se se algum expoente clássico e conceitualmente significativo está contido no intervalo de confiança de $95\%$ de $\lambda$:</span>
+<span id="cb5-155"><a href="#cb5-155" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se $1 \in IC(\lambda) \implies$ nenhuma transformação é necessária.</span>
+<span id="cb5-156"><a href="#cb5-156" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se $0{,}5 \in IC(\lambda) \implies$ adotar a raiz quadrada $\sqrt{Y}$.</span>
+<span id="cb5-157"><a href="#cb5-157" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se $0 \in IC(\lambda) \implies$ adotar a transformação logarítmica $\ln(Y)$.</span>
+<span id="cb5-158"><a href="#cb5-158" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Se $-1 \in IC(\lambda) \implies$ adotar a transformação recíproca $1/Y$.</span>
+<span id="cb5-159"><a href="#cb5-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-160"><a href="#cb5-160" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb5-161"><a href="#cb5-161" aria-hidden="true" tabindex="-1"></a><span class="co"># Aplicacao de Box-Cox com pacote MASS em R</span></span>
+<span id="cb5-162"><a href="#cb5-162" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb5-163"><a href="#cb5-163" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp, <span class="at">data =</span> mtcars)</span>
+<span id="cb5-164"><a href="#cb5-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-165"><a href="#cb5-165" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico de perfil de Box-Cox com IC de 95%</span></span>
+<span id="cb5-166"><a href="#cb5-166" aria-hidden="true" tabindex="-1"></a><span class="fu">boxcox</span>(mod, <span class="at">lambda =</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">2</span>, <span class="at">by =</span> <span class="fl">0.1</span>))</span>
+<span id="cb5-167"><a href="#cb5-167" aria-hidden="true" tabindex="-1"></a><span class="co"># Permite inspecionar visualmente se lambda = 0 (log) ou lambda = -0.5 esta no IC</span></span>
+<span id="cb5-168"><a href="#cb5-168" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-169"><a href="#cb5-169" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb5-170"><a href="#cb5-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-171"><a href="#cb5-171" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb5-172"><a href="#cb5-172" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-173"><a href="#cb5-173" aria-hidden="true" tabindex="-1"></a><span class="fu">## 3.3 Diagnóstico de Alavancagem e Medidas de Influência</span></span>
+<span id="cb5-174"><a href="#cb5-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-175"><a href="#cb5-175" aria-hidden="true" tabindex="-1"></a>::: {.panel-tabset}</span>
+<span id="cb5-176"><a href="#cb5-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## Texto do Slide (Oficial)</span></span>
+<span id="cb5-177"><a href="#cb5-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-178"><a href="#cb5-178" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pontos de Alavanca (*Leverage*)</span></span>
+<span id="cb5-179"><a href="#cb5-179" aria-hidden="true" tabindex="-1"></a>A matriz chapéu $H = X(X^\top X)^{-1}X^\top$ projeta o vetor observado $Y$ sobre os valores ajustados:</span>
+<span id="cb5-180"><a href="#cb5-180" aria-hidden="true" tabindex="-1"></a>$$\hat{Y}_i = \sum_{j=1}^n h_{ij} Y_j = h_{ii} Y_i + \sum_{j \neq i} h_{ij} Y_j$$</span>
+<span id="cb5-181"><a href="#cb5-181" aria-hidden="true" tabindex="-1"></a>O elemento diagonal $h_{ii}$ mede o peso/influência que a própria observação $Y_i$ exerce na determinação do seu valor predito $\hat{Y}_i$.</span>
+<span id="cb5-182"><a href="#cb5-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-183"><a href="#cb5-183" aria-hidden="true" tabindex="-1"></a>**Propriedades de $h_{ii}$:**</span>
+<span id="cb5-184"><a href="#cb5-184" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$0 \le h_{ii} \le 1$;</span>
+<span id="cb5-185"><a href="#cb5-185" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$\sum_{i=1}^n h_{ii} = \mathrm{tr}(H) = p$;</span>
+<span id="cb5-186"><a href="#cb5-186" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>O valor médio de alavancagem na amostra é $\bar{h} = \frac{p}{n}$.</span>
+<span id="cb5-187"><a href="#cb5-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-188"><a href="#cb5-188" aria-hidden="true" tabindex="-1"></a>**Critério de Alerta:**</span>
+<span id="cb5-189"><a href="#cb5-189" aria-hidden="true" tabindex="-1"></a>Uma observação é considerada um **ponto de alta alavancagem** se:</span>
+<span id="cb5-190"><a href="#cb5-190" aria-hidden="true" tabindex="-1"></a>$$h_{ii} &gt; \frac{2p}{n}$$</span>
+<span id="cb5-191"><a href="#cb5-191" aria-hidden="true" tabindex="-1"></a>(ou $h_{ii} &gt; \frac{3p}{n}$ para amostras pequenas).</span>
+<span id="cb5-192"><a href="#cb5-192" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-193"><a href="#cb5-193" aria-hidden="true" tabindex="-1"></a><span class="fu">### Distinção entre Outliers, Alavancas e Pontos Influentes</span></span>
+<span id="cb5-194"><a href="#cb5-194" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Outlier:** Observação com valor discrepante na resposta $Y$ (resíduo studentizado elevado, $|t_i| &gt; 2$).</span>
+<span id="cb5-195"><a href="#cb5-195" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Ponto de Alavanca:** Observação com valores extremos nas variáveis explicativas $X$ ($h_{ii} &gt; 2p/n$), independente de ter resíduo grande ou pequeno.</span>
+<span id="cb5-196"><a href="#cb5-196" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Ponto Influente:** Observação que afeta substancialmente os coeficientes da regressão quando removida. Resulta da combinação de alta alavancagem com resíduo não nulo.</span>
+<span id="cb5-197"><a href="#cb5-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-198"><a href="#cb5-198" aria-hidden="true" tabindex="-1"></a><span class="fu">### Medidas Formais de Influência de Caso</span></span>
+<span id="cb5-199"><a href="#cb5-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-200"><a href="#cb5-200" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Distância de Cook ($D_i$):**</span>
+<span id="cb5-201"><a href="#cb5-201" aria-hidden="true" tabindex="-1"></a>   Mede a distância euclidiana quadrada entre o vetor de coeficientes do modelo completo $\hat{\beta}$ e o vetor estimado sem a $i$-ésima observação $\hat{\beta}_{(i)}$:</span>
+<span id="cb5-202"><a href="#cb5-202" aria-hidden="true" tabindex="-1"></a>   $$D_i = \frac{(\hat{\beta} - \hat{\beta}_{(i)})^\top (X^\top X) (\hat{\beta} - \hat{\beta}_{(i)})}{p \cdot QMRes} = \frac{r_i^2}{p} \left( \frac{h_{ii}}{1 - h_{ii}} \right)$$</span>
+<span id="cb5-203"><a href="#cb5-203" aria-hidden="true" tabindex="-1"></a>   *Critério de Alerta:* $D_i &gt; \mathcal{F}_{0{,}50, \, p, \, n - p} \approx 1$. Valores $D_i &gt; 0{,}5$ ou $1$ requerem investigação criteriosa.</span>
+<span id="cb5-204"><a href="#cb5-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-205"><a href="#cb5-205" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**DFFITS ($DFFITS_i$):**</span>
+<span id="cb5-206"><a href="#cb5-206" aria-hidden="true" tabindex="-1"></a>   Mede o número de erros-padrão pelo qual a predição $\hat{Y}_i$ se altera ao remover a observação $i$:</span>
+<span id="cb5-207"><a href="#cb5-207" aria-hidden="true" tabindex="-1"></a>   $$DFFITS_i = \frac{\hat{Y}_i - \hat{Y}_{i(i)}}{\sqrt{QMRes_{(i)} h_{ii}}} = t_i \sqrt{\frac{h_{ii}}{1 - h_{ii}}}$$</span>
+<span id="cb5-208"><a href="#cb5-208" aria-hidden="true" tabindex="-1"></a>   *Critério de Alerta:* $|DFFITS_i| &gt; 2 \sqrt{\frac{p}{n}}$ para amostras grandes (ou $&gt; 1$ para pequenas).</span>
+<span id="cb5-209"><a href="#cb5-209" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-210"><a href="#cb5-210" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**DFBETAS ($DFBETAS_{j(i)}$):**</span>
+<span id="cb5-211"><a href="#cb5-211" aria-hidden="true" tabindex="-1"></a>   Mede o impacto da exclusão da observação $i$ sobre a estimativa específica do $j$-ésimo coeficiente $\hat{\beta}_j$:</span>
+<span id="cb5-212"><a href="#cb5-212" aria-hidden="true" tabindex="-1"></a>   $$DFBETAS_{j(i)} = \frac{\hat{\beta}_j - \hat{\beta}_{j(i)}}{\sqrt{QMRes_{(i)} c_{jj}}}$$</span>
+<span id="cb5-213"><a href="#cb5-213" aria-hidden="true" tabindex="-1"></a>   *Critério de Alerta:* $|DFBETAS_{j(i)}| &gt; \frac{2}{\sqrt{n}}$.</span>
+<span id="cb5-214"><a href="#cb5-214" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-215"><a href="#cb5-215" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**COVRATIO:**</span>
+<span id="cb5-216"><a href="#cb5-216" aria-hidden="true" tabindex="-1"></a>   Mede a razão entre o determinante da matriz de covariância calculada sem o ponto $i$ e o determinante da matriz de covariância completa:</span>
+<span id="cb5-217"><a href="#cb5-217" aria-hidden="true" tabindex="-1"></a>   $$COVRATIO_i = \frac{\det[\mathrm{Var}(\hat{\beta}_{(i)})]}{\det[\mathrm{Var}(\hat{\beta})]} = \frac{(QMRes_{(i)})^p}{(QMRes)^p (1 - h_{ii})}$$</span>
+<span id="cb5-218"><a href="#cb5-218" aria-hidden="true" tabindex="-1"></a>   *Critério de Alerta:* $|COVRATIO_i - 1| &gt; \frac{3p}{n}$. Valores $&gt; 1 + \frac{3p}{n}$ indicam que a observação $i$ melhora a precisão; valores $&lt; 1 - \frac{3p}{n}$ indicam que a observação degrada a precisão.</span>
+<span id="cb5-219"><a href="#cb5-219" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-220"><a href="#cb5-220" aria-hidden="true" tabindex="-1"></a><span class="fu">## Versão Aprofundada (Notas Pessoais)</span></span>
+<span id="cb5-221"><a href="#cb5-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-222"><a href="#cb5-222" aria-hidden="true" tabindex="-1"></a><span class="fu">### Decomposição Elegante da Distância de Cook</span></span>
+<span id="cb5-223"><a href="#cb5-223" aria-hidden="true" tabindex="-1"></a>Observe a fórmula:</span>
+<span id="cb5-224"><a href="#cb5-224" aria-hidden="true" tabindex="-1"></a>$$D_i = \underbrace{\frac{r_i^2}{p}}_{\text{Componente de Outlier (Y)}} \times \underbrace{\frac{h_{ii}}{1 - h_{ii}}}_{\text{Componente de Alavanca (X)}}$$</span>
+<span id="cb5-225"><a href="#cb5-225" aria-hidden="true" tabindex="-1"></a>Esta fatoração matemática é pedagógica:</span>
+<span id="cb5-226"><a href="#cb5-226" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Se a observação tem grande alavancagem ($h_{ii} \to 1$), mas está exatamente sobre a reta de regressão ($r_i \approx 0$), $D_i \approx 0$ e ela não é influente sobre os coeficientes.</span>
+<span id="cb5-227"><a href="#cb5-227" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Se a observação tem resíduo expressivo ($r_i$ grande), mas seu $h_{ii}$ está próximo da média $p/n$, $D_i$ permanece moderado.</span>
+<span id="cb5-228"><a href="#cb5-228" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>A observação só se torna perigosamente influente quando conjuga simultaneamente **afastamento no espaço $X$ ($h_{ii}$ grande)** e **discordância com o modelo ($r_i$ grande)**.</span>
+<span id="cb5-229"><a href="#cb5-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-230"><a href="#cb5-230" aria-hidden="true" tabindex="-1"></a><span class="fu">### Implementação Prática das Medidas de Diagnóstico em R e Python</span></span>
+<span id="cb5-231"><a href="#cb5-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-232"><a href="#cb5-232" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb5-233"><a href="#cb5-233" aria-hidden="true" tabindex="-1"></a><span class="co"># Medidas formais de influencia em R</span></span>
+<span id="cb5-234"><a href="#cb5-234" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> hp <span class="sc">+</span> qsec, <span class="at">data =</span> mtcars)</span>
+<span id="cb5-235"><a href="#cb5-235" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(mtcars)</span>
+<span id="cb5-236"><a href="#cb5-236" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">coef</span>(mod))</span>
+<span id="cb5-237"><a href="#cb5-237" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-238"><a href="#cb5-238" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculo de todas as metricas</span></span>
+<span id="cb5-239"><a href="#cb5-239" aria-hidden="true" tabindex="-1"></a>influencia <span class="ot">&lt;-</span> <span class="fu">influence.measures</span>(mod)</span>
+<span id="cb5-240"><a href="#cb5-240" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(influencia)</span>
+<span id="cb5-241"><a href="#cb5-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-242"><a href="#cb5-242" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico de Distancia de Cook</span></span>
+<span id="cb5-243"><a href="#cb5-243" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(mod, <span class="at">which =</span> <span class="dv">4</span>, <span class="at">cook.levels =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">1.0</span>))</span>
+<span id="cb5-244"><a href="#cb5-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-245"><a href="#cb5-245" aria-hidden="true" tabindex="-1"></a><span class="co"># Identificacao de pontos criticos</span></span>
+<span id="cb5-246"><a href="#cb5-246" aria-hidden="true" tabindex="-1"></a>cooks_d <span class="ot">&lt;-</span> <span class="fu">cooks.distance</span>(mod)</span>
+<span id="cb5-247"><a href="#cb5-247" aria-hidden="true" tabindex="-1"></a>pontos_criticos <span class="ot">&lt;-</span> <span class="fu">which</span>(cooks_d <span class="sc">&gt;</span> <span class="dv">4</span> <span class="sc">/</span> (n <span class="sc">-</span> p))</span>
+<span id="cb5-248"><a href="#cb5-248" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Observações influentes pelo critério 4/(n-p):"</span>, <span class="fu">names</span>(pontos_criticos), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb5-249"><a href="#cb5-249" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-250"><a href="#cb5-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-251"><a href="#cb5-251" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
+<span id="cb5-252"><a href="#cb5-252" aria-hidden="true" tabindex="-1"></a><span class="co"># Analise de influencia em Python com statsmodels</span></span>
+<span id="cb5-253"><a href="#cb5-253" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb5-254"><a href="#cb5-254" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.stats.outliers_influence <span class="im">import</span> OLSInfluence</span>
+<span id="cb5-255"><a href="#cb5-255" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb5-256"><a href="#cb5-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-257"><a href="#cb5-257" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajuste do modelo</span></span>
+<span id="cb5-258"><a href="#cb5-258" aria-hidden="true" tabindex="-1"></a>X_mat <span class="op">=</span> sm.add_constant(mtcars[[<span class="st">'wt'</span>, <span class="st">'hp'</span>, <span class="st">'qsec'</span>]])</span>
+<span id="cb5-259"><a href="#cb5-259" aria-hidden="true" tabindex="-1"></a>mod <span class="op">=</span> sm.OLS(mtcars[<span class="st">'mpg'</span>], X_mat).fit()</span>
+<span id="cb5-260"><a href="#cb5-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-261"><a href="#cb5-261" aria-hidden="true" tabindex="-1"></a><span class="co"># Objeto de influencia</span></span>
+<span id="cb5-262"><a href="#cb5-262" aria-hidden="true" tabindex="-1"></a>infl <span class="op">=</span> OLSInfluence(mod)</span>
+<span id="cb5-263"><a href="#cb5-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-264"><a href="#cb5-264" aria-hidden="true" tabindex="-1"></a><span class="co"># Grafico de Leverage vs Residuos Studentizados</span></span>
+<span id="cb5-265"><a href="#cb5-265" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb5-266"><a href="#cb5-266" aria-hidden="true" tabindex="-1"></a>sm.graphics.influence_plot(mod, ax<span class="op">=</span>ax, criterion<span class="op">=</span><span class="st">"cooks"</span>)</span>
+<span id="cb5-267"><a href="#cb5-267" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Gráfico de Influência: Resíduos Studentizados vs Alavancagem"</span>)</span>
+<span id="cb5-268"><a href="#cb5-268" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">":"</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb5-269"><a href="#cb5-269" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb5-270"><a href="#cb5-270" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb5-271"><a href="#cb5-271" aria-hidden="true" tabindex="-1"></a>:::</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>EST074 - Análise de Regressão (UFJF)</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Compilado com Quarto para GitHub Pages</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

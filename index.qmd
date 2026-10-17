@@ -1,0 +1,119 @@
+# Apresentação do Curso {.unnumbered}
+
+Bem-vindo ao portal interativo de estudos da disciplina **EST074 – Análise de Regressão**, oferecida pelo Departamento de Estatística do Instituto de Ciências Exatas (ICE) da **Universidade Federal de Juiz de Fora (UFJF)**, ministrada pelo **Prof. Dr. Tiago M. Magalhães**.
+
+Este material foi concebido para transformar os slides das aulas em uma experiência de estudo contínua, rica e acessível na web, estruturada especificamente para publicação no **GitHub Pages**.
+
+---
+
+## Estrutura do Material: Dupla Camada de Aprendizado
+
+Para manter a fidelidade ao conteúdo ministrado em sala e simultaneamente permitir o enriquecimento contínuo com a bibliografia clássica e moderna, cada seção conceitual deste livro adota uma estrutura em abas (*tabset*):
+
+::: {.panel-tabset}
+## Texto do Slide (Oficial)
+Nesta aba encontra-se a **transcrição *ipsis litteris*** das notas de aula e apresentações oficiais do professor, preservando rigorosamente as definições, equações, numerações, notações, tabelas e exemplos originais.
+
+## Versão Aprofundada (Notas Pessoais)
+Nesta aba encontram-se **anotações de estudo aprofundadas**, deduções matemáticas detalhadas passo a passo (álgebra matricial, cálculos de esperança e variância, lemas e teoremas), intuições geométricas, conexões com os livros-texto (@montgomery2021; @kutner2005; @graybill1983) e implementações práticas reproduzíveis com códigos em **R** e **Python**.
+:::
+
+---
+
+## Ementa do Curso
+
+A disciplina aborda formal e computacionalmente a modelagem da relação entre uma variável resposta e um conjunto de variáveis explicativas (covariáveis), dividindo-se em quatro grandes blocos temáticos:
+
+1. **Módulo 1: Fundamentos e Estimação por Mínimos Quadrados**
+   - Contextualização histórica e motivação (Galton, Antropometria e aplicações modernas).
+   - Conceitos iniciais, covariância, correlação de Pearson e diagramas de dispersão.
+   - Ferramentas de Álgebra Linear Aplicada: formas quadráticas, decomposição espectral, fatoração de Cholesky e derivadas matriciais.
+   - O Modelo de Regressão Linear Simples e Múltiplo ($Y = X\beta + \varepsilon$).
+   - Suposições clássicas de Gauss-Markov e propriedades dos erros.
+   - Método dos Mínimos Quadrados Ordinários (MQO) matricial e Teorema de Gauss-Markov (BLUE).
+   - Método da Máxima Verossimilhança (MV) sob normalidade e estimador de variância ($QMRes$).
+   - Variáveis qualitativas (*dummy encoding*) e padronização de variáveis.
+
+2. **Módulo 2: Análise de Variância, Inferência e Predição**
+   - Partição da variabilidade: Decomposição da Soma de Quadrados ($SQTot = SQReg + SQRes$).
+   - Tabela ANOVA e o Teorema de Cochran.
+   - Coeficiente de Determinação ($R^2$) e Coeficiente de Determinação Ajustado ($R^2_{adj}$).
+   - Teste de hipóteses para parâmetros individuais (Teste $t$ de Student).
+   - Teste $F$ global de significância da regressão e Teste $F$ parcial (Soma de Quadrados Extra).
+   - Testes de hipóteses lineares gerais ($H_0: L\beta = c$) e testes assintóticos (Razão de Verossimilhanças, Wald e Escore de Rao).
+   - Intervalos de confiança individuais, elipsoides de confiança conjunta e correções de Bonferroni e Scheffé.
+   - Inferência sobre a resposta média $E(Y|x_0)$ versus predição de nova observação $Y_0$ (bandas de predição).
+
+3. **Módulo 3: Análise de Resíduos, Transformações e Diagnóstico**
+   - Resíduos ordinários, resíduos padronizados e resíduos studentizados (internos e externamente com deleção / R-Student).
+   - Análise gráfica para verificação de linearidade, homocedasticidade e normalidade.
+   - Transformações estabilizadoras da variância e família de transformações Box-Cox.
+   - Introdução aos Mínimos Quadrados Ponderados (MQP) e Generalizados (MQG).
+   - Identificação de observações discrepantes: outliers, pontos de alta alavancagem (*leverage* via matriz chapéu $H$).
+   - Medidas formais de influência: Distância de Cook ($D_i$), DFFITS, DFBETAS e COVRATIO.
+
+4. **Módulo 4: Multicolinearidade, Seleção de Variáveis, Validação e Extensões**
+   - Multicolinearidade: diagnóstico via matriz de correlação, Fator de Inflação da Variância ($VIF$) e número de condição ($CI$).
+   - Remediação de multicolinearidade e Regressão Ridge ($L_2$).
+   - Métodos de seleção de variáveis: Best Subsets, Forward, Backward e Stepwise baseados em $AIC$, $BIC$ e $C_p$ de Mallows.
+   - Introdução à regressão Lasso ($L_1$) e penalizações esparsas.
+   - Validação de modelos: partição treino/teste, validação cruzada $k$-fold, Leave-One-Out (LOOCV), resíduos PRESS e $R^2_{pred}$.
+   - Tópicos avançados e extensões: Regressão Linear Bayesiana, Modelos Lineares Generalizados (MLG / GLM - Logística e Poisson), e a perspectiva do Aprendizado de Máquina (*machine learning*) e equilíbrio viés-variância.
+
+---
+
+## Informações do Docente e Contato
+
+- **Docente:** Prof. Dr. Tiago M. Magalhães
+- **Instituição:** Departamento de Estatística — ICE / UFJF
+- **Gabinete:** Sala 319, ICE/UFJF, Juiz de Fora - MG
+- **E-mail:** `tiago.magalhaes@ufjf.br`
+- **Página Institucional:** [ufjf.br/tiago_magalhaes](https://ufjf.br/tiago_magalhaes)
+
+---
+
+## Bibliografia Principal Recomendada
+
+- **Montgomery, D. C., Peck, E. A., & Vining, G. G. (2021).** *Introduction to Linear Regression Analysis* (6th ed.). John Wiley & Sons.
+- **Kutner, M. H., Nachtsheim, C. J., Neter, J., & Li, W. (2005).** *Applied Linear Statistical Models* (5th ed.). McGraw-Hill Irwin.
+- **Neter, J., Wasserman, W., & Kutner, M. H. (1983).** *Applied Linear Regression Models*. Richard D. Irwin.
+- **Graybill, F. A. (1983).** *Matrices with Applications in Statistics* (2nd ed.). Wadsworth.
+- **James, G., Witten, D., Hastie, T., & Tibshirani, R. (2023).** *An Introduction to Statistical Learning: with Applications in R* (2nd ed.). Springer.
+
+---
+
+## Como Compilar e Publicar no GitHub Pages
+
+Este repositório está configurado para gerar os arquivos estáticos na pasta `docs/`, facilitando o deploy automático pelo GitHub Pages.
+
+### 1. Renderizar localmente com Quarto
+No terminal, execute:
+```bash
+quarto render
+```
+ou para pré-visualização contínua durante a edição:
+```bash
+quarto preview
+```
+
+### 2. Ativação no GitHub
+1. Faça o commit e envie as alterações para o seu repositório:
+   ```bash
+   git add .
+   git commit -m "Compilando book EST074 para o GitHub Pages"
+   git push origin main
+   ```
+2. No GitHub, acesse as configurações do seu repositório (**Settings** > **Pages**).
+3. Na seção **Build and deployment**, selecione:
+   - **Source:** *Deploy from a branch*
+   - **Branch:** `main` e diretório `/docs`
+4. Clique em **Save**. Em instantes seu site estará disponível no ar!
+
+---
+
+## Aviso Legal (Disclaimer Acadêmico)
+
+> [!NOTE]
+> Os textos, roteiros e exemplos contidos na aba **"Texto do Slide (Oficial)"** pertencem ao material pedagógico elaborado pelo Prof. Dr. Tiago M. Magalhães para o curso EST074 do ICE-UFJF. 
+> 
+> As deduções suplementares, notas expandidas, códigos em R/Python e ilustrações da aba **"Versão Aprofundada (Notas Pessoais)"** representam anotações de estudo e pesquisa discente, integradas para enriquecer o processo de aprendizagem e consulta acadêmica contínua.

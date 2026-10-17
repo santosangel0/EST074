@@ -1,0 +1,43 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "EST074 - Análise de Regressão"
+  subtitle: "Notas de Aula, Transcrições Oficiais e Estudos Aprofundados"
+  author: "Prof. Dr. Tiago M. Magalhães | Notas & Estudos"
+  date-format: "D [de] MMMM [de] YYYY"
+  language: pt
+  search: true
+  sidebar:
+    style: "docked"
+    search: true
+    collapse-level: 2
+  page-footer:
+    left: "EST074 - Análise de Regressão (UFJF)"
+    right: "Compilado com Quarto para GitHub Pages"
+  chapters:
+    - index.qmd
+    - modulos/01-intro-mqo.qmd
+    - modulos/02-inferencia.qmd
+    - modulos/03-diagnostico.qmd
+    - modulos/04-multivariada.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    code-copy: true
+    code-overflow: wrap
+    smooth-scroll: true
+    link-external-icon: true
+    link-external-newwindow: true
