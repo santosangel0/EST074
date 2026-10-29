@@ -1,0 +1,487 @@
+---
+title: "Mensuração do Risco Sistemático no Mercado de Ações: Estimação do Coeficiente Beta via Regressão Linear Simples"
+author:
+  - "Angelo dos Santos Luna Filho (Matrícula: 202465601D)"
+  - "Daniel Antonio Camargo Vieira (Matrícula: 201965615D)"
+date: "28 de Outubro de 2026"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    number_sections: false
+    keep_tex: false
+    citation_package: default
+bibliography: references.bib
+biblio-style: apalike
+link-citations: true
+geometry: margin=2cm, headheight=28pt, headsep=14pt, footskip=20pt
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{lastpage}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{xcolor}
+  - \usepackage{caption}
+  - \captionsetup[table]{skip=4pt}
+  - \pagestyle{fancy}
+  - \fancypagestyle{plain}{\fancyhf{}\fancyhead[L]{\footnotesize Federal University of Juiz de Fora\\Spring 2026}\fancyhead[C]{\footnotesize EST074\\Análise de Regressão}\fancyhead[R]{\footnotesize Department of Statistics\\Tiago M. Magalhães}\fancyfoot[L]{\footnotesize\texttt{ufjf.br/tiago\_magalhaes}}\fancyfoot[R]{\footnotesize Page \thepage/\pageref{LastPage}}\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0.4pt}}
+  - \fancyhf{}
+  - \fancyhead[L]{\footnotesize Federal University of Juiz de Fora\\Spring 2026}
+  - \fancyhead[C]{\footnotesize EST074\\Análise de Regressão}
+  - \fancyhead[R]{\footnotesize Department of Statistics\\Tiago M. Magalhães}
+  - \fancyfoot[L]{\footnotesize\texttt{ufjf.br/tiago\_magalhaes}}
+  - \fancyfoot[R]{\footnotesize Page \thepage/\pageref{LastPage}}
+  - \renewcommand{\headrulewidth}{0.4pt}
+  - \renewcommand{\footrulewidth}{0.4pt}
+  - \setlength{\headheight}{28pt}
+---
+
+```{r setup, include=FALSE}
+# Configurações globais dos chunks do knitr:
+# Conforme as instruções do trabalho, nenhum código, comando ou saída bruta do R
+# deve aparecer no corpo do artigo. Todos os resultados são apresentados via
+# tabelas e gráficos formatados profissionalmente.
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = "center",
+  fig.pos = "H"
+)
+
+suppressPackageStartupMessages({
+  library(readxl)
+  library(dplyr)
+  library(tidyr)
+  library(broom)
+  library(knitr)
+  library(kableExtra)
+  library(ggplot2)
+  library(patchwork)
+})
+
+# Caso os scripts modulares estejam presentes localmente, carrega-os;
+# caso contrário, utiliza as definições integradas para compilação autônoma.
+if (dir.exists("scripts") &&
+    file.exists("scripts/01_data_loader.R") &&
+    file.exists("scripts/02_eda_tables.R") &&
+    file.exists("scripts/03_eda_plots.R") &&
+    file.exists("scripts/04_model_analysis.R")) {
+  source("scripts/01_data_loader.R")
+  source("scripts/02_eda_tables.R")
+  source("scripts/03_eda_plots.R")
+  source("scripts/04_model_analysis.R")
+} else {
+  load_beta_data <- function(file_path = "Beta.xlsx") {
+    df <- readxl::read_excel(file_path, sheet = "Data")
+    required_cols <- c(
+      "Month", "Microsoft", "Exxon Mobil", "Caterpillar", 
+      "Johnson & Johnson", "McDonald's", "Sandisk", 
+      "Qualcomm", "Procter & Gamble", "S&P 500"
+    )
+    asset_cols <- setdiff(required_cols, "Month")
+    df %>%
+      dplyr::select(dplyr::all_of(required_cols)) %>%
+      dplyr::mutate(
+        Month = as.Date(Month),
+        dplyr::across(dplyr::all_of(asset_cols), ~ as.numeric(.x) * 100)
+      )
+  }
+
+  compute_descriptive_stats <- function(data, vars = c(
+    "Sandisk", "Qualcomm", "Caterpillar", "McDonald's",
+    "Exxon Mobil", "Microsoft", "Procter & Gamble", "Johnson & Johnson", "S&P 500"
+  )) {
+    results <- lapply(vars, function(var_name) {
+      x <- data[[var_name]][!is.na(data[[var_name]])]
+      q <- stats::quantile(x, probs = c(0.25, 0.5, 0.75))
+      m <- mean(x)
+      s <- sd(x)
+      data.frame(
+        Ativo = var_name, Minimo = min(x), Q1 = unname(q[1]),
+        Mediana = unname(q[2]), Media = m, Q3 = unname(q[3]),
+        Maximo = max(x), Desvio_Padrao = s, CV_Perc = (s / abs(m)) * 100,
+        stringsAsFactors = FALSE
+      )
+    })
+    do.call(rbind, results)
+  }
+
+  format_descriptive_table <- function(desc_df, caption = "Medidas descritivas dos retornos totais mensais em percentual (\\%) para as oito ações e o índice S\\&P 500 ($n = 36$ meses)") {
+    display_df <- desc_df %>%
+      dplyr::rename(
+        `Ativo / Índice` = Ativo, `Mínimo` = Minimo, `1º Quartil` = Q1,
+        `Mediana` = Mediana, `Média` = Media, `3º Quartil` = Q3,
+        `Máximo` = Maximo, `Desvio Padrão` = Desvio_Padrao, `CV (%)` = CV_Perc
+      )
+    knitr::kable(display_df, format = "latex", booktabs = TRUE, row.names = FALSE,
+                 digits = 2, caption = caption, align = c("l", rep("r", ncol(display_df) - 1))) %>%
+      kableExtra::kable_styling(latex_options = c("striped", "hold_position"), font_size = 9)
+  }
+
+  identify_outliers <- function(data, vars = c(
+    "Sandisk", "Qualcomm", "Caterpillar", "McDonald's",
+    "Exxon Mobil", "Microsoft", "Procter & Gamble", "Johnson & Johnson", "S&P 500"
+  )) {
+    outliers_list <- list()
+    for (v in vars) {
+      x <- data[[v]]
+      q1 <- stats::quantile(x, 0.25, na.rm = TRUE)
+      q3 <- stats::quantile(x, 0.75, na.rm = TRUE)
+      iqr <- q3 - q1
+      lower_bound <- q1 - 1.5 * iqr
+      upper_bound <- q3 + 1.5 * iqr
+      idx <- which(x < lower_bound | x > upper_bound)
+      if (length(idx) > 0) {
+        for (i in idx) {
+          tipo <- ifelse(x[i] < lower_bound, "Inferior", "Superior")
+          limite <- ifelse(tipo == "Inferior", lower_bound, upper_bound)
+          outliers_list[[length(outliers_list) + 1]] <- data.frame(
+            Ativo = v, Mes = format(data$Month[i], "%m/%Y"), Valor = x[i],
+            Tipo = tipo, Limite_IQR = unname(limite), stringsAsFactors = FALSE
+          )
+        }
+      }
+    }
+    do.call(rbind, outliers_list)
+  }
+
+  format_outliers_table <- function(df_outliers, caption = "Retornos mensais atípicos identificados pelo critério de $1{,}5 \\times \\text{IQR}$") {
+    display_df <- df_outliers %>%
+      dplyr::rename(
+        `Ativo / Índice` = Ativo, `Mês/Ano` = Mes, `Retorno Observado (%)` = Valor,
+        `Tipo de Outlier` = Tipo, `Barreira IQR (%)` = Limite_IQR
+      )
+    knitr::kable(display_df, format = "latex", booktabs = TRUE, row.names = FALSE,
+                 digits = 2, caption = caption, align = c("l", "c", "r", "c", "r")) %>%
+      kableExtra::kable_styling(latex_options = c("striped", "hold_position"), font_size = 9)
+  }
+
+  theme_academic <- function(base_size = 9) {
+    ggplot2::theme_minimal(base_size = base_size) +
+      ggplot2::theme(
+        plot.title = ggplot2::element_text(face = "bold", size = base_size + 1, hjust = 0.5),
+        plot.subtitle = ggplot2::element_text(size = base_size - 1, hjust = 0.5, color = "gray30"),
+        axis.title = ggplot2::element_text(face = "bold", size = base_size),
+        axis.text = ggplot2::element_text(size = base_size - 1, color = "black"),
+        panel.grid.minor = ggplot2::element_blank(),
+        panel.border = ggplot2::element_rect(color = "gray80", fill = NA, linewidth = 0.5),
+        strip.background = ggplot2::element_rect(fill = "gray95", color = "gray80"),
+        strip.text = ggplot2::element_text(face = "bold", size = base_size - 1)
+      )
+  }
+
+  plot_histograms <- function(data, vars = c(
+    "Sandisk", "Qualcomm", "Caterpillar", "McDonald's",
+    "Exxon Mobil", "Microsoft", "Procter & Gamble", "Johnson & Johnson", "S&P 500"
+  )) {
+    df_long <- data %>%
+      dplyr::select(dplyr::all_of(vars)) %>%
+      tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Ativo", values_to = "Retorno") %>%
+      dplyr::mutate(Ativo = factor(Ativo, levels = vars))
+    ggplot2::ggplot(df_long, ggplot2::aes(x = Retorno)) +
+      ggplot2::geom_histogram(ggplot2::aes(y = ggplot2::after_stat(density)),
+                              bins = 10, fill = "#2C3E50", color = "white", alpha = 0.78) +
+      ggplot2::geom_density(color = "#E74C3C", linewidth = 0.8) +
+      ggplot2::geom_vline(xintercept = 0, linetype = "dashed", color = "gray40", linewidth = 0.5) +
+      ggplot2::facet_wrap(~ Ativo, scales = "free", ncol = 3) +
+      ggplot2::labs(x = "Retorno Total Mensal (%)", y = "Densidade") +
+      theme_academic(base_size = 9)
+  }
+
+  plot_boxplots <- function(data, vars = c(
+    "S&P 500", "Johnson & Johnson", "Procter & Gamble", "Microsoft",
+    "Exxon Mobil", "McDonald's", "Caterpillar", "Qualcomm", "Sandisk"
+  )) {
+    df_long <- data %>%
+      dplyr::select(dplyr::all_of(vars)) %>%
+      tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Ativo", values_to = "Retorno") %>%
+      dplyr::mutate(
+        Ativo = factor(Ativo, levels = vars),
+        Tipo = ifelse(Ativo == "S&P 500", "Índice de Mercado", "Ação Individual")
+      )
+    ggplot2::ggplot(df_long, ggplot2::aes(x = Ativo, y = Retorno, fill = Tipo)) +
+      ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "gray50", linewidth = 0.5) +
+      ggplot2::geom_boxplot(outlier.color = "#E74C3C", outlier.size = 1.8, alpha = 0.8) +
+      ggplot2::scale_fill_manual(values = c("Índice de Mercado" = "#E67E22", "Ação Individual" = "#2980B9")) +
+      ggplot2::coord_flip() +
+      ggplot2::labs(x = "Ativo / Índice", y = "Retorno Total Mensal (%)", fill = "Categoria") +
+      theme_academic(base_size = 9) +
+      ggplot2::theme(legend.position = "top")
+  }
+
+  plot_bivariate_relationships <- function(data, stocks = c(
+    "Sandisk", "McDonald's", "Caterpillar", "Qualcomm",
+    "Exxon Mobil", "Procter & Gamble", "Microsoft", "Johnson & Johnson"
+  ), market = "S&P 500") {
+    df_long <- data %>%
+      dplyr::select(dplyr::all_of(c(market, stocks))) %>%
+      tidyr::pivot_longer(cols = dplyr::all_of(stocks), names_to = "Acao", values_to = "Retorno_Acao") %>%
+      dplyr::mutate(Acao = factor(Acao, levels = stocks))
+    ggplot2::ggplot(df_long, ggplot2::aes(x = .data[[market]], y = Retorno_Acao)) +
+      ggplot2::geom_hline(yintercept = 0, linetype = "dotted", color = "gray60") +
+      ggplot2::geom_vline(xintercept = 0, linetype = "dotted", color = "gray60") +
+      ggplot2::geom_point(color = "#34495E", alpha = 0.7, size = 1.6) +
+      ggplot2::geom_smooth(method = "lm", formula = y ~ x, color = "#2980B9", fill = "#BDC3C7", linewidth = 0.8) +
+      ggplot2::facet_wrap(~ Acao, scales = "free_y", ncol = 4) +
+      ggplot2::labs(x = "Retorno Total Mensal do Mercado - S&P 500 (%)", y = "Retorno Total Mensal da Ação (%)") +
+      theme_academic(base_size = 9)
+  }
+
+  fit_beta_models <- function(data, stocks = c(
+    "Sandisk", "McDonald's", "Caterpillar", "Qualcomm",
+    "Exxon Mobil", "Procter & Gamble", "Microsoft", "Johnson & Johnson"
+  )) {
+    models_list <- list()
+    summary_rows <- list()
+    for (s in stocks) {
+      form <- stats::as.formula(paste0("`", s, "` ~ `S&P 500`"))
+      m <- stats::lm(form, data = data)
+      models_list[[s]] <- m
+      sm <- summary(m)
+      cf <- stats::coef(sm)
+      ci <- stats::confint(m, level = 0.95)
+      f_stat <- sm$fstatistic
+      f_pval <- stats::pf(f_stat[1], f_stat[2], f_stat[3], lower.tail = FALSE)
+      summary_rows[[s]] <- data.frame(
+        Acao = s, b0 = cf[1, 1], se_b0 = cf[1, 2], t_b0 = cf[1, 3], p_b0 = cf[1, 4],
+        Beta = cf[2, 1], se_Beta = cf[2, 2], t_Beta = cf[2, 3], p_Beta = cf[2, 4],
+        CI_low = ci[2, 1], CI_high = ci[2, 2], r = stats::cor(data[[s]], data[["S&P 500"]]),
+        R2 = sm$r.squared, R2_adj = sm$adj.r.squared, R2_perc = sm$r.squared * 100,
+        Nao_Explicado_perc = (1 - sm$r.squared) * 100, sigma = sm$sigma,
+        F_stat = unname(f_stat[1]), p_F = unname(f_pval), stringsAsFactors = FALSE
+      )
+    }
+    summary_df <- do.call(rbind, summary_rows) %>% dplyr::arrange(dplyr::desc(Beta))
+    rownames(summary_df) <- NULL
+    list(models = models_list, summary = summary_df)
+  }
+
+  format_beta_estimates_table <- function(summary_df, caption = "Estimativas dos parâmetros dos modelos de regressão linear simples ($\\widehat{R}_j = b_0 + b_1 R_{\\text{S\\&P 500}}$) ordenadas pelo coeficiente Beta ($b_1$)") {
+    display_df <- summary_df %>%
+      dplyr::mutate(
+        Acao_tex = gsub("&", "\\\\&", Acao),
+        b0_str = sprintf("%.3f (%.3f)", b0, se_b0),
+        p_Beta_str = ifelse(p_Beta < 0.001, "< 0,001***",
+                            ifelse(p_Beta < 0.01, sprintf("%.4f**", p_Beta),
+                                   ifelse(p_Beta < 0.05, sprintf("%.4f*", p_Beta),
+                                          sprintf("%.4f (ns)", p_Beta)))),
+        IC_95 = sprintf("[%.3f; %.3f]", CI_low, CI_high),
+        Perfil = ifelse(Beta > 1, "Agressiva ($\\beta > 1$)", "Defensiva ($\\beta < 1$)")
+      ) %>%
+      dplyr::select(
+        `Ação` = Acao_tex, `$b_0$ (EP)` = b0_str, `Beta ($b_1$)` = Beta,
+        `EP ($b_1$)` = se_Beta, `Estatística $t$` = t_Beta,
+        `$p$-valor ($b_1$)` = p_Beta_str, `IC 95\\% ($b_1$)` = IC_95, `Classificação` = Perfil
+      )
+    knitr::kable(display_df, format = "latex", booktabs = TRUE, row.names = FALSE,
+                 escape = FALSE, digits = 3, caption = caption,
+                 align = c("l", "c", "r", "r", "r", "c", "c", "l")) %>%
+      kableExtra::kable_styling(latex_options = c("striped", "hold_position", "scale_down"), font_size = 9)
+  }
+
+  format_goodness_of_fit_table <- function(summary_df, caption = "Qualidade do ajuste e proporção da variabilidade do retorno explicada pelo mercado ($R^2$) vs. risco idiossincrático ($1 - R^2$)") {
+    display_df <- summary_df %>%
+      dplyr::arrange(dplyr::desc(R2)) %>%
+      dplyr::mutate(
+        Acao_tex = gsub("&", "\\\\&", Acao),
+        R2_str = sprintf("%.2f\\%%", R2_perc),
+        Idio_str = sprintf("%.2f\\%%", Nao_Explicado_perc)
+      ) %>%
+      dplyr::select(
+        `Ação` = Acao_tex, `$r$ de Pearson` = r, `$R^2$` = R2, `$R^2$ Ajustado` = R2_adj,
+        `Explicado pelo Mercado ($R^2$)` = R2_str, `Risco Específico ($1 - R^2$)` = Idio_str,
+        `$\\hat{\\sigma}_{\\text{res}}$ (\\%)` = sigma, `Estatística $F$` = F_stat
+      )
+    knitr::kable(display_df, format = "latex", booktabs = TRUE, row.names = FALSE,
+                 escape = FALSE, digits = 3, caption = caption,
+                 align = c("l", "r", "r", "r", "r", "r", "r", "r")) %>%
+      kableExtra::kable_styling(latex_options = c("striped", "hold_position", "scale_down"), font_size = 9)
+  }
+
+  plot_beta_and_r2 <- function(summary_df) {
+    df_plot <- summary_df %>%
+      dplyr::mutate(
+        Acao_ord_beta = factor(Acao, levels = rev(Acao)),
+        Significativo = ifelse(p_Beta < 0.05, "Significativo (p < 0,05)", "Não significativo (p >= 0,05)")
+      )
+    p1 <- ggplot2::ggplot(df_plot, ggplot2::aes(x = Beta, y = Acao_ord_beta, color = Significativo)) +
+      ggplot2::geom_vline(xintercept = 1, linetype = "dashed", color = "#E74C3C", linewidth = 0.7) +
+      ggplot2::geom_vline(xintercept = 0, linetype = "dotted", color = "gray50", linewidth = 0.6) +
+      ggplot2::geom_errorbarh(ggplot2::aes(xmin = CI_low, xmax = CI_high), height = 0.25, linewidth = 0.7) +
+      ggplot2::geom_point(size = 2.6) +
+      ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", Beta)), vjust = -0.75, size = 2.6, show.legend = FALSE) +
+      ggplot2::scale_y_discrete(expand = ggplot2::expansion(mult = c(0.08, 0.16))) +
+      ggplot2::scale_color_manual(values = c("Significativo (p < 0,05)" = "#2980B9", "Não significativo (p >= 0,05)" = "#7F8C8D")) +
+      ggplot2::labs(title = "(a) Coeficiente Beta e IC 95%", subtitle = "Linha tracejada: Beta do mercado = 1,0",
+                    x = "Estimativa de Beta (b1)", y = "Ação", color = "") +
+      ggplot2::theme_minimal(base_size = 8.5) +
+      ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", hjust = 0.5, size = 9),
+                     plot.subtitle = ggplot2::element_text(hjust = 0.5, size = 7.5, color = "gray30"),
+                     legend.position = "bottom")
+    df_r2 <- summary_df %>%
+      dplyr::arrange(R2_perc) %>%
+      dplyr::mutate(Acao_ord_r2 = factor(Acao, levels = Acao))
+    p2 <- ggplot2::ggplot(df_r2, ggplot2::aes(x = R2_perc, y = Acao_ord_r2)) +
+      ggplot2::geom_col(fill = "#2C3E50", alpha = 0.85, width = 0.62) +
+      ggplot2::geom_text(ggplot2::aes(label = sprintf("%.1f%%", R2_perc)), hjust = -0.15, size = 2.6, color = "black") +
+      ggplot2::scale_x_continuous(limits = c(0, 42)) +
+      ggplot2::scale_y_discrete(expand = ggplot2::expansion(mult = c(0.08, 0.12))) +
+      ggplot2::labs(title = "(b) Variância Explicada (R²)", subtitle = "Percentual explicado pelo índice S&P 500",
+                    x = "Coeficiente de Determinação R² (%)", y = "") +
+      ggplot2::theme_minimal(base_size = 8.5) +
+      ggplot2::theme(plot.title = ggplot2::element_text(face = "bold", hjust = 0.5, size = 9),
+                     plot.subtitle = ggplot2::element_text(hjust = 0.5, size = 7.5, color = "gray30"))
+    p1 | p2
+  }
+}
+
+# Carregamento e preparação dos dados (retornos mensais em percentual %)
+dados_beta <- load_beta_data("Beta.xlsx")
+
+# Ajuste dos modelos de regressão linear simples (Modelo de Mercado)
+resultados_modelos <- fit_beta_models(dados_beta)
+```
+
+## Resumo
+
+A avaliação da volatilidade e do risco de ativos financeiros constitui um problema central na seleção de carteiras e na tomada de decisão de investimentos. Embora o desvio padrão quantifique o risco total de uma ação individual, ele não mensura a sensibilidade do ativo às oscilações macroeconômicas do mercado acionário. Este trabalho analisa os retornos totais mensais (valorização de capital acrescida de dividendos) ao longo de 36 meses para oito ações ordinárias amplamente negociadas (*Microsoft*, *Exxon Mobil*, *Caterpillar*, *Johnson & Johnson*, *McDonald's*, *Sandisk*, *Qualcomm* e *Procter & Gamble*) e para o índice de referência *S&P 500*. Realizaram-se uma análise exploratória descritiva completa e o ajuste de oito modelos de regressão linear simples pelo método de Mínimos Quadrados Ordinários (MQO), tendo o retorno do *S&P 500* como variável explicativa para estimar o coeficiente $\beta$ (*beta*) de cada companhia. A análise descritiva evidenciou que *Sandisk* ($\text{DP} = 19{,}54\%$) e *Qualcomm* ($\text{DP} = 8{,}62\%$) apresentaram as maiores volatilidades totais, ao passo que o índice *S&P 500* ($\text{DP} = 2{,}63\%$), *Johnson & Johnson* ($\text{DP} = 3{,}49\%$) e *Procter & Gamble* ($\text{DP} = 3{,}71\%$) exibiram a maior estabilidade. Na modelagem de regressão, identificou-se que *Sandisk* ($\hat{\beta}_1 = 2{,}605$), *McDonald's* ($\hat{\beta}_1 = 1{,}503$), *Caterpillar* ($\hat{\beta}_1 = 1{,}493$) e *Qualcomm* ($\hat{\beta}_1 = 1{,}414$) possuem betas superiores à unidade ($\beta > 1$), configurando ativos agressivos com melhor expectativa de desempenho em mercados em alta. Em contrapartida, *Johnson & Johnson* ($\hat{\beta}_1 = 0{,}009$), *Microsoft* ($\hat{\beta}_1 = 0{,}458$), *Procter & Gamble* ($\hat{\beta}_1 = 0{,}507$) e *Exxon Mobil* ($\hat{\beta}_1 = 0{,}731$) atuam como ativos defensivos ($\beta < 1$), preservando melhor seu valor em mercados em baixa. Por fim, os coeficientes de determinação ($R^2$) revelaram que a parcela do retorno explicada pelo mercado varia de praticamente nula em *Johnson & Johnson* ($0{,}004\%$) a moderada em *Caterpillar* ($32{,}88\%$) e *McDonald's* ($33{,}78\%$), demonstrando a predominância do risco idiossincrático nos retornos individuais.
+
+**Palavras-chave:** Risco de mercado; Coeficiente beta; Regressão linear simples; Volatilidade de ações; S&P 500.
+
+---
+
+## 1. Introdução
+
+No âmbito da administração financeira e da economia de mercados de capitais, a quantificação precisa do risco associado a ativos de renda variável é indispensável para a alocação eficiente de recursos. Uma medida clássica de risco ou volatilidade de uma ação individual consiste no desvio padrão de seu retorno total (composto pela valorização do capital somada aos dividendos distribuídos) ao longo de múltiplos períodos. Contudo, conforme destacado por @anderson2019estatistica, embora o desvio padrão seja de cálculo imediato e mensure a dispersão total dos retornos, ele não leva em consideração até que ponto o preço de uma determinada ação varia conjuntamente em função de um índice de mercado padrão, tal como o *Standard & Poor's 500* (*S&P 500*).
+
+Por essa razão, analistas financeiros e gestores de portfólio recorrem amplamente a uma medida alternativa de risco sistemático denominada *beta* ($\beta$). O coeficiente $\beta$ de uma ação individual é determinado por meio de uma regressão linear simples, na qual a variável resposta (dependente) é o retorno total da ação e a variável preditora (independente) é o retorno total do mercado acionário. Como o valor do beta para o próprio mercado é, por definição, igual a $1$, ações que tendem a subir e descer em magnitude semelhante ao mercado exibem um beta próximo de $1$. Por sua vez, coeficientes $\beta > 1$ indicam que a ação é mais volátil (agressiva) do que o mercado — por exemplo, um ativo com $\beta = 1{,}4$ é $40\%$ mais volátil que o índice de referência —, enquanto valores $\beta < 1$ sinalizam que a ação é menos volátil (defensiva) que o mercado — um ativo com $\beta = 0{,}4$ apresenta volatilidade sistemática $60\%$ inferior à do mercado [@anderson2019estatistica].
+
+O conjunto de dados analisado neste estudo contempla os registros históricos de retornos totais mensais ao longo de $n = 36$ meses consecutivos (janeiro de 2003 a dezembro de 2005) para oito ações ordinárias amplamente negociadas no mercado norte-americano — *Microsoft*, *Exxon Mobil*, *Caterpillar*, *Johnson & Johnson*, *McDonald's*, *Sandisk*, *Qualcomm* e *Procter & Gamble* —, acompanhadas do retorno total mensal do índice *S&P 500* como *proxy* do mercado acionário.
+
+O objetivo do presente trabalho é investigar as características de risco e retorno dessas oito ações ordinárias frente ao índice *S&P 500* por meio de análise exploratória e modelagem de regressão linear simples. Especificamente, busca-se: (i) calcular e interpretar as estatísticas descritivas de retorno e volatilidade de cada ativo; (ii) estimar o coeficiente $\beta$ de cada ação para identificar quais títulos apresentariam o melhor desempenho em um cenário de mercado em alta (*bull market*) e quais manteriam melhor seu valor em um mercado em baixa (*bear market*); e (iii) avaliar, via coeficiente de determinação ($R^2$), a proporção da variabilidade do retorno de cada ação individual que é explicada pelas flutuações do mercado.
+
+---
+
+## 2. Análise exploratória dos dados
+
+A base de dados compreende $n = 36$ observações mensais para nove variáveis quantitativas contínuas, correspondentes às taxas mensais de retorno total das oito companhias e do índice *S&P 500* (expressas em termos percentuais, $\%$, obtidas multiplicando-se as proporções originais por $100$). Não há variáveis qualitativas ou valores omissos no conjunto de dados. A Tabela 1 sumariza as medidas descritivas de posição, tendência central, separatrizes e dispersão, ordenadas de forma decrescente pelo desvio padrão.
+
+```{r tab-descritiva}
+desc_stats <- compute_descriptive_stats(dados_beta)
+format_descriptive_table(desc_stats)
+```
+
+A avaliação da Tabela 1 permite responder diretamente à primeira questão do estudo de caso acerca do perfil de retorno e de quais ações são as mais voláteis:
+
+* **Desempenho médio e mediano de retorno:** No período de 36 meses avaliado, todas as ações apresentaram retornos médios positivos. A *Sandisk* destacou-se com o maior retorno médio mensal ($6{,}93\%$ e mediana de $7{,}41\%$), seguida por *Caterpillar* (média de $3{,}01\%$ e mediana de $4{,}08\%$), *Qualcomm* ($2{,}84\%$ e mediana de $3{,}87\%$) e *McDonald's* ($2{,}45\%$ e mediana de $3{,}70\%$). Em contrapartida, *Microsoft* (média de $0{,}50\%$) e *Johnson & Johnson* (média de $0{,}53\%$ e mediana ligeiramente negativa de $-0{,}15\%$) registraram os menores retornos médios mensais, situando-se abaixo do rendimento médio do índice de mercado *S&P 500* ($1{,}01\%$ ao mês; mediana de $1{,}03\%$).
+* **Identificação das ações mais voláteis (Risco Total):** Tomando o desvio padrão ($\text{DP}$) e a amplitude interquartílica como medidas fundamentais de volatilidade total dos retornos, constata-se que a **Sandisk** é, de forma isolada, a ação mais volátil da amostra, exibindo um desvio padrão mensal de $19{,}54\%$ e retornos extremos que oscilaram entre uma perda máxima de $-28{,}33\%$ e um ganho máximo de $+50{,}17\%$ em um único mês ($Q_1 = -6{,}94\%$ e $Q_3 = 16{,}62\%$). Na sequência das ações mais voláteis posicionam-se a **Qualcomm** ($\text{DP} = 8{,}62\%$, variando de $-12{,}17\%$ a $+21{,}05\%$), a **Caterpillar** ($\text{DP} = 6{,}86\%$, de $-10{,}06\%$ a $+21{,}85\%$) e o **McDonald's** ($\text{DP} = 6{,}81\%$, de $-11{,}44\%$ a $+18{,}26\%$).
+* **Ativos de menor volatilidade e dispersão relativa ($\text{CV}$):** Em posição oposta, o índice **S&P 500** apresentou o menor desvio padrão de toda a base ($\text{DP} = 2{,}63\%$, oscilando entre $-3{,}43\%$ e $+8{,}10\%$), refletindo o efeito clássico da diversificação de carteira ao agregar 500 grandes corporações. Entre as ações individuais, as menos voláteis pertencem aos setores farmacêutico e de bens de consumo básico: **Johnson & Johnson** ($\text{DP} = 3{,}49\%$) e **Procter & Gamble** ($\text{DP} = 3{,}71\%$), seguidas pela **Microsoft** ($\text{DP} = 4{,}54\%$) e **Exxon Mobil** ($\text{DP} = 5{,}53\%$). Cabe notar que, em termos de coeficiente de variação ($\text{CV} = \text{DP}/|\text{Média}|$), todas as séries apresentam valores superiores a $220\%$ — com picos em *Microsoft* ($902{,}82\%$) e *Johnson & Johnson* ($658{,}40\%$) —, fenômeno típico de séries financeiras de retornos mensais, cujas médias aritméticas situam-se próximas de zero.
+
+### Análise gráfica
+
+A Figura 1 exibe os histogramas acompanhados das curvas de densidade empírica para as oito ações e o *S&P 500*. Observa-se que ativos como *Microsoft*, *Procter & Gamble* e *S&P 500* apresentam distribuições aproximadamente unimodais e concentradas em torno de $0\%$ a $2\%$, enquanto *Sandisk* e *Qualcomm* exibem caudas longas e acentuado espalhamento horizontal. Em *Exxon Mobil* e *Caterpillar*, nota-se leve assimetria à direita provocada por meses de expressiva valorização.
+
+```{r fig-distribuicoes, fig.height=4.0, fig.width=6.5, fig.cap="Histogramas e curvas de densidade empírica dos retornos totais mensais (\\%) das oito ações e do índice S\\&P 500."}
+plot_histograms(dados_beta)
+```
+
+Para aprofundar a comparação visual da volatilidade e verificar a presença de observações atípicas, a Figura 2 apresenta os box-plots horizontais ordenados pelo desvio padrão, e a Tabela 2 relaciona os meses classificados como *outliers* pelo critério formal de $1{,}5 \times \text{IQR}$.
+
+```{r fig-boxplots, fig.height=3.1, fig.width=6.5, fig.cap="Box-plots comparativos dos retornos totais mensais (\\%) ordenados pela volatilidade dos ativos."}
+plot_boxplots(dados_beta)
+```
+
+```{r tab-outliers}
+outliers_df <- identify_outliers(dados_beta)
+format_outliers_table(outliers_df)
+```
+
+A Figura 2 evidencia visualmente a disparidade de escala da volatilidade da *Sandisk*, cuja caixa interquartílica ($\text{IQR} = 23{,}56$ pontos percentuais) é tão ampla que mesmo oscilações de $-28{,}33\%$ e $+50{,}17\%$ não ultrapassam suas barreiras internas de $1{,}5 \times \text{IQR}$. Por outro lado, em ativos de menor dispersão interquartílica, choques pontuais destacam-se como valores atípicos na Tabela 2: a *Exxon Mobil* registrou dois picos positivos (dezembro/2003 com $+13{,}26\%$ e fevereiro/2005 com $+23{,}22\%$) e uma queda atípica (outubro/2005 com $-11{,}65\%$); a *Caterpillar* e a *Johnson & Johnson* apresentaram um mês de alta excepcional cada ($+21{,}85\%$ em julho/2003 e $+10{,}33\%$ em março/2003, respectivamente); e o *S&P 500* registrou um ganho atípico de $+8{,}10\%$ em abril/2003.
+
+```{r fig-dispersao, fig.height=3.6, fig.width=6.5, fig.cap="Diagramas de dispersão entre o retorno mensal de cada ação (variável resposta) e o retorno do índice S\\&P 500 (variável preditora) com retas de regressão ajustadas."}
+plot_bivariate_relationships(dados_beta)
+```
+
+A Figura 3 ilustra os diagramas de dispersão relacionando o retorno de cada ação individual (eixo vertical $Y$) ao retorno do índice *S&P 500* (eixo horizontal $X$). Nota-se uma tendência linear positiva bem definida para *McDonald's*, *Caterpillar*, *Qualcomm* e *Sandisk*, inclinação positiva mais suave para *Exxon Mobil*, *Procter & Gamble* e *Microsoft*, e uma reta praticamente horizontal para *Johnson & Johnson*, antecipando ausência de associação linear com o índice de mercado.
+
+---
+
+## 3. Modelo de regressão
+
+Para determinar o risco sistemático (coeficiente $\beta$) de cada ativo, ajustaram-se oito modelos de regressão linear simples independentes, indexados por $j \in \{1, 2, \dots, 8\}$ para cada uma das ações analisadas ao longo dos $t = 1, 2, \dots, 36$ meses. Em cada modelo:
+
+* **Variável resposta ($Y_{j,t}$):** Retorno total mensal da ação individual $j$ no mês $t$ (em $\%$).
+* **Variável preditora ($X_t$):** Retorno total mensal do índice de mercado *S&P 500* no mês $t$ (em $\%$).
+
+Assumindo erros aleatórios independentes e identicamente distribuídos $\varepsilon_{j,t} \sim \text{Normal}(0, \sigma_j^2)$, o modelo populacional de regressão linear simples (conhecido em finanças como *Modelo de Mercado*) é expresso por:
+
+$$Y_{j,t} = \beta_{0,j} + \beta_{1,j} X_t + \varepsilon_{j,t}$$
+
+onde $\beta_{0,j}$ representa o intercepto (retorno esperado da ação $j$ quando o retorno do mercado é nulo) e $\beta_{1,j}$ corresponde à inclinação da reta de regressão, isto é, ao **coeficiente beta ($\beta$)** da ação $j$.
+
+### 3.1 Equações Estimadas e Coeficientes Beta
+
+O ajuste pelo método dos Mínimos Quadrados Ordinários (MQO) forneceu as oito equações de regressão estimadas ($\widehat{Y}_j = b_{0,j} + b_{1,j} X$), apresentadas a seguir em ordem decrescente do valor estimado de beta ($b_1$):
+
+$$\begin{aligned}
+\widehat{\text{Sandisk}} &= 4{,}297 + 2{,}605 \cdot \text{S\&P 500} & \widehat{\text{Exxon Mobil}} &= 0{,}926 + 0{,}731 \cdot \text{S\&P 500} \\
+\widehat{\text{McDonald's}} &= 0{,}930 + 1{,}503 \cdot \text{S\&P 500} & \widehat{\text{Procter \& Gamble}} &= 0{,}548 + 0{,}507 \cdot \text{S\&P 500} \\
+\widehat{\text{Caterpillar}} &= 1{,}502 + 1{,}493 \cdot \text{S\&P 500} & \widehat{\text{Microsoft}} &= 0{,}040 + 0{,}458 \cdot \text{S\&P 500} \\
+\widehat{\text{Qualcomm}} &= 1{,}409 + 1{,}414 \cdot \text{S\&P 500} & \widehat{\text{Johnson \& Johnson}} &= 0{,}521 + 0{,}009 \cdot \text{S\&P 500}
+\end{aligned}$$
+
+*(Nota: Caso os retornos sejam expressos em proporção unitária em vez de percentual, a inclinação $b_1$ permanece estritamente idêntica, e o intercepto $b_0$ é dividido por $100$, por exemplo, $b_0 = 0{,}0430$ para a Sandisk).*
+
+A Tabela 3 sintetiza as estimativas pontuais do intercepto ($b_0$) e do coeficiente beta ($b_1$), seus respectivos erros padrões (EP), estatísticas $t$, $p$-valores para o teste bilateral $H_0: \beta_{1,j} = 0$ versus $H_1: \beta_{1,j} \neq 0$, intervalos de confiança a $95\%$ e a classificação financeira do ativo.
+
+```{r tab-beta-estimativas}
+format_beta_estimates_table(resultados_modelos$summary)
+```
+
+### 3.2 Interpretação dos Coeficientes: Sinal, Magnitude e Cenários de Mercado
+
+A análise detalhada das estimativas da Tabela 3 permite interpretar o comportamento das ações e responder integralmente à segunda questão do relatório administrativo:
+
+1. **Sinal dos coeficientes e significância estatística:** Todas as oito ações exibiram coeficientes angulares positivos ($b_1 > 0$), indicando uma relação direta na qual valorizações do índice *S&P 500* estão associadas, em média, a acréscimos nos retornos das ações. Ao nível de significância de $5\%$ ($\alpha = 0{,}05$), o efeito linear do mercado é estatisticamente significativo para seis das oito companhias: *McDonald's* ($p = 0{,}0002$), *Caterpillar* ($p = 0{,}0003$), *Qualcomm* ($p = 0{,}0085$), *Procter & Gamble* ($p = 0{,}0311$), *Sandisk* ($p = 0{,}0358$) e *Exxon Mobil* ($p = 0{,}0377$). Em contrapartida, para a *Microsoft* ($p = 0{,}1169$) e sobretudo para a *Johnson & Johnson* ($p = 0{,}9695$), não se rejeita $H_0: \beta_1 = 0$, indicando que seus retornos mensais não apresentaram dependência linear estatisticamente significativa em relação ao *S&P 500* no período. Quanto aos interceptos ($b_0$), todos apresentaram $p > 0{,}14$, não diferindo estatisticamente de zero.
+2. **Magnitude dos efeitos e desempenho em um mercado em alta (*Bull Market*):** As ações com $\hat{\beta}_1 > 1$ amplificam os movimentos do índice *S&P 500*, sendo classificadas como agressivas. A **Sandisk** apresenta o maior coeficiente beta ($\hat{\beta}_1 = 2{,}605$), sendo **$160{,}5\%$ mais volátil do que o mercado**: estima-se que, para cada aumento de $1$ ponto percentual no retorno mensal do *S&P 500*, o retorno total da *Sandisk* aumente, em média, $2{,}605$ pontos percentuais. Seguem-se a ela o **McDonald's** ($\hat{\beta}_1 = 1{,}503$; $50{,}3\%$ mais volátil que o mercado), a **Caterpillar** ($\hat{\beta}_1 = 1{,}493$; $49{,}3\%$ mais volátil) e a **Qualcomm** ($\hat{\beta}_1 = 1{,}414$; $41{,}4\%$ mais volátil). Consequentemente, em um cenário de **mercado em alta**, a **Sandisk** é a ação que apresentaria o melhor desempenho esperado, seguida por **McDonald's**, **Caterpillar** e **Qualcomm** (sendo que *McDonald's* e *Caterpillar* aliam alto beta a menor erro padrão de estimação).
+3. **Preservação de valor em um mercado em baixa (*Bear Market*):** Em um cenário de retração bursátil, investidores buscam ativos defensivos ($\hat{\beta}_1 < 1$), que sofrem quedas proporcionalmente menores que o índice de mercado. A ação que melhor manteria seu valor em um **mercado em baixa** é a **Johnson & Johnson** ($\hat{\beta}_1 = 0{,}009$; $99{,}1\%$ menos volátil em relação ao mercado), uma vez que seu retorno é virtualmente imune às quedas do *S&P 500* (para cada queda de $1$ ponto percentual no mercado, sua variação média associada ao índice é de apenas $-0{,}009$ ponto percentual, mantendo um retorno basal médio positivo de $b_0 = 0{,}521\%$). Entre as ações com relação linear estatisticamente significativa com o mercado, destacam-se na proteção contra baixas a **Procter & Gamble** ($\hat{\beta}_1 = 0{,}507$, que é $49{,}3\%$ menos volátil que o mercado, absorvendo apenas metade da queda do *S&P 500*) e a **Exxon Mobil** ($\hat{\beta}_1 = 0{,}731$, $26{,}9\%$ menos volátil que o mercado), além da **Microsoft** ($\hat{\beta}_1 = 0{,}458$, $54{,}2\%$ menos volátil).
+
+### 3.3 Qualidade do Ajuste: Quanto do Retorno Individual é Explicado pelo Mercado?
+
+Para responder ao terceiro item do estudo de caso, analisa-se o coeficiente de determinação ($R^2$) de cada regressão, que quantifica a proporção da variância total dos retornos da ação que é explicada linearmente pelo retorno do *S&P 500* (risco sistemático), enquanto o complemento ($1 - R^2$) reflete a parcela atribuída a fatores próprios da empresa ou setor (risco idiossincrático ou não sistemático). A Tabela 4 e a Figura 4 sintetizam esses resultados.
+
+```{r tab-qualidade-ajuste}
+format_goodness_of_fit_table(resultados_modelos$summary)
+```
+
+```{r fig-beta-r2, fig.height=3.2, fig.width=6.5, fig.cap="Comparação entre as ações: (a) Estimativas do coeficiente Beta com intervalos de confiança de 95\\%; e (b) Percentual da variância do retorno explicado pelo mercado ($R^2$)."}
+plot_beta_and_r2(resultados_modelos$summary)
+```
+
+A inspeção da Tabela 4 e da Figura 4 revela que a proporção do retorno das ações individuais explicada pelo mercado é, em geral, moderada a baixa, situando-se abaixo de $34\%$ para todos os ativos analisados:
+
+* **Maior poder explicativo do mercado:** As ações do **McDonald's** ($R^2 = 0{,}338$, ou $33{,}78\%$) e da **Caterpillar** ($R^2 = 0{,}329$, ou $32{,}88\%$) apresentam os maiores coeficientes de determinação e as maiores correlações positivas com o índice ($r = 0{,}581$ e $r = 0{,}573$, respectivamente). Nesses dois casos, aproximadamente um terço da variabilidade mensal dos retornos é explicada diretamente pelo movimento do *S&P 500*.
+* **Poder explicativo intermediário:** Para a **Qualcomm**, o mercado explica $18{,}66\%$ da variação dos retornos ($r = 0{,}432$). Já para **Procter & Gamble** ($12{,}95\%$), **Sandisk** ($12{,}32\%$) e **Exxon Mobil** ($12{,}09\%$), o índice *S&P 500* responde por cerca de um oitavo da variabilidade total. Merece destaque o contraste observado na **Sandisk**: embora possua o maior beta ($\hat{\beta}_1 = 2{,}605$), seu erro padrão residual é elevado ($\hat{\sigma}_{\text{res}} = 18{,}56\%$) e apenas $12{,}32\%$ de sua variância decorre do mercado, o que significa que $87{,}68\%$ de sua intensa volatilidade origina-se de fatores específicos da própria empresa e da indústria de semicondutores.
+* **Baixo ou nulo poder explicativo:** Na **Microsoft**, apenas $7{,}08\%$ da variação mensal dos retornos é explicada pelo *S&P 500* ($r = 0{,}266$). Por fim, na **Johnson & Johnson**, o poder explicativo do mercado é virtualmente nulo ($R^2 < 0{,}01\%$; $r = 0{,}007$), demonstrando que quase $100\%$ das oscilações mensais dessa companhia farmacêutica no período decorreram de fatores idiossincráticos independentes do ciclo geral da bolsa.
+
+---
+
+## 4. Conclusão
+
+Este trabalho aplicou a análise exploratória de dados e a modelagem de regressão linear simples para mensurar o risco total e o risco sistemático (coeficiente $\beta$) de oito importantes ações norte-americanas em relação ao índice *S&P 500* ao longo de 36 meses.
+
+Em síntese, verificou-se inicialmente que a avaliação de risco pelo desvio padrão (volatilidade total) aponta *Sandisk* ($\text{DP} = 19{,}54\%$), *Qualcomm* ($\text{DP} = 8{,}62\%$), *Caterpillar* ($\text{DP} = 6{,}86\%$) e *McDonald's* ($\text{DP} = 6{,}81\%$) como os ativos mais voláteis, enquanto *Johnson & Johnson* ($\text{DP} = 3{,}49\%$) e *Procter & Gamble* ($\text{DP} = 3{,}71\%$) destacam-se como as ações mais estáveis, aproximando-se da baixa volatilidade da carteira diversificada do *S&P 500* ($\text{DP} = 2{,}63\%$).
+
+A estimação dos modelos de regressão linear simples permitiu distinguir claramente o perfil de resposta das ações frente aos ciclos de mercado. Em um cenário de **mercado em alta**, ações agressivas ($\hat{\beta}_1 > 1$) proporcionam os maiores ganhos esperados, lideradas pela **Sandisk** ($\hat{\beta}_1 = 2{,}605$), seguida por **McDonald's** ($\hat{\beta}_1 = 1{,}503$), **Caterpillar** ($\hat{\beta}_1 = 1{,}493$) e **Qualcomm** ($\hat{\beta}_1 = 1{,}414$). Em contrapartida, em um cenário de **mercado em baixa**, ações defensivas ($\hat{\beta}_1 < 1$) preservam melhor o capital investido, destacando-se a **Johnson & Johnson** ($\hat{\beta}_1 = 0{,}009$), cujos retornos independem das quedas do índice, bem como a **Microsoft** ($\hat{\beta}_1 = 0{,}458$), a **Procter & Gamble** ($\hat{\beta}_1 = 0{,}507$) e a **Exxon Mobil** ($\hat{\beta}_1 = 0{,}731$).
+
+Por fim, a análise do coeficiente de determinação ($R^2$) demonstrou que o mercado explica entre $0{,}004\%$ (*Johnson & Johnson*) e $33{,}78\%$ (*McDonald's*) da variabilidade dos retornos mensais individuais. Conclui-se que, embora o coeficiente $\beta$ seja uma ferramenta essencial para alinhar a exposição de uma carteira às expectativas de alta ou baixa do mercado, a maior parte da variância de ações individuais isoladas ($66{,}22\%$ a $99{,}99\%$) permanece associada ao risco específico de cada companhia, reforçando a importância da diversificação de portfólios.
+
+---
+
+## Referências
+
+<div id="refs"></div>
